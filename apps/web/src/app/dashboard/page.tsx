@@ -51,7 +51,7 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <Image
-              src="/dward_favicon.png"
+              src="/dwarf.png"
               alt="AIFM Logo"
               width={40}
               height={40}

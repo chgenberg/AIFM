@@ -20,7 +20,7 @@ export function Header() {
         <div className="flex items-center gap-3">
           <Link href="/dashboard" className="flex items-center gap-3">
             <Image
-              src="/dward_favicon.png"
+              src="/dwarf.png"
               alt="AIFM Logo"
               width={40}
               height={40}

@@ -33,7 +33,7 @@ export default function Navigation() {
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2">
             <Image
-              src="/dward_favicon.png"
+              src="/dwarf.png"
               alt="AIFM Logo"
               width={32}
               height={32}
