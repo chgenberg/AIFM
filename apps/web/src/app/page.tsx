@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { Button } from '@/components/Button';
 import { WorkflowModal } from '@/components/WorkflowModal';
 import { Card } from '@/components/Card';
-import { Zap, Lock, BarChart3, Users, ArrowRight, Sparkles, Database, FileCheck } from 'lucide-react';
+import { Lock, BarChart3, Users, ArrowRight, Sparkles, Database, FileCheck } from 'lucide-react';
 
 export default function HomePage() {
   const router = useRouter();
