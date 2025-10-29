@@ -1,152 +1,79 @@
 'use client';
 
+import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Button } from './Button';
 import Image from 'next/image';
-import {
-  Home,
-  CheckCircle,
-  BarChart3,
-  Settings,
-  LogOut,
-  Menu,
-  X,
-} from 'lucide-react';
-import { useState } from 'react';
 
-const navItems = [
-  { href: '/', label: 'Home', icon: Home, roles: ['admin', 'coordinator', 'specialist', 'client'] },
-  { href: '/coordinator/inbox', label: 'QC Inbox', icon: CheckCircle, roles: ['admin', 'coordinator'] },
-  { href: '/specialist/board', label: 'Delivery Board', icon: BarChart3, roles: ['admin', 'specialist'] },
-  { href: '/client/dashboard', label: 'Dashboard', icon: BarChart3, roles: ['admin', 'client'] },
-  { href: '/admin/dashboard', label: 'Admin', icon: Settings, roles: ['admin'] },
-];
-
-export const Navigation = () => {
+export default function Navigation() {
+  const { data: session } = useSession();
   const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
-  const userRole = 'admin';
-  const filteredItems = navItems.filter((item) => item.roles.includes(userRole));
+
+  if (!session) return null;
+
+  const userRole = (session.user as any)?.role?.toLowerCase() || 'client';
+  
+  const dashboardLinks = {
+    admin: [
+      { label: 'Dashboard', href: '/admin/dashboard' },
+    ],
+    coordinator: [
+      { label: 'Inbox', href: '/coordinator/inbox' },
+    ],
+    specialist: [
+      { label: 'Board', href: '/specialist/board' },
+    ],
+  };
+
+  const links = dashboardLinks[userRole as keyof typeof dashboardLinks] || [];
 
   return (
-    <nav className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
-      <div className="max-w-full px-4 py-3">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 font-bold text-lg">
+    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div className="flex items-center gap-8">
+          <Link href="/" className="flex items-center gap-2">
             <Image
-              src="/dwarf.svg"
-              alt="FINANS Logo"
+              src="/dward_favicon.png"
+              alt="AIFM Logo"
               width={32}
               height={32}
-              className="w-8 h-8"
+              className="rounded-lg"
             />
-            <span className="hidden sm:inline">FINANS</span>
+            <span className="font-bold text-lg">AIFM</span>
           </Link>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
-            {filteredItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`
-                    flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors
-                    ${
-                      isActive
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }
-                  `}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-          </div>
-
-          {/* Right Side */}
-          <div className="flex items-center gap-3">
-            {/* Desktop User Info */}
-            <div className="hidden md:flex items-center gap-2 text-sm">
-              <div>
-                <p className="font-medium">Test User</p>
-                <p className="text-xs text-gray-500">{userRole}</p>
-              </div>
-            </div>
-
-            {/* Desktop Logout */}
-            <Button
-              variant="outline"
-              size="sm"
-              className="hidden md:flex"
-              onClick={() => window.location.href = '/'}
-            >
-              <LogOut className="w-4 h-4" />
-            </Button>
-
-            {/* Mobile Menu Button */}
-            <button
-              className="md:hidden p-2"
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              {isOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
-            </button>
+          
+          <div className="flex gap-6">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`font-medium transition ${
+                  pathname === link.href
+                    ? 'text-gray-900 border-b-2 border-gray-900 pb-1'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="md:hidden mt-4 pb-4 border-t pt-4">
-            <div className="space-y-2">
-              {filteredItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = pathname === item.href;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setIsOpen(false)}
-                    className={`
-                      flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors
-                      ${
-                        isActive
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'text-gray-700 hover:bg-gray-100'
-                      }
-                    `}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span>{item.label}</span>
-                  </Link>
-                );
-              })}
-            </div>
-            <div className="mt-4 pt-4 border-t space-y-2">
-              <p className="text-sm font-medium px-3">Test User</p>
-              <p className="text-xs text-gray-500 px-3">{userRole}</p>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full justify-start"
-                onClick={() => window.location.href = '/'}
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
-              </Button>
-            </div>
-          </div>
-        )}
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-gray-600">
+            {session.user?.email}
+          </span>
+          <span className="text-xs font-semibold bg-gray-200 px-3 py-1 rounded-full">
+            {userRole.toUpperCase()}
+          </span>
+          <button
+            onClick={() => signOut({ redirect: true, callbackUrl: '/' })}
+            className="px-4 py-2 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition"
+          >
+            Sign Out
+          </button>
+        </div>
       </div>
     </nav>
   );
-};
+}

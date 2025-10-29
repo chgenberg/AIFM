@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Navigation from '@/components/Navigation';
 import { Button } from '@/components/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/Card';
 import { RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
@@ -78,6 +79,7 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="page-container">
+      <Navigation />
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="section-title">Admin Dashboard</h1>
