@@ -101,10 +101,11 @@ export async function POST(request: NextRequest) {
         where: { id: clientId },
       });
 
-      const [bankTransactions, ledgerEntries, investors] = await Promise.all([
-        prisma.bankTransaction.findMany({
+      const [bankLedgerEntries, allLedgerEntries, investors] = await Promise.all([
+        prisma.ledgerEntry.findMany({
           where: {
             clientId,
+            source: 'BANK',
             bookingDate: {
               gte: new Date(periodStart),
               lte: new Date(periodEnd),
@@ -130,10 +131,10 @@ export async function POST(request: NextRequest) {
         reportType,
         periodStart,
         periodEnd,
-        bankTransactions: bankTransactions.length,
-        ledgerEntries: ledgerEntries.length,
+        bankTransactions: bankLedgerEntries.length,
+        ledgerEntries: allLedgerEntries.length,
         investors: investors.length,
-        totalBalance: bankTransactions.reduce((sum, t) => sum + Number(t.amount), 0),
+        totalBalance: bankLedgerEntries.reduce((sum, t) => sum + Number(t.amount), 0),
       };
     }
 
