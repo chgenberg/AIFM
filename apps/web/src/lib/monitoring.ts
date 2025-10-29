@@ -145,7 +145,7 @@ export function withErrorTracking<P extends object>(
 ) {
   return (props: P) => {
     try {
-      return <Component {...(props as any)} />;
+      return React.createElement(Component, props as any);
     } catch (error) {
       if (error instanceof Error) {
         monitoring.captureException(error, { component: Component.name });
