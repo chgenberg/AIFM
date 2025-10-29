@@ -206,10 +206,10 @@ export default function CoordinatorInboxPage() {
               </div>
             </CardContent>
           </Card>
-      </div>
+        </div>
 
-      {/* Action Bar */}
-      <div className="mb-6 flex items-center justify-between">
+        {/* Action Bar */}
+        <div className="mb-6 flex items-center justify-between">
         <div className="text-sm text-gray-600 uppercase tracking-wide">
           {filteredTasks.length} pending task{filteredTasks.length !== 1 ? 's' : ''}
         </div>
@@ -366,7 +366,8 @@ export default function CoordinatorInboxPage() {
         isLoading={approving}
       >
         <p className="text-gray-700">Are you sure you want to approve this task?</p>
-      </Modal>
+        </Modal>
+      </div>
     </div>
   );
 }
