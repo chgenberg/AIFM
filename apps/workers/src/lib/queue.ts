@@ -111,10 +111,10 @@ export function setupQueueListeners() {
 
 export async function getQueueHealth() {
   try {
-    const etlCounts = await (etlQueue.getCountsData?.() ?? etlQueue.getJobCounts?.());
-    const aiCounts = await (aiQueue.getCountsData?.() ?? aiQueue.getJobCounts?.());
-    const reportsCounts = await (reportsQueue.getCountsData?.() ?? reportsQueue.getJobCounts?.());
-    const complianceCounts = await (complianceQueue.getCountsData?.() ?? complianceQueue.getJobCounts?.());
+    const etlCounts = await (etlQueue as any).getCountsData?.() ?? (etlQueue as any).getJobCounts?.();
+    const aiCounts = await (aiQueue as any).getCountsData?.() ?? (aiQueue as any).getJobCounts?.();
+    const reportsCounts = await (reportsQueue as any).getCountsData?.() ?? (reportsQueue as any).getJobCounts?.();
+    const complianceCounts = await (complianceQueue as any).getCountsData?.() ?? (complianceQueue as any).getJobCounts?.();
 
     return {
       healthy: true,

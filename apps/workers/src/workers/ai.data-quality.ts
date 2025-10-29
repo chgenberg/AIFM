@@ -2,14 +2,17 @@
  * Data Quality AI Worker
  * Validates ledger entries, detects duplicates, missing fields, and creates QC tasks
  */
-import { Worker, Job } from "bullmq";
-import { PrismaClient, TaskStatus } from "@prisma/client";
-import pino from "pino";
+import { prisma } from "@prisma/client";
+import { logger } from "../../../libs/logger";
+import { Queue, Worker } from "bullmq";
+import { Redis } from "ioredis";
 import { AIJobPayload, DataQualityResultZ, QCCheck } from "@aifm/shared";
 import { redisConnection } from "../lib/queue";
 
-const logger = pino();
-const prisma = new PrismaClient();
+// Use TaskStatus from Prisma enums
+type TaskStatus = "QUEUED" | "IN_PROGRESS" | "BLOCKED" | "NEEDS_REVIEW" | "DONE";
+
+const prisma = new prisma();
 
 // ============================================================================
 // DATA QUALITY WORKER
@@ -17,7 +20,7 @@ const prisma = new PrismaClient();
 
 export const dataQualityWorker = new Worker(
   "ai",
-  async (job: Job<AIJobPayload>) => {
+  async (job: Worker.Job<AIJobPayload>) => {
     logger.info(
       { jobId: job.id, clientId: job.data.clientId },
       "Starting data quality check"
