@@ -12,7 +12,6 @@ import {
   FileText, 
   Shield,
   Zap,
-  Users,
   ArrowRight
 } from 'lucide-react';
 
