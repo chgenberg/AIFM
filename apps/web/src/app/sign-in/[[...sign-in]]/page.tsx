@@ -56,7 +56,7 @@ export default function SignInPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-gray-700 border border-gray-600 rounded-2xl px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-              placeholder="admin@aifm.se"
+              placeholder="admin@aifm.com"
               required
             />
           </div>
@@ -68,7 +68,7 @@ export default function SignInPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-gray-700 border border-gray-600 rounded-2xl px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-              placeholder="••••••••"
+              placeholder="Password1!"
               required
             />
           </div>
@@ -83,9 +83,8 @@ export default function SignInPage() {
         </form>
 
         <p className="text-gray-400 text-center mt-6">
-          Demo credentials:
-          <br />
-          <span className="font-mono text-sm">admin@aifm.se / password</span>
+          Demo logins:<br />
+          <span className="font-mono text-sm">admin@aifm.com / Password1!</span>
         </p>
       </div>
     </div>
