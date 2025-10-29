@@ -127,7 +127,7 @@ const FEW_SHOT_EXAMPLES: Record<string, Array<{ user: string; assistant: string 
 
 export async function POST(request: NextRequest) {
   try {
-    const { taskKind, context, clientId } = await request.json();
+    const { taskKind, context } = await request.json();
 
     if (!taskKind || !SYSTEM_PROMPTS[taskKind]) {
       return NextResponse.json(
