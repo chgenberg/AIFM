@@ -28,6 +28,8 @@ model Client {
   kycRecords      KYCRecord[]
   bankAccounts    BankAccount[]
   investors       Investor[]
+  users           User[] @relation("UserToClient")
+  ledgers         LedgerEntry[] @relation("ClientLedgers")
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -92,6 +94,7 @@ model User {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   auditLogs       AuditLog[] @relation("AuditActors")
+  tasks           Task[] @relation("UserTasks")
 
   @@index([role])
   @@index([email])
@@ -157,7 +160,7 @@ model LedgerEntry {
   source      DataSource
   bookingDate DateTime
   account     String
-  amount      Decimal   @db.Numeric(18, 2)
+  amount      Decimal
   currency    String    @db.VarChar(3)
   description String?
   meta        Json?
@@ -174,7 +177,7 @@ model BankAccount {
   client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   iban      String
   currency  String   @db.VarChar(3)
-  balance   Decimal  @db.Numeric(18, 2)
+  balance   Decimal
   syncedAt  DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -195,7 +198,7 @@ model Task {
   status      TaskStatus  @default(QUEUED)
   payload     Json
   assigneeId  String?
-  assignee    User?       @relation(fields: [assigneeId], references: [id])
+  assignee    User?       @relation("UserTasks", fields: [assigneeId], references: [id])
   comment     String?
   flags       Flag[]
   createdAt   DateTime    @default(now())
@@ -328,7 +331,7 @@ model KYCRecord {
   id              String   @id @default(cuid())
   clientId        String
   client          Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  investorId      String?
+  investorId      String?  @unique
   investor        Investor? @relation(fields: [investorId], references: [id])
   status          KYCStatus @default(PENDING)
   riskLevel       String?  // "low", "medium", "high"
@@ -356,7 +359,7 @@ model RiskProfile {
   clientId     String
   client       Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   period       DateTime
-  var95        Decimal? @db.Numeric(18, 2) // Value at Risk
+  var95        Decimal? // Value at Risk
   concentration Json?   // top5 positions
   limitBreaches Json?   // { limit: "X", breach: true/false }
   stressTest   Json?   // scenario results
