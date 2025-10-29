@@ -4,8 +4,11 @@ import { PrismaAdapter } from '@auth/prisma-adapter';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 
+const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
+  trustHost: true,
   providers: [
     CredentialsProvider({
       name: 'Credentials',
