@@ -12,11 +12,8 @@ interface MonitoringConfig {
 
 class MonitoringService {
   private initialized = false;
-  private config: MonitoringConfig = {};
 
   init(config: MonitoringConfig) {
-    this.config = config;
-
     // Only initialize Sentry in browser environment with DSN
     if (typeof window !== 'undefined' && config.dsn) {
       try {
