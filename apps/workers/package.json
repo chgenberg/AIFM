@@ -1,0 +1,32 @@
+{
+  "name": "@aifm/workers",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "worker:fortnox": "tsx src/workers/etl.fortnox.ts",
+    "worker:bank": "tsx src/workers/etl.bank.ts",
+    "worker:data-quality": "tsx src/workers/ai.data-quality.ts"
+  },
+  "dependencies": {
+    "@aifm/shared": "*",
+    "@prisma/client": "^5.6.0",
+    "bullmq": "^5.1.0",
+    "redis": "^4.6.12",
+    "zod": "^3.22.4",
+    "axios": "^1.6.2",
+    "dotenv": "^16.3.1",
+    "pino": "^8.17.2",
+    "papaparse": "^5.4.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/papaparse": "^5.3.9",
+    "prisma": "^5.6.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.2"
+  }
+}

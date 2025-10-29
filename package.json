@@ -1,0 +1,44 @@
+{
+  "name": "aifm-agent-portal",
+  "version": "0.1.0",
+  "description": "AIFM Agent Portal: Data ETL → AI Agent → Human QC → Delivery",
+  "private": true,
+  "workspaces": [
+    "apps/web",
+    "apps/api",
+    "apps/workers",
+    "packages/shared",
+    "packages/ai"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w apps/web\" \"npm run dev -w apps/workers\" \"npm run dev -w apps/api\"",
+    "build": "npm run build --workspaces",
+    "db:setup": "prisma migrate dev --name init",
+    "db:push": "prisma db push",
+    "db:seed": "prisma db seed",
+    "db:reset": "prisma migrate reset --force && npm run db:seed",
+    "db:status": "prisma migrate status",
+    "lint": "eslint . --ext .ts,.tsx",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.54.0",
+    "prettier": "^3.1.0",
+    "prisma": "^5.6.0",
+    "typescript": "^5.3.2"
+  },
+  "dependencies": {
+    "winston": "^3.11.0",
+    "isomorphic-dompurify": "^2.3.0",
+    "@sentry/nextjs": "^7.73.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
