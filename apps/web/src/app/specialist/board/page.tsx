@@ -10,10 +10,11 @@ interface Report {
   id: string;
   type: string;
   status: string;
-  periodStart: string;
-  periodEnd: string;
-  draftText?: string;
-  artifactUrl?: string;
+  periodStart: Date | string;
+  periodEnd: Date | string;
+  draftText?: string | null;
+  artifactUrl?: string | null;
+  client?: { name: string };
 }
 
 const STATUSES = ['DRAFT', 'QC', 'APPROVAL', 'PUBLISHED'];
@@ -34,13 +35,11 @@ export default function SpecialistBoardPage() {
   const loadReports = async () => {
     try {
       setLoading(true);
-      // Mock reports for testing
-      const mockReports: Report[] = [
-        { id: '1', type: 'Monthly Statement', status: 'DRAFT', periodStart: '2024-10-01', periodEnd: '2024-10-31', draftText: 'Report content here...' },
-        { id: '2', type: 'Quarterly Report', status: 'QC', periodStart: '2024-Q3', periodEnd: '2024-Q3', draftText: 'Q3 analysis...' },
-        { id: '3', type: 'Annual Report', status: 'APPROVAL', periodStart: '2023-01-01', periodEnd: '2023-12-31' },
-        { id: '4', type: 'Fund Summary', status: 'PUBLISHED', periodStart: '2024-09-01', periodEnd: '2024-09-30', artifactUrl: 'https://example.com/report.pdf' },
-      ];
+      const response = await fetch('/api/reports');
+      if (!response.ok) {
+        throw new Error('Failed to load reports');
+      }
+      const data: Report[] = await response.json();
 
       const grouped: Record<string, Report[]> = {
         DRAFT: [],
@@ -49,7 +48,7 @@ export default function SpecialistBoardPage() {
         PUBLISHED: [],
       };
 
-      mockReports.forEach((report: Report) => {
+      data.forEach((report: Report) => {
         if (grouped[report.status]) {
           grouped[report.status].push(report);
         }
@@ -110,9 +109,10 @@ export default function SpecialistBoardPage() {
                     className="cursor-move hover:shadow-md transition-shadow"
                   >
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-sm">{report.type}</CardTitle>
+                      <CardTitle className="text-sm">{report.type.replace(/_/g, ' ')}</CardTitle>
+                      {report.client && <p className="text-xs text-gray-500 mt-1">{report.client.name}</p>}
                       <CardDescription className="text-xs">
-                        {formatDate(report.periodStart)} – {formatDate(report.periodEnd)}
+                        {formatDate(typeof report.periodStart === 'string' ? report.periodStart : report.periodStart.toISOString())} – {formatDate(typeof report.periodEnd === 'string' ? report.periodEnd : report.periodEnd.toISOString())}
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
