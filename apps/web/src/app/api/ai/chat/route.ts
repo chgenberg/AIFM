@@ -111,7 +111,7 @@ Always use English and be professional but friendly. You have access to real-tim
       // GPT-5-mini specific parameters
       if (isGPT5Mini) {
         requestParams.verbosity = 'medium'; // low, medium, high
-        requestParams.reasoning_effort = 'standard'; // minimal, standard, high
+        requestParams.reasoning_effort = 'medium'; // low, medium, high
         // Note: GPT-5-mini does not support temperature or max_tokens parameters
       } else {
         // Standard GPT models use temperature

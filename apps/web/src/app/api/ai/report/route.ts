@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     // GPT-5-mini specific parameters (no temperature or max_tokens)
     if (isGPT5Mini) {
       requestParams.verbosity = 'high'; // Use high for detailed reports
-      requestParams.reasoning_effort = 'standard'; // minimal, standard, high
+      requestParams.reasoning_effort = 'medium'; // low, medium, high
     }
 
     const response = await openai.chat.completions.create(requestParams);

@@ -20,7 +20,7 @@ async function main() {
       isActive: true,
       settings: {
         verbosity: 'medium',
-        reasoning_effort: 'standard',
+        reasoning_effort: 'medium',
       },
       prompts: {
         create: [

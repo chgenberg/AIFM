@@ -467,7 +467,7 @@ model AIModel {
   examples  AIModelExample[]
   feedbacks AIFeedback[]
 
-  settings  Json? // { verbosity: "high", reasoning_effort: "standard" }
+  settings  Json? // { verbosity: "high", reasoning_effort: "medium" } // reasoning_effort: "low" | "medium" | "high"
   isActive  Boolean @default(true)
   isDefault Boolean @default(false) // Only one default per taskKind
 

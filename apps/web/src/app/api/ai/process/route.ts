@@ -215,7 +215,9 @@ export async function POST(request: NextRequest) {
       // Use settings from Knowledge Base if available
       const settings = model?.settings as any;
       requestParams.verbosity = settings?.verbosity || 'medium';
-      requestParams.reasoning_effort = settings?.reasoning_effort || 'standard';
+      // Map 'standard' to 'medium' if present (for backward compatibility)
+      const reasoningEffort = settings?.reasoning_effort === 'standard' ? 'medium' : (settings?.reasoning_effort || 'medium');
+      requestParams.reasoning_effort = reasoningEffort; // low, medium, high
     }
 
     const response = await openai.chat.completions.create(requestParams);
