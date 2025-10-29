@@ -1,10 +1,100 @@
 'use client';
 
+import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
+import { Button } from '@/components/Button';
+import { Download, Trash2, AlertCircle, AlertTriangle } from 'lucide-react';
 
 export default function DataProtectionPage() {
+  const { data: session } = useSession();
+  const [exporting, setExporting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteReason, setDeleteReason] = useState('');
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const handleExportData = async () => {
+    setExporting(true);
+    setMessage(null);
+    
+    try {
+      const response = await fetch('/api/privacy/data-export');
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to export data');
+      }
+
+      const data = await response.json();
+      
+      // Create a blob and download
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `gdpr-data-export-${session?.user?.email}-${Date.now()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      setMessage({
+        type: 'success',
+        text: 'Your data has been exported successfully. The download should start automatically.',
+      });
+    } catch (error: any) {
+      setMessage({
+        type: 'error',
+        text: error.message || 'Failed to export data. Please try again or contact support.',
+      });
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    setMessage(null);
+
+    try {
+      const response = await fetch('/api/privacy/delete-account', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          confirm: true,
+          reason: deleteReason || undefined,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to delete account');
+      }
+
+      setMessage({
+        type: 'success',
+        text: 'Your account has been deleted successfully. You will be redirected to the home page.',
+      });
+
+      // Redirect after 3 seconds
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 3000);
+    } catch (error: any) {
+      setMessage({
+        type: 'error',
+        text: error.message || 'Failed to delete account. Please try again or contact support.',
+      });
+      setDeleting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -62,14 +152,119 @@ export default function DataProtectionPage() {
 
               <section>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">4. Exercising Your Rights</h2>
-                <p>To exercise any of these rights, please contact us:</p>
-                <div className="mt-4 space-y-2">
-                  <p><strong>Email:</strong> <a href="mailto:privacy@aifm.com" className="text-blue-600 hover:underline">privacy@aifm.com</a></p>
-                  <p><strong>Data Protection Officer:</strong> <a href="mailto:dpo@aifm.com" className="text-blue-600 hover:underline">dpo@aifm.com</a></p>
+                <p>You can exercise your GDPR rights directly through this portal:</p>
+
+                {/* Data Export Section */}
+                <div className="mt-6 p-6 bg-blue-50 border-2 border-blue-200 rounded-2xl">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                    <Download className="w-5 h-5 text-blue-900" />
+                    Right to Access & Data Portability
+                  </h3>
+                  <p className="text-gray-700 mb-4">
+                    Download a complete copy of all your personal data in JSON format. This includes your profile, tasks, audit logs, and all associated information.
+                  </p>
+                  {session ? (
+                    <Button
+                      onClick={handleExportData}
+                      disabled={exporting}
+                      className="bg-blue-900 text-white hover:bg-blue-800"
+                    >
+                      {exporting ? 'Exporting...' : 'Export My Data'}
+                      <Download className="w-4 h-4 ml-2" />
+                    </Button>
+                  ) : (
+                    <p className="text-sm text-gray-600 italic">Please sign in to export your data</p>
+                  )}
                 </div>
-                <p className="mt-4">
-                  We will respond to your request within 30 days. We may ask for identification to verify your identity before processing your request.
-                </p>
+
+                {/* Delete Account Section */}
+                <div className="mt-6 p-6 bg-red-50 border-2 border-red-200 rounded-2xl">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                    <Trash2 className="w-5 h-5 text-red-900" />
+                    Right to Erasure ("Right to be Forgotten")
+                  </h3>
+                  <p className="text-gray-700 mb-4">
+                    Request deletion of your account and all associated personal data. This action cannot be undone. Business records (tasks, reports) will be preserved but anonymized.
+                  </p>
+                  {session ? (
+                    <>
+                      {!showDeleteConfirm ? (
+                        <Button
+                          onClick={() => setShowDeleteConfirm(true)}
+                          variant="outline"
+                          className="border-red-600 text-red-900 hover:bg-red-100"
+                        >
+                          Request Account Deletion
+                          <AlertCircle className="w-4 h-4 ml-2" />
+                        </Button>
+                      ) : (
+                        <div className="space-y-4">
+                          <div className="p-4 bg-white border-2 border-red-300 rounded-lg">
+                            <p className="text-sm font-semibold text-red-900 mb-2 flex items-center gap-2">
+                              <AlertTriangle className="w-4 h-4 text-red-900" />
+                              Warning: This action is permanent!
+                            </p>
+                            <p className="text-sm text-gray-700 mb-4">
+                              Your account will be permanently deleted. All personal data will be anonymized or removed. You will be logged out immediately.
+                            </p>
+                            <textarea
+                              value={deleteReason}
+                              onChange={(e) => setDeleteReason(e.target.value)}
+                              placeholder="Optional: Reason for deletion"
+                              className="w-full px-3 py-2 border-2 border-gray-300 rounded-lg text-sm"
+                              rows={3}
+                            />
+                          </div>
+                          <div className="flex gap-3">
+                            <Button
+                              onClick={handleDeleteAccount}
+                              disabled={deleting}
+                              className="bg-red-900 text-white hover:bg-red-800"
+                            >
+                              {deleting ? 'Deleting...' : 'Confirm Deletion'}
+                              <Trash2 className="w-4 h-4 ml-2" />
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                setShowDeleteConfirm(false);
+                                setDeleteReason('');
+                              }}
+                              variant="outline"
+                              className="border-gray-300"
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <p className="text-sm text-gray-600 italic">Please sign in to delete your account</p>
+                  )}
+                </div>
+
+                {/* Contact Option */}
+                <div className="mt-6">
+                  <p className="text-gray-700 mb-2">You can also contact us directly:</p>
+                  <div className="space-y-2">
+                    <p><strong>Email:</strong> <a href="mailto:privacy@aifm.com" className="text-blue-600 hover:underline">privacy@aifm.com</a></p>
+                    <p><strong>Data Protection Officer:</strong> <a href="mailto:dpo@aifm.com" className="text-blue-600 hover:underline">dpo@aifm.com</a></p>
+                  </div>
+                  <p className="mt-4 text-sm text-gray-600">
+                    We will respond to your request within 30 days. We may ask for identification to verify your identity before processing your request.
+                  </p>
+                </div>
+
+                {/* Message Display */}
+                {message && (
+                  <div className={`mt-4 p-4 rounded-lg ${
+                    message.type === 'success' 
+                      ? 'bg-green-100 border-2 border-green-300 text-green-900' 
+                      : 'bg-red-100 border-2 border-red-300 text-red-900'
+                  }`}>
+                    {message.text}
+                  </div>
+                )}
               </section>
 
               <section>

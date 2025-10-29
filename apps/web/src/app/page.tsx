@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/Button';
 import { Footer } from '@/components/Footer';
+import { Settings, CheckCircle2, BarChart3, Building2, Search, TrendingUp } from 'lucide-react';
 
 export default function HomePage() {
   const { data: session, status } = useSession();
@@ -93,7 +94,9 @@ export default function HomePage() {
           <div className="grid md:grid-cols-3 gap-8 mt-16">
             <Link href="/admin/dashboard">
               <div className="bg-white border-2 border-gray-200 rounded-3xl p-8 hover:border-gray-400 hover:shadow-lg transition-all cursor-pointer group">
-                <div className="mb-4 text-3xl">⚙️</div>
+                <div className="mb-4 flex justify-center">
+                  <Settings className="w-12 h-12 text-blue-900 group-hover:scale-110 transition-transform" />
+                </div>
                 <h3 className="text-2xl font-bold mb-3 uppercase tracking-wide">ADMIN</h3>
                 <p className="text-gray-600">Manage clients and system configuration</p>
                 <div className="mt-6 inline-flex items-center text-sm font-semibold group-hover:translate-x-1 transition">
@@ -104,7 +107,9 @@ export default function HomePage() {
 
             <Link href="/coordinator/inbox">
               <div className="bg-white border-2 border-gray-200 rounded-3xl p-8 hover:border-gray-400 hover:shadow-lg transition-all cursor-pointer group">
-                <div className="mb-4 text-3xl">✓</div>
+                <div className="mb-4 flex justify-center">
+                  <CheckCircle2 className="w-12 h-12 text-blue-900 group-hover:scale-110 transition-transform" />
+                </div>
                 <h3 className="text-2xl font-bold mb-3 uppercase tracking-wide">COORDINATOR</h3>
                 <p className="text-gray-600">Review and approve pending tasks</p>
                 <div className="mt-6 inline-flex items-center text-sm font-semibold group-hover:translate-x-1 transition">
@@ -115,7 +120,9 @@ export default function HomePage() {
 
             <Link href="/specialist/board">
               <div className="bg-white border-2 border-gray-200 rounded-3xl p-8 hover:border-gray-400 hover:shadow-lg transition-all cursor-pointer group">
-                <div className="mb-4 text-3xl">📊</div>
+                <div className="mb-4 flex justify-center">
+                  <BarChart3 className="w-12 h-12 text-blue-900 group-hover:scale-110 transition-transform" />
+                </div>
                 <h3 className="text-2xl font-bold mb-3 uppercase tracking-wide">SPECIALIST</h3>
                 <p className="text-gray-600">Draft and finalize expert reports</p>
                 <div className="mt-6 inline-flex items-center text-sm font-semibold group-hover:translate-x-1 transition">
@@ -130,17 +137,23 @@ export default function HomePage() {
         {!session && (
           <div className="mt-24 grid md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="text-4xl mb-4">🏦</div>
+              <div className="mb-4 flex justify-center">
+                <Building2 className="w-16 h-16 text-blue-900" />
+              </div>
               <h4 className="text-lg font-bold mb-2 uppercase">BANK RECONCILIATION</h4>
               <p className="text-gray-600">Automated matching and variance analysis</p>
             </div>
             <div className="text-center">
-              <div className="text-4xl mb-4">🔍</div>
+              <div className="mb-4 flex justify-center">
+                <Search className="w-16 h-16 text-blue-900" />
+              </div>
               <h4 className="text-lg font-bold mb-2 uppercase">KYC COMPLIANCE</h4>
               <p className="text-gray-600">Intelligent investor verification</p>
             </div>
             <div className="text-center">
-              <div className="text-4xl mb-4">📈</div>
+              <div className="mb-4 flex justify-center">
+                <TrendingUp className="w-16 h-16 text-blue-900" />
+              </div>
               <h4 className="text-lg font-bold mb-2 uppercase">SMART REPORTS</h4>
               <p className="text-gray-600">AI-generated fund accounting reports</p>
             </div>

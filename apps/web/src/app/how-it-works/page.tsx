@@ -14,7 +14,10 @@ import {
   FileText, 
   Shield,
   Zap,
-  ArrowRight
+  ArrowRight,
+  Settings,
+  BarChart3,
+  ClipboardList
 } from 'lucide-react';
 
 export default function HowItWorksPage() {
@@ -164,7 +167,10 @@ export default function HowItWorksPage() {
           {userRole === 'coordinator' && (
             <Card className="mb-8">
               <CardHeader>
-                <CardTitle>📋 As COORDINATOR - Review Tasks</CardTitle>
+                <CardTitle className="flex items-center gap-3">
+                  <ClipboardList className="w-6 h-6 text-blue-900" />
+                  As COORDINATOR - Review Tasks
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex gap-4">
@@ -203,7 +209,10 @@ export default function HowItWorksPage() {
           {userRole === 'specialist' && (
             <Card className="mb-8">
               <CardHeader>
-                <CardTitle>📊 As SPECIALIST - Manage Reports</CardTitle>
+                <CardTitle className="flex items-center gap-3">
+                  <BarChart3 className="w-6 h-6 text-blue-900" />
+                  As SPECIALIST - Manage Reports
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex gap-4">
@@ -242,7 +251,10 @@ export default function HowItWorksPage() {
           {userRole === 'admin' && (
             <Card className="mb-8">
               <CardHeader>
-                <CardTitle>⚙️ As ADMIN - Overview</CardTitle>
+                <CardTitle className="flex items-center gap-3">
+                  <Settings className="w-6 h-6 text-blue-900" />
+                  As ADMIN - Overview
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex gap-4">

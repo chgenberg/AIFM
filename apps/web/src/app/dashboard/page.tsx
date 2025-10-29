@@ -4,7 +4,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { LogOut } from 'lucide-react';
+import { LogOut, Settings, CheckCircle2, BarChart3, Target } from 'lucide-react';
 import { Footer } from '@/components/Footer';
 
 export default function DashboardPage() {
@@ -27,23 +27,24 @@ export default function DashboardPage() {
       title: 'ADMIN DASHBOARD',
       description: 'Manage system, clients, and configuration',
       href: '/admin/dashboard',
-      icon: '⚙️',
+      icon: Settings,
     },
     coordinator: {
       title: 'COORDINATOR INBOX',
       description: 'Review and approve pending tasks',
       href: '/coordinator/inbox',
-      icon: '✓',
+      icon: CheckCircle2,
     },
     specialist: {
       title: 'SPECIALIST BOARD',
       description: 'Draft and finalize expert reports',
       href: '/specialist/board',
-      icon: '📊',
+      icon: BarChart3,
     },
   };
 
   const config = roleConfig[userRole as keyof typeof roleConfig] || roleConfig.admin;
+  const IconComponent = config.icon;
 
   return (
     <div className="min-h-screen bg-white">
@@ -79,7 +80,9 @@ export default function DashboardPage() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-20">
         <div className="text-center mb-16">
-          <div className="text-6xl mb-6">{config.icon}</div>
+          <div className="mb-6 flex justify-center">
+            <IconComponent className="w-24 h-24 text-blue-900" />
+          </div>
           <h2 className="text-5xl font-bold tracking-tight mb-6">{config.title}</h2>
           <p className="text-xl text-gray-600 mb-10">{config.description}</p>
           <Link href={config.href}>
@@ -91,20 +94,26 @@ export default function DashboardPage() {
 
         {/* Quick Stats (placeholder) */}
         <div className="grid md:grid-cols-3 gap-6 mt-16">
-          <div className="bg-gray-50 border-2 border-gray-200 rounded-3xl p-8 text-center">
-            <div className="text-4xl mb-4">📊</div>
+          <div className="bg-gray-50 border-2 border-gray-200 rounded-3xl p-8 text-center hover:border-blue-900 transition-all group cursor-pointer">
+            <div className="mb-4 flex justify-center">
+              <BarChart3 className="w-12 h-12 text-blue-900 group-hover:scale-110 transition-transform" />
+            </div>
             <h3 className="font-bold text-lg mb-2">TASKS</h3>
             <p className="text-3xl font-bold text-gray-900">12</p>
             <p className="text-sm text-gray-600 mt-2">Pending</p>
           </div>
-          <div className="bg-gray-50 border-2 border-gray-200 rounded-3xl p-8 text-center">
-            <div className="text-4xl mb-4">✓</div>
+          <div className="bg-gray-50 border-2 border-gray-200 rounded-3xl p-8 text-center hover:border-blue-900 transition-all group cursor-pointer">
+            <div className="mb-4 flex justify-center">
+              <CheckCircle2 className="w-12 h-12 text-blue-900 group-hover:scale-110 transition-transform" />
+            </div>
             <h3 className="font-bold text-lg mb-2">COMPLETED</h3>
             <p className="text-3xl font-bold text-gray-900">48</p>
             <p className="text-sm text-gray-600 mt-2">This month</p>
           </div>
-          <div className="bg-gray-50 border-2 border-gray-200 rounded-3xl p-8 text-center">
-            <div className="text-4xl mb-4">🎯</div>
+          <div className="bg-gray-50 border-2 border-gray-200 rounded-3xl p-8 text-center hover:border-blue-900 transition-all group cursor-pointer">
+            <div className="mb-4 flex justify-center">
+              <Target className="w-12 h-12 text-blue-900 group-hover:scale-110 transition-transform" />
+            </div>
             <h3 className="font-bold text-lg mb-2">EFFICIENCY</h3>
             <p className="text-3xl font-bold text-gray-900">94%</p>
             <p className="text-sm text-gray-600 mt-2">On target</p>

@@ -300,7 +300,7 @@ export const OnboardingGuide = ({ isOpen, onClose }: OnboardingGuideProps) => {
                   <button
                     key={idx}
                     onClick={() => setCurrentStep(idx)}
-                    className={`w-10 h-10 rounded-full font-semibold text-xs transition-all ${
+                    className={`w-10 h-10 rounded-full font-semibold text-xs transition-all flex items-center justify-center ${
                       idx === currentStep
                         ? 'bg-black text-white scale-110'
                         : idx < currentStep
@@ -308,7 +308,11 @@ export const OnboardingGuide = ({ isOpen, onClose }: OnboardingGuideProps) => {
                         : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                     }`}
                   >
-                    {idx < currentStep ? '✓' : idx + 1}
+                    {idx < currentStep ? (
+                      <CheckCircle className="w-5 h-5" />
+                    ) : (
+                      idx + 1
+                    )}
                   </button>
                 ))}
               </div>

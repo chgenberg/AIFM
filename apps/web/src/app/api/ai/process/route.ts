@@ -1,71 +1,76 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/auth';
+import { prisma } from '@/lib/prisma';
+import { getAIModelForTask, buildAIMessages } from '@/lib/ai-knowledge';
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// 🎓 System prompts för att "utbilda" GPT
-const SYSTEM_PROMPTS: Record<string, string> = {
-  BANK_RECON: `Du är en expert på fondredovisning och bankavstämning. Din uppgift är att:
+/**
+ * Fallback prompts if no model found in database
+ * These are migrated from the old hardcoded prompts
+ */
+const FALLBACK_PROMPTS: Record<string, string> = {
+  BANK_RECON: `You are an expert in fund accounting and bank reconciliation. Your task is to:
 
-1. Jämföra bankutdrag med redovisningen
-2. Identifiera diskrepanser och deras orsaker
-3. Klassificera avvikelser (kritiska, varningar, info)
-4. Ge konkreta rekommendationer för åtgärd
+1. Compare bank statements with ledger entries
+2. Identify discrepancies and their causes
+3. Classify deviations (critical, warnings, info)
+4. Provide concrete recommendations for action
 
-Returnera alltid ett JSON-objekt med denna exakta struktur:
+Always return a JSON object with this exact structure:
 {
-  "analysis": "Detaljerad analys av avvikelserna och deras orsaker",
+  "analysis": "Detailed analysis of discrepancies and their causes",
   "discrepancies": [
     {
       "type": "TIMING_DIFFERENCE|MISSING_TRANSACTION|INCORRECT_AMOUNT|OTHER",
-      "amount": tal,
-      "date": "ISO-datum",
-      "explanation": "Förklaring"
+      "amount": number,
+      "date": "ISO-date",
+      "explanation": "Explanation"
     }
   ],
-  "recommendations": ["Åtgärd 1", "Åtgärd 2"],
+  "recommendations": ["Action 1", "Action 2"],
   "flags": [
     {
       "severity": "error|warning|info",
-      "message": "Meddelande",
-      "code": "KOD"
+      "message": "Message",
+      "code": "CODE"
     }
   ]
 }`,
 
-  KYC_REVIEW: `Du är en compliance officer och compliance expert. Din uppgift är att granska KYC-dokument:
+  KYC_REVIEW: `You are a compliance officer and compliance expert. Your task is to review KYC documents:
 
-1. Verifiera investerares identitet
-2. Bedöm risknivå (low, medium, high)
-3. Kontrollera PEP-status (politically exposed person)
-4. Kontrollera sanktionslister
-5. Analysera ägarstrukturen (UBO)
+1. Verify investor identity
+2. Assess risk level (low, medium, high)
+3. Check PEP status (politically exposed person)
+4. Check sanctions lists
+5. Analyze ownership structure (UBO)
 
-Returnera alltid ett JSON-objekt:
+Always return a JSON object:
 {
   "approved": true|false,
   "riskLevel": "low|medium|high",
   "pepStatus": "clear|flagged",
   "sanctionStatus": "clear|flagged",
   "issues": ["Problem 1", "Problem 2"],
-  "recommendedActions": ["Åtgärd 1", "Åtgärd 2"]
+  "recommendedActions": ["Action 1", "Action 2"]
 }`,
 
-  REPORT_DRAFT: `Du är en professionell fondredovisningsrapportskrivare med 15 års erfarenhet. Din uppgift är att:
+  REPORT_DRAFT: `You are a professional fund accounting report writer with 15 years of experience. Your task is to:
 
-1. Sammanfatta fondens prestanda
-2. Analysera portföljhållningar
-3. Bedöma risker
-4. Skriva en professionell, läsbar rapport
+1. Summarize fund performance
+2. Analyze portfolio holdings
+3. Assess risks
+4. Write a professional, readable report
 
-Skriva rapport i Markdown format med tydlig struktur.
-Returnera JSON: { "report": "Markdown-text" }`,
+Write report in Markdown format with clear structure.
+Return JSON: { "report": "Markdown-text" }`,
 };
 
-// 📚 Few-shot examples för att träna GPT bättre
-const FEW_SHOT_EXAMPLES: Record<string, Array<{ user: string; assistant: string }>> = {
+const FALLBACK_EXAMPLES: Record<string, Array<{ user: string; assistant: string }>> = {
   BANK_RECON: [
     {
       user: JSON.stringify({
@@ -78,7 +83,7 @@ const FEW_SHOT_EXAMPLES: Record<string, Array<{ user: string; assistant: string 
         ]
       }),
       assistant: JSON.stringify({
-        analysis: 'Bank visar 125M SEK medan redovisningen visar 124.95M SEK. Diskrepans på 50K SEK. Trolig orsak: management fee debited av bank 2024-01-16 men ännu inte bokförd i redovisningen.',
+        analysis: 'Bank shows 125M SEK while ledger shows 124.95M SEK. Discrepancy of 50K SEK. Likely cause: management fee debited by bank 2024-01-16 but not yet posted in ledger.',
         discrepancies: [
           {
             type: 'TIMING_DIFFERENCE',
@@ -88,8 +93,8 @@ const FEW_SHOT_EXAMPLES: Record<string, Array<{ user: string; assistant: string 
           }
         ],
         recommendations: [
-          'Verifiera att 50K fee är korrekt',
-          'Bokför i redovisningen för att stämma av'
+          'Verify that 50K fee is correct',
+          'Post in ledger to reconcile'
         ],
         flags: [
           {
@@ -129,49 +134,88 @@ export async function POST(request: NextRequest) {
   try {
     const { taskKind, context } = await request.json();
 
-    if (!taskKind || !SYSTEM_PROMPTS[taskKind]) {
+    if (!taskKind) {
       return NextResponse.json(
-        { error: 'Invalid task kind' },
+        { error: 'taskKind is required' },
         { status: 400 }
       );
     }
 
-    const systemPrompt = SYSTEM_PROMPTS[taskKind];
-    const examples = FEW_SHOT_EXAMPLES[taskKind] || [];
+    // Try to get AI model from Knowledge Base
+    let model = null;
+    let messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [];
 
-    // 🧠 Bygga messages: system + few-shot examples + user context
-    const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
-      { role: 'system', content: systemPrompt },
-    ];
+    try {
+      model = await getAIModelForTask(taskKind as any);
+      
+      if (model) {
+        // Use Knowledge Base model
+        messages = buildAIMessages(model, context);
+      } else {
+        // Fallback to hardcoded prompts (backward compatibility)
+        const systemPrompt = FALLBACK_PROMPTS[taskKind];
+        const examples = FALLBACK_EXAMPLES[taskKind] || [];
 
-    // Lägg till few-shot examples
-    for (const example of examples) {
-      messages.push(
-        { role: 'user', content: example.user },
-        { role: 'assistant', content: example.assistant }
-      );
+        if (!systemPrompt) {
+          return NextResponse.json(
+            { error: `Invalid task kind: ${taskKind}` },
+            { status: 400 }
+          );
+        }
+
+        messages = [
+          { role: 'system', content: systemPrompt },
+        ];
+
+        // Add few-shot examples
+        for (const example of examples) {
+          messages.push(
+            { role: 'user', content: example.user },
+            { role: 'assistant', content: example.assistant }
+          );
+        }
+
+        // Add actual context
+        messages.push({
+          role: 'user',
+          content: `Analyze this data: ${JSON.stringify(context)}`,
+        });
+      }
+    } catch (error) {
+      console.error('Error loading AI model:', error);
+      // Fallback to hardcoded prompts
+      const systemPrompt = FALLBACK_PROMPTS[taskKind];
+      if (!systemPrompt) {
+        return NextResponse.json(
+          { error: `Invalid task kind: ${taskKind}` },
+          { status: 400 }
+        );
+      }
+      messages = [
+        { role: 'system', content: systemPrompt },
+        {
+          role: 'user',
+          content: `Analyze this data: ${JSON.stringify(context)}`,
+        },
+      ];
     }
 
-    // Lägg till actual context
-    messages.push({
-      role: 'user',
-      content: `Analysera denna data: ${JSON.stringify(context)}`
-    });
-
-    // 🚀 Anropa GPT med tränade prompts
-    const model = process.env.OPENAI_MODEL || 'gpt-5-mini';
-    const isGPT5Mini = model === 'gpt-5-mini';
+    // Call OpenAI
+    const openaiModel = process.env.OPENAI_MODEL || 'gpt-5-mini';
+    const isGPT5Mini = openaiModel === 'gpt-5-mini';
     
     const requestParams: any = {
-      model,
+      model: openaiModel,
       messages,
       response_format: { type: 'json_object' },
     };
 
-    // GPT-5-mini specific parameters (no temperature or max_tokens)
+    // GPT-5-mini specific parameters
     if (isGPT5Mini) {
-      requestParams.verbosity = 'medium'; // low, medium, high
-      requestParams.reasoning_effort = 'standard'; // minimal, standard, high
+      // Use settings from Knowledge Base if available
+      const settings = model?.settings as any;
+      requestParams.verbosity = settings?.verbosity || 'medium';
+      requestParams.reasoning_effort = settings?.reasoning_effort || 'standard';
     }
 
     const response = await openai.chat.completions.create(requestParams);
@@ -181,11 +225,20 @@ export async function POST(request: NextRequest) {
       throw new Error('Empty response from OpenAI');
     }
 
-    return NextResponse.json(JSON.parse(content));
-  } catch (error) {
+    const result = JSON.parse(content);
+
+    // Track usage if using Knowledge Base model
+    if (model && model.examples.length > 0) {
+      // Find which example was most similar (simplified - could be improved with embeddings)
+      // For now, just track that model was used
+      // TODO: Implement proper example matching
+    }
+
+    return NextResponse.json(result);
+  } catch (error: any) {
     console.error('AI processing error:', error);
     return NextResponse.json(
-      { error: 'AI processing failed' },
+      { error: 'AI processing failed', details: error?.message },
       { status: 500 }
     );
   }

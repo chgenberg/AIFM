@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
 import { Button } from '@/components/Button';
 import { Header } from '@/components/Header';
-import { Send, Bot, User, Loader2 } from 'lucide-react';
+import { Send, Bot, User, Loader2, XCircle } from 'lucide-react';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -62,7 +62,7 @@ export default function AIChatPage() {
         ...prev,
         {
           role: 'assistant',
-          content: `❌ Error: ${errorMessage}\n\nIf this problem persists, please check:\n• OpenAI API key is configured\n• You have internet connectivity\n• The AI service is available`,
+          content: `Error: ${errorMessage}\n\nIf this problem persists, please check:\n• OpenAI API key is configured\n• You have internet connectivity\n• The AI service is available`,
         },
       ]);
     } finally {
