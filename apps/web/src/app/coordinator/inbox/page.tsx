@@ -265,7 +265,7 @@ export default function CoordinatorInboxPage() {
         onConfirm={handleApprove}
         onCancel={() => setConfirmModal({ isOpen: false, taskId: null })}
         confirmText="Approve"
-        confirmLoading={approving}
+        isLoading={approving}
       >
         <p className="text-gray-700">Are you sure you want to approve this task?</p>
       </Modal>
