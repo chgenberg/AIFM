@@ -76,8 +76,6 @@ export default function SpecialistBoardPage() {
     }
   };
 
-  const totalReports = Object.values(reports).reduce((sum, arr) => sum + arr.length, 0);
-
   return (
     <div className="page-container">
       <div className="mb-8">
