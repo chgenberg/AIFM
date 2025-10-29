@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/Card';
 import { Header } from '@/components/Header';
-import { RefreshCw, LogOut, Users, FileText, BarChart3, Activity, MessageSquare } from 'lucide-react';
+import { RefreshCw, Users, FileText, BarChart3, Activity, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 
 interface HealthData {
