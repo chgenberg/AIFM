@@ -89,17 +89,12 @@ async function main() {
   console.log(`✓ Created ${transactions.length} bank transactions`);
 
   // 3. Create an investor/KYC record
-  let investor;
-  try {
-    investor = await prisma.investor.findFirst({
-      where: {
-        clientId: client.id,
-        email: "investor@pensionfund.se",
-      },
-    });
-  } catch (e) {
-    investor = null;
-  }
+  let investor = await prisma.investor.findFirst({
+    where: {
+      clientId: client.id,
+      email: "investor@pensionfund.se",
+    },
+  });
 
   if (!investor) {
     investor = await prisma.investor.create({
@@ -110,6 +105,9 @@ async function main() {
         ubo: "State Pension Fund",
       },
     });
+    console.log(`✓ Created investor: ${investor.name}`);
+  } else {
+    console.log(`✓ Found existing investor: ${investor.name}`);
   }
 
   let kycRecord = await prisma.kycRecord.findFirst({
@@ -130,9 +128,10 @@ async function main() {
         },
       },
     });
+    console.log(`✓ Created KYC record for investor: ${investor.name}`);
+  } else {
+    console.log(`✓ Found existing KYC record`);
   }
-
-  console.log(`✓ Created KYC record for investor: ${investor.name}`);
 
   // 4. Create tasks for different workflows
   const coordinator = await prisma.user.findFirst({
