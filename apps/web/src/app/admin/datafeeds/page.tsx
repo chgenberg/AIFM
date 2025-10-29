@@ -12,6 +12,7 @@ interface DataFeed {
   source: string;
   status: string;
   configJson: any;
+  lastSyncAt?: string | null;
   client?: { name: string };
 }
 
