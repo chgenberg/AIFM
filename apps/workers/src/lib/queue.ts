@@ -71,33 +71,33 @@ export async function enqueueAIJob(payload: AIJobPayload) {
 // ============================================================================
 
 export function setupQueueListeners() {
-  etlQueue.on("completed", (job) => {
+  etlQueue.on("completed" as any, (job: any) => {
     logger.info({ jobId: job.id, clientId: job.data.clientId }, "ETL job completed");
   });
 
-  etlQueue.on("failed", (job, err) => {
+  etlQueue.on("failed" as any, (job: any, err: any) => {
     logger.error(
       { jobId: job?.id, error: err.message, stack: err.stack },
       "ETL job failed"
     );
   });
 
-  aiQueue.on("completed", (job) => {
+  aiQueue.on("completed" as any, (job: any) => {
     logger.info({ jobId: job.id, task: job.data.task }, "AI job completed");
   });
 
-  aiQueue.on("failed", (job, err) => {
+  aiQueue.on("failed" as any, (job: any, err: any) => {
     logger.error(
       { jobId: job?.id, error: err.message, stack: err.stack },
       "AI job failed"
     );
   });
 
-  reportsQueue.on("completed", (job) => {
+  reportsQueue.on("completed" as any, (job: any) => {
     logger.info({ jobId: job.id }, "Report job completed");
   });
 
-  reportsQueue.on("failed", (job, err) => {
+  reportsQueue.on("failed" as any, (job: any, err: any) => {
     logger.error(
       { jobId: job?.id, error: err.message },
       "Report job failed"
@@ -111,10 +111,10 @@ export function setupQueueListeners() {
 
 export async function getQueueHealth() {
   try {
-    const etlCounts = await etlQueue.getCountsData();
-    const aiCounts = await aiQueue.getCountsData();
-    const reportsCounts = await reportsQueue.getCountsData();
-    const complianceCounts = await complianceQueue.getCountsData();
+    const etlCounts = await (etlQueue.getCountsData?.() ?? etlQueue.getJobCounts?.());
+    const aiCounts = await (aiQueue.getCountsData?.() ?? aiQueue.getJobCounts?.());
+    const reportsCounts = await (reportsQueue.getCountsData?.() ?? reportsQueue.getJobCounts?.());
+    const complianceCounts = await (complianceQueue.getCountsData?.() ?? complianceQueue.getJobCounts?.());
 
     return {
       healthy: true,
