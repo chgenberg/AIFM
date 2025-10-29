@@ -38,7 +38,9 @@
   "dependencies": {
     "winston": "^3.11.0",
     "isomorphic-dompurify": "^2.3.0",
-    "@sentry/nextjs": "^7.73.0"
+    "@sentry/nextjs": "^7.73.0",
+    "openai": "^4.24.0",
+    "dotenv": "^16.3.1"
   },
   "engines": {
     "node": ">=18.0.0"
