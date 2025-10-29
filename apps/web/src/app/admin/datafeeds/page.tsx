@@ -60,8 +60,8 @@ export default function DataFeedsPage() {
           const tasks = await tasksRes.json();
           const uniqueClients = Array.from(
             new Map(tasks.map((t: any) => [t.client?.id, { id: t.client?.id, name: t.client?.name }])).values()
-          ).filter(c => c.id);
-          setClients(uniqueClients as Client[]);
+          ).filter((c: any) => c && c.id) as Client[];
+          setClients(uniqueClients);
         }
       }
     } catch (error) {
