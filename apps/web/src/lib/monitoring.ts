@@ -3,6 +3,8 @@
  * Integrates with Sentry for production error tracking
  */
 
+import React from 'react';
+
 interface MonitoringConfig {
   dsn?: string;
   environment?: string;
