@@ -15,7 +15,9 @@ interface Task {
   kind: string;
   status: string;
   createdAt: string;
-  flags?: Array<{ id: string; type: string; message: string }>;
+  client?: { name: string };
+  flags?: Array<{ id: string; severity: string; message: string }>;
+  payload?: any;
 }
 
 export default function CoordinatorInboxPage() {
@@ -34,26 +36,12 @@ export default function CoordinatorInboxPage() {
   const loadTasks = async () => {
     try {
       setLoading(true);
-      const mockTasks: Task[] = [
-        {
-          id: '1',
-          kind: 'QC_CHECK',
-          status: 'PENDING',
-          createdAt: new Date().toISOString(),
-          flags: [
-            { id: 'f1', type: 'error', message: 'Reconciliation variance > 0.01%' },
-            { id: 'f2', type: 'warning', message: 'Bank feed older than 24 hours' },
-          ],
-        },
-        {
-          id: '2',
-          kind: 'QC_CHECK',
-          status: 'PENDING',
-          createdAt: new Date(Date.now() - 3600000).toISOString(),
-          flags: [{ id: 'f3', type: 'warning', message: 'Missing supporting documents' }],
-        },
-      ];
-      setTasks(mockTasks);
+      const response = await fetch('/api/tasks');
+      if (!response.ok) {
+        throw new Error('Failed to load tasks');
+      }
+      const data = await response.json();
+      setTasks(data);
     } catch (error) {
       console.error('Failed to load tasks:', error);
       errorToast('Failed to load tasks');
@@ -88,8 +76,8 @@ export default function CoordinatorInboxPage() {
     }
   };
 
-  const errorCount = tasks.reduce((sum, t) => sum + (t.flags?.filter(f => f.type === 'error').length || 0), 0);
-  const warningCount = tasks.reduce((sum, t) => sum + (t.flags?.filter(f => f.type === 'warning').length || 0), 0);
+  const errorCount = tasks.reduce((sum, t) => sum + (t.flags?.filter(f => f.severity === 'error').length || 0), 0);
+  const warningCount = tasks.reduce((sum, t) => sum + (t.flags?.filter(f => f.severity === 'warning').length || 0), 0);
 
   return (
     <div className="page-container">
@@ -190,15 +178,16 @@ export default function CoordinatorInboxPage() {
             <Card key={task.id} className="border-gray-200 bg-white overflow-hidden hover:shadow-md">
               <div className="flex">
                 {/* Left border indicator */}
-                <div className={`w-1 ${task.flags?.some(f => f.type === 'error') ? 'bg-red-600' : task.flags?.length ? 'bg-orange-600' : 'bg-green-600'}`} />
+                <div className={`w-1 ${task.flags?.some(f => f.severity === 'error') ? 'bg-red-600' : task.flags?.length ? 'bg-orange-600' : 'bg-green-600'}`} />
                 
                 <div className="flex-1 p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h3 className="text-base font-semibold text-black flex items-center gap-3">
                         {task.kind.replace(/_/g, ' ')}
-                        <span className={`text-xs font-medium px-2.5 py-1 rounded ${task.flags?.some(f => f.type === 'error') ? 'bg-red-100 text-red-700' : task.flags?.length ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'}`}>
-                          {task.flags?.some(f => f.type === 'error') ? 'Review' : task.flags?.length ? 'Warnings' : 'Ready'}
+                        {task.client && <span className="text-xs text-gray-500">({task.client.name})</span>}
+                        <span className={`text-xs font-medium px-2.5 py-1 rounded ${task.flags?.some(f => f.severity === 'error') ? 'bg-red-100 text-red-700' : task.flags?.length ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'}`}>
+                          {task.flags?.some(f => f.severity === 'error') ? 'Review' : task.flags?.length ? 'Warnings' : 'Ready'}
                         </span>
                       </h3>
                       <p className="text-xs text-gray-500 mt-1">
@@ -214,16 +203,16 @@ export default function CoordinatorInboxPage() {
                         <div
                           key={flag.id}
                           className={`flex items-start gap-3 p-3 rounded text-sm ${
-                            flag.type === 'error'
+                            flag.severity === 'error'
                               ? 'bg-red-50 border border-red-200 text-red-900'
                               : 'bg-orange-50 border border-orange-200 text-orange-900'
                           }`}
                         >
                           <div className="mt-0.5">
-                            <AlertCircle className={`w-4 h-4 ${flag.type === 'error' ? 'text-red-600' : 'text-orange-600'}`} />
+                            <AlertCircle className={`w-4 h-4 ${flag.severity === 'error' ? 'text-red-600' : 'text-orange-600'}`} />
                           </div>
                           <div>
-                            <p className="font-medium text-xs uppercase">{flag.type}</p>
+                            <p className="font-medium text-xs uppercase">{flag.severity}</p>
                             <p className="text-xs mt-1">{flag.message}</p>
                           </div>
                         </div>
