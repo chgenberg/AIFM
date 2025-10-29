@@ -158,7 +158,7 @@ export default function SpecialistBoardPage() {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => window.open(report.artifactUrl)}
+                            onClick={() => window.open(report.artifactUrl || undefined)}
                           >
                             <Eye className="w-3 h-3" />
                           </Button>
