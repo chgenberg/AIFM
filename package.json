@@ -13,6 +13,8 @@
   "scripts": {
     "dev": "concurrently \"npm run dev -w apps/web\" \"npm run dev -w apps/workers\" \"npm run dev -w apps/api\"",
     "build": "npm run build --workspaces",
+    "start": "npm run start -w apps/web",
+    "start:prod": "concurrently \"npm run start -w apps/web\" \"npm run start -w apps/workers\"",
     "db:setup": "prisma migrate dev --name init",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
