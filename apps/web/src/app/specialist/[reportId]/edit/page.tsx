@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { Button } from '@/components/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
 import { ArrowLeft, Save } from 'lucide-react';
+import { apiClient } from '@/lib/api-client';
 
 // Mock user for testing
 const userId = 'test-specialist-001';
