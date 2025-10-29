@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 import { getAIModelForTask, buildAIMessages } from '@/lib/ai-knowledge';
 import OpenAI from 'openai';
 
