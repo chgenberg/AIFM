@@ -121,7 +121,7 @@ async function main() {
       data: {
         clientId: client.id,
         investorId: investor.id,
-        status: "PENDING_REVIEW",
+        status: "PENDING",
         riskLevel: "medium",
         pepStatus: "clear",
         sanctionStatus: "clear",
