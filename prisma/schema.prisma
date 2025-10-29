@@ -84,17 +84,20 @@ model Contact {
 // ============================================================================
 
 model User {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   role            Role
-  email           String   @unique
+  email           String    @unique
   name            String
-  clerkUserId     String?  @unique
-  clientId        String?  // If CLIENT, link to client
-  client          Client?  @relation("UserToClient", fields: [clientId], references: [id])
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  password        String?   // For NextAuth credentials provider
+  image           String?
+  emailVerified   DateTime?
+  clientId        String?   // If CLIENT, link to client
+  client          Client?   @relation("UserToClient", fields: [clientId], references: [id])
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
   auditLogs       AuditLog[] @relation("AuditActors")
-  tasks           Task[] @relation("UserTasks")
+  accounts        Account[]
+  sessions        Session[]
 
   @@index([role])
   @@index([email])
@@ -105,6 +108,44 @@ enum Role {
   COORDINATOR
   SPECIALIST
   ADMIN
+}
+
+model Account {
+  id                 String    @id @default(cuid())
+  userId             String
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expires      DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
 
 // Relation extension (avoid circular FK)

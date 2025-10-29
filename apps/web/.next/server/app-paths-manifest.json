@@ -1,7 +1,7 @@
 {
-  "/coordinator/inbox/page": "app/coordinator/inbox/page.js",
   "/page": "app/page.js",
-  "/specialist/board/page": "app/specialist/board/page.js",
+  "/coordinator/inbox/page": "app/coordinator/inbox/page.js",
   "/admin/dashboard/page": "app/admin/dashboard/page.js",
-  "/client/dashboard/page": "app/client/dashboard/page.js"
+  "/client/dashboard/page": "app/client/dashboard/page.js",
+  "/specialist/board/page": "app/specialist/board/page.js"
 }
