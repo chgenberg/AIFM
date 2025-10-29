@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
       const investor = await prisma.investor.findUnique({
         where: { id: investorId },
         include: {
-          kycRecords: {
+          kycRecord: {
             orderBy: { createdAt: 'desc' },
             take: 1,
           },
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
       context = {
         investorName: investor.name,
         investorId: investor.id,
-        documentSet: investor.kycRecords[0]?.documentSet || {},
+        documentSet: investor.kycRecord?.documentSet || {},
       };
     } else if (kind === 'REPORT_DRAFT') {
       const reportType = payload?.reportType || 'FUND_ACCOUNTING';
