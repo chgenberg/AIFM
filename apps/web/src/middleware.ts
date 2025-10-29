@@ -1,29 +1,23 @@
-import { withAuth } from 'next-auth/middleware';
+import { auth } from '@/auth';
 import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-export default withAuth(
-  function middleware(req) {
-    const token = req.nextauth.token;
-    const pathname = req.nextUrl.pathname;
+export async function middleware(request: NextRequest) {
+  const session = await auth();
+  const pathname = request.nextUrl.pathname;
 
-    // Protected routes
-    if (pathname.startsWith('/admin') || pathname.startsWith('/coordinator') || pathname.startsWith('/specialist')) {
-      if (!token) {
-        return NextResponse.redirect(new URL('/sign-in', req.url));
-      }
-    }
+  // Protected routes - redirect to sign-in if not authenticated
+  const protectedRoutes = ['/admin', '/coordinator', '/specialist'];
+  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
-    return NextResponse.next();
-  },
-  {
-    callbacks: {
-      authorized: ({ token, req }) => {
-        const publicRoutes = ['/', '/sign-in', '/api/ai/process', '/api/ai/report'];
-        return publicRoutes.includes(req.nextUrl.pathname) || !!token;
-      },
-    },
+  if (isProtectedRoute && !session) {
+    const signInUrl = new URL('/sign-in', request.url);
+    signInUrl.searchParams.set('callbackUrl', pathname);
+    return NextResponse.redirect(signInUrl);
   }
-);
+
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
