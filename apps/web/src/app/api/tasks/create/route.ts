@@ -74,10 +74,7 @@ export async function POST(request: NextRequest) {
       const investor = await prisma.investor.findUnique({
         where: { id: investorId },
         include: {
-          kycRecord: {
-            orderBy: { createdAt: 'desc' },
-            take: 1,
-          },
+          kycRecord: true,
         },
       });
 
