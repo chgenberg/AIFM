@@ -98,7 +98,7 @@ export function WorkflowModal({ isOpen, onClose }: WorkflowModalProps) {
   const roles = ['Admin', 'Coordinator', 'Specialist', 'Client', 'System'];
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onCancel={onClose}>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
         
