@@ -166,7 +166,7 @@ export default function DataFeedsPage() {
         throw new Error('Failed to create task');
       }
 
-      const result = await response.json();
+      await response.json(); // Parse response but don't use it
       alert(`Task created! Check Coordinator Inbox to review.`);
       window.location.href = '/coordinator/inbox';
     } catch (error) {
