@@ -32,8 +32,11 @@ export default function HomePage() {
           <div className="flex gap-4 items-center">
             {session ? (
               <>
+                <Link href="/how-it-works" className="text-sm text-gray-600 hover:text-gray-900">
+                  HOW IT WORKS
+                </Link>
                 <span className="text-sm text-gray-600">{session.user?.email}</span>
-                <Button onClick={() => router.push('/admin/dashboard')} size="sm">
+                <Button onClick={() => router.push('/dashboard')} size="sm">
                   DASHBOARD
                 </Button>
                 <Button 
@@ -46,6 +49,9 @@ export default function HomePage() {
               </>
             ) : (
               <>
+                <Link href="/how-it-works" className="text-sm text-gray-600 hover:text-gray-900">
+                  HOW IT WORKS
+                </Link>
                 <Button variant="minimal" size="sm" onClick={() => router.push('/sign-in')}>
                   SIGN IN
                 </Button>
