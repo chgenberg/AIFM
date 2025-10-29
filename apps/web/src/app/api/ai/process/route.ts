@@ -159,11 +159,22 @@ export async function POST(request: NextRequest) {
     });
 
     // 🚀 Anropa GPT med tränade prompts
-    const response = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || 'gpt-5-mini',
+    const model = process.env.OPENAI_MODEL || 'gpt-5-mini';
+    const isGPT5Mini = model === 'gpt-5-mini';
+    
+    const requestParams: any = {
+      model,
       messages,
       response_format: { type: 'json_object' },
-    });
+    };
+
+    // GPT-5-mini specific parameters (no temperature or max_tokens)
+    if (isGPT5Mini) {
+      requestParams.verbosity = 'medium'; // low, medium, high
+      requestParams.reasoning_effort = 'standard'; // minimal, standard, high
+    }
+
+    const response = await openai.chat.completions.create(requestParams);
 
     const content = response.choices[0].message.content;
     if (!content) {

@@ -30,6 +30,7 @@ export default function AIChatPage() {
     if (!input.trim() || loading) return;
 
     const userMessage: Message = { role: 'user', content: input };
+    const userInput = input.trim();
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setLoading(true);
@@ -38,24 +39,30 @@ export default function AIChatPage() {
       const response = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ message: userInput }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to get response');
+        const errorMessage = data.error || `Error ${response.status}: ${response.statusText}`;
+        throw new Error(errorMessage);
       }
 
-      const data = await response.json();
-      const assistantMessage: Message = { role: 'assistant', content: data.response };
+      if (!data.response) {
+        throw new Error('No response received from AI');
+      }
 
+      const assistantMessage: Message = { role: 'assistant', content: data.response };
       setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Chat error:', error);
+      const errorMessage = error?.message || 'Sorry, I couldn\'t process your question right now. Please try again later.';
       setMessages((prev) => [
         ...prev,
         {
           role: 'assistant',
-          content: 'Sorry, I couldn\'t process your question right now. Please try again later.',
+          content: `❌ Error: ${errorMessage}\n\nIf this problem persists, please check:\n• OpenAI API key is configured\n• You have internet connectivity\n• The AI service is available`,
         },
       ]);
     } finally {

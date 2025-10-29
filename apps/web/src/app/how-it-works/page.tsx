@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/Card';
 import { Button } from '@/components/Button';
 import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 import { 
   Building2, 
   TrendingUp, 
@@ -351,6 +352,7 @@ export default function HowItWorksPage() {
           </CardContent>
         </Card>
       </div>
+      <Footer />
     </div>
   );
 }

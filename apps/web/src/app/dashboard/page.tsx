@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { LogOut } from 'lucide-react';
+import { Footer } from '@/components/Footer';
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
@@ -110,6 +111,7 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

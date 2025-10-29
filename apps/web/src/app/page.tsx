@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/Button';
+import { Footer } from '@/components/Footer';
 
 export default function HomePage() {
   const { data: session, status } = useSession();
@@ -148,9 +149,7 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200 mt-24 py-8 text-center text-gray-600 text-sm">
-        <p>AIFM Portal © 2024 | AI-Powered Fund Management</p>
-      </footer>
+      <Footer />
     </div>
   );
 }
