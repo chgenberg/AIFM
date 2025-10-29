@@ -3,6 +3,7 @@
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/Button';
 
 export default function HomePage() {
@@ -18,7 +19,16 @@ export default function HomePage() {
       {/* Header */}
       <header className="border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">AIFM Portal</h1>
+          <div className="flex items-center gap-3">
+            <Image
+              src="/dwarf_favicon.png"
+              alt="AIFM Logo"
+              width={32}
+              height={32}
+              className="rounded-lg"
+            />
+            <h1 className="text-2xl font-bold">AIFM Portal</h1>
+          </div>
           <div className="flex gap-4 items-center">
             {session ? (
               <>
@@ -45,6 +55,15 @@ export default function HomePage() {
       {/* Hero */}
       <main className="max-w-7xl mx-auto px-4 py-16">
         <div className="text-center mb-12">
+          <div className="flex justify-center mb-6">
+            <Image
+              src="/dwarf_favicon.png"
+              alt="AIFM Logo"
+              width={80}
+              height={80}
+              className="rounded-2xl"
+            />
+          </div>
           <h2 className="text-5xl font-bold mb-4">AI-Powered Fund Management</h2>
           <p className="text-xl text-gray-400 mb-8">
             Automated bank reconciliation, KYC review, and report generation
