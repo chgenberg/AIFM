@@ -6,9 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { formatDate } from '@/lib/utils';
 import { Edit2, Check, Eye } from 'lucide-react';
 
-// Mock user for testing
-const userId = 'test-specialist-001';
-
 interface Report {
   id: string;
   type: string;
