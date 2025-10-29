@@ -90,7 +90,12 @@ async function main() {
 
   // 3. Create an investor/KYC record
   const investor = await prisma.investor.upsert({
-    where: { email: "investor@pensionfund.se" },
+    where: {
+      clientId_email: {
+        clientId: client.id,
+        email: "investor@pensionfund.se",
+      },
+    },
     update: {},
     create: {
       clientId: client.id,
