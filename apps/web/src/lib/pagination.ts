@@ -26,7 +26,7 @@ export const usePagination = (
 ): UsePaginationResult => {
   const [page, setPage] = useState(1);
   const [limit, setPageLimit] = useState(initialLimit);
-  const [total, setTotal] = useState(initialTotal);
+  const [total] = useState(initialTotal);
 
   const totalPages = Math.ceil(total / limit);
   const hasNextPage = page < totalPages;
