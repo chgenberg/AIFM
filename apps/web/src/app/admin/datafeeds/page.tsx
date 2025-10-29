@@ -339,7 +339,7 @@ export default function DataFeedsPage() {
                         Sync Now
                       </Button>
                       <div className="text-xs text-gray-500">
-                        Last sync: {feed.lastSyncAt ? new Date(feed.lastSyncAt).toLocaleString() : 'Never'}
+                        Last sync: {feed.lastSyncAt ? new Date(feed.lastSyncAt as string).toLocaleString() : 'Never'}
                       </div>
                     </div>
                   </CardContent>
