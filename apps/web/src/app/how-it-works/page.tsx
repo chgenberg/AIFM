@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/Card';
 import { Button } from '@/components/Button';
+import { Header } from '@/components/Header';
 import { 
   Building2, 
   TrendingUp, 
@@ -92,14 +93,7 @@ export default function HowItWorksPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="border-b border-gray-200 bg-white">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <h1 className="font-bold text-2xl">HOW IT WORKS</h1>
-          <p className="text-gray-600 mt-2">Understanding the AIFM workflow</p>
-        </div>
-      </div>
-
+      <Header />
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Your Role Section */}
