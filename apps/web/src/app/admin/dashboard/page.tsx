@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { Button } from '@/components/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/Card';
-import { RefreshCw, LogOut, Users, FileText, CheckCircle2, TrendingUp, BarChart3, Activity, Zap, MessageSquare } from 'lucide-react';
+import { RefreshCw, LogOut, Users, FileText, TrendingUp, BarChart3, Activity, Zap, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 
 interface HealthData {
@@ -51,8 +51,8 @@ export default function AdminDashboardPage() {
   if (!health) {
     return (
       <div className="min-h-screen bg-white">
-        <div className="page-container text-center py-12">
-          <div className="animate-pulse">Loading system status...</div>
+      <div className="page-container text-center py-12">
+        <div className="animate-pulse">Loading system status...</div>
         </div>
       </div>
     );
@@ -79,16 +79,16 @@ export default function AdminDashboardPage() {
 
       {/* Main Content */}
       <div className="page-container py-8">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
             <h1 className="text-4xl font-bold text-black mb-2 tracking-tight">ADMIN DASHBOARD</h1>
             <p className="text-gray-600 text-sm uppercase tracking-wide">System monitoring & health checks</p>
-          </div>
+        </div>
           <Button onClick={loadHealth} disabled={loading} className="rounded-2xl uppercase tracking-wide">
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            {loading ? 'Refreshing...' : 'Refresh'}
-          </Button>
-        </div>
+          {loading ? 'Refreshing...' : 'Refresh'}
+        </Button>
+      </div>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
@@ -110,7 +110,7 @@ export default function AdminDashboardPage() {
           <Link href="/admin/ai-chat">
             <Card className="border-2 border-gray-200 bg-white hover:shadow-xl hover:border-purple-300 transition-all duration-200 rounded-3xl cursor-pointer group">
               <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-lg uppercase tracking-wide mb-2">AI Assistant</CardTitle>
                     <p className="text-sm text-gray-600">Chat with AI about your system</p>
@@ -204,7 +204,7 @@ export default function AdminDashboardPage() {
                     <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center">
                       <Users className="w-6 h-6 text-blue-600" />
                     </div>
-                  </div>
+            </div>
                 </CardContent>
               </Card>
 
@@ -212,29 +212,29 @@ export default function AdminDashboardPage() {
                 <CardHeader>
                   <CardTitle className="text-lg uppercase tracking-wide">Tasks</CardTitle>
                   <CardDescription className="text-xs uppercase tracking-wide">Total tasks</CardDescription>
-                </CardHeader>
-                <CardContent>
+          </CardHeader>
+          <CardContent>
                   <div className="flex items-center justify-between">
-                    <div>
+              <div>
                       <div className="text-3xl font-bold">{health.tasks}</div>
                       <div className="text-sm text-gray-600 mt-2">
                         {health.taskStats.NEEDS_REVIEW || 0} need review
                       </div>
-                    </div>
+              </div>
                     <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center">
                       <Activity className="w-6 h-6 text-orange-600" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
               <Card className="border-2 border-gray-200 bg-white hover:shadow-lg transition-all duration-200 rounded-3xl">
-                <CardHeader>
+          <CardHeader>
                   <CardTitle className="text-lg uppercase tracking-wide">Reports</CardTitle>
                   <CardDescription className="text-xs uppercase tracking-wide">Total reports</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between">
                     <div>
                       <div className="text-3xl font-bold">{health.reports}</div>
                       <div className="text-sm text-gray-600 mt-2">
@@ -244,7 +244,7 @@ export default function AdminDashboardPage() {
                     <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center">
                       <FileText className="w-6 h-6 text-green-600" />
                     </div>
-                  </div>
+            </div>
                 </CardContent>
               </Card>
 
@@ -252,36 +252,36 @@ export default function AdminDashboardPage() {
                 <CardHeader>
                   <CardTitle className="text-lg uppercase tracking-wide">Investors</CardTitle>
                   <CardDescription className="text-xs uppercase tracking-wide">Total investors</CardDescription>
-                </CardHeader>
-                <CardContent>
+          </CardHeader>
+          <CardContent>
                   <div className="flex items-center justify-between">
                     <div className="text-3xl font-bold">{health.investors}</div>
                     <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center">
                       <Users className="w-6 h-6 text-purple-600" />
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
             </div>
+          </CardContent>
+        </Card>
+      </div>
           </>
         )}
 
         {activeTab === 'TASKS' && (
-          <div className="mb-8">
+      <div className="mb-8">
             <h2 className="text-2xl font-bold mb-4 uppercase tracking-wide">Task Status Breakdown</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
               {Object.entries(health.taskStats).map(([status, count]) => (
                 <Card key={status} className="border-2 border-gray-200 bg-white hover:shadow-lg transition-all duration-200 rounded-3xl">
-                  <CardHeader>
+              <CardHeader>
                     <CardTitle className="text-sm capitalize uppercase tracking-wide">{status.replace(/_/g, ' ')}</CardTitle>
-                  </CardHeader>
+              </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">{count as number}</div>
                   </CardContent>
                 </Card>
               ))}
-            </div>
-          </div>
+                </div>
+                </div>
         )}
 
         {activeTab === 'REPORTS' && (
@@ -295,41 +295,41 @@ export default function AdminDashboardPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">{count as number}</div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
         )}
 
-        {/* System Info */}
+      {/* System Info */}
         <Card className="border-2 border-gray-200 bg-white rounded-3xl">
-          <CardHeader>
+        <CardHeader>
             <CardTitle className="text-lg uppercase tracking-wide">System Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
                 <span className="text-gray-600 uppercase tracking-wide">Last Updated:</span>
                 <div className="font-semibold mt-1">
-                  {lastRefresh?.toLocaleTimeString()}
-                </div>
+                {lastRefresh?.toLocaleTimeString()}
               </div>
-              <div>
+            </div>
+            <div>
                 <span className="text-gray-600 uppercase tracking-wide">Environment:</span>
                 <div className="font-semibold mt-1 uppercase">production</div>
-              </div>
-              <div>
+            </div>
+            <div>
                 <span className="text-gray-600 uppercase tracking-wide">Uptime:</span>
                 <div className="font-semibold mt-1">99.9%</div>
-              </div>
-              <div>
+            </div>
+            <div>
                 <span className="text-gray-600 uppercase tracking-wide">API Version:</span>
                 <div className="font-semibold mt-1">1.0.0</div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </CardContent>
+      </Card>
       </div>
     </div>
   );
