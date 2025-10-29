@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { Button } from '@/components/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/Card';
-import { RefreshCw, LogOut, Users, FileText, CheckCircle2, TrendingUp, BarChart3, Activity } from 'lucide-react';
+import { RefreshCw, LogOut, Users, FileText, CheckCircle2, TrendingUp, BarChart3, Activity, Zap, MessageSquare } from 'lucide-react';
+import Link from 'next/link';
 
 interface HealthData {
   clients: number;
@@ -87,6 +88,40 @@ export default function AdminDashboardPage() {
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             {loading ? 'Refreshing...' : 'Refresh'}
           </Button>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          <Link href="/admin/activity">
+            <Card className="border-2 border-gray-200 bg-white hover:shadow-xl hover:border-blue-300 transition-all duration-200 rounded-3xl cursor-pointer group">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg uppercase tracking-wide mb-2">System Activity</CardTitle>
+                    <p className="text-sm text-gray-600">Live monitoring of workflow</p>
+                  </div>
+                  <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Activity className="w-6 h-6 text-blue-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link href="/admin/ai-chat">
+            <Card className="border-2 border-gray-200 bg-white hover:shadow-xl hover:border-purple-300 transition-all duration-200 rounded-3xl cursor-pointer group">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg uppercase tracking-wide mb-2">AI Assistant</CardTitle>
+                    <p className="text-sm text-gray-600">Chat with AI about your system</p>
+                  </div>
+                  <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <MessageSquare className="w-6 h-6 text-purple-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         {/* Tabs */}
