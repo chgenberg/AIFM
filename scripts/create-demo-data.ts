@@ -89,37 +89,48 @@ async function main() {
   console.log(`✓ Created ${transactions.length} bank transactions`);
 
   // 3. Create an investor/KYC record
-  const investor = await prisma.investor.upsert({
-    where: {
-      clientId_email: {
+  let investor;
+  try {
+    investor = await prisma.investor.findFirst({
+      where: {
         clientId: client.id,
         email: "investor@pensionfund.se",
       },
-    },
-    update: {},
-    create: {
-      clientId: client.id,
-      name: "Pension Fund Sweden AB",
-      email: "investor@pensionfund.se",
-      ubo: "State Pension Fund",
-    },
+    });
+  } catch (e) {
+    investor = null;
+  }
+
+  if (!investor) {
+    investor = await prisma.investor.create({
+      data: {
+        clientId: client.id,
+        name: "Pension Fund Sweden AB",
+        email: "investor@pensionfund.se",
+        ubo: "State Pension Fund",
+      },
+    });
+  }
+
+  let kycRecord = await prisma.kycRecord.findFirst({
+    where: { investorId: investor.id },
   });
 
-  const kycRecord = await prisma.kycRecord.upsert({
-    where: { investorId: investor.id },
-    update: {},
-    create: {
-      clientId: client.id,
-      investorId: investor.id,
-      status: "PENDING_REVIEW",
-      riskLevel: "medium",
-      pepStatus: "clear",
-      sanctionStatus: "clear",
-      uboTree: {
-        owners: [{ name: "State Pension Fund", ownership: 100 }],
+  if (!kycRecord) {
+    kycRecord = await prisma.kycRecord.create({
+      data: {
+        clientId: client.id,
+        investorId: investor.id,
+        status: "PENDING_REVIEW",
+        riskLevel: "medium",
+        pepStatus: "clear",
+        sanctionStatus: "clear",
+        uboTree: {
+          owners: [{ name: "State Pension Fund", ownership: 100 }],
+        },
       },
-    },
-  });
+    });
+  }
 
   console.log(`✓ Created KYC record for investor: ${investor.name}`);
 
