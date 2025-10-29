@@ -19,25 +19,31 @@ export async function POST(request: NextRequest) {
     }
 
     // Skapa eller uppdatera DataFeed
-    const dataFeed = await prisma.dataFeed.upsert({
+    // Först försök hitta befintlig
+    const existing = await prisma.dataFeed.findFirst({
       where: {
-        clientId_source: {
-          clientId,
-          source: source,
-        },
-      },
-      update: {
-        configJson,
-        status: 'ACTIVE',
-        updatedAt: new Date(),
-      },
-      create: {
         clientId,
-        source,
-        configJson,
-        status: 'ACTIVE',
+        source: source,
       },
     });
+
+    const dataFeed = existing
+      ? await prisma.dataFeed.update({
+          where: { id: existing.id },
+          data: {
+            configJson,
+            status: 'ACTIVE',
+            updatedAt: new Date(),
+          },
+        })
+      : await prisma.dataFeed.create({
+          data: {
+            clientId,
+            source,
+            configJson,
+            status: 'ACTIVE',
+          },
+        });
 
     return NextResponse.json({ success: true, dataFeed });
   } catch (error) {
