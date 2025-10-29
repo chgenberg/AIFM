@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
       };
     }
 
-    // Anropa AI för att analysera
+    // Call AI to analyze
     const aiResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/ai/process`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
