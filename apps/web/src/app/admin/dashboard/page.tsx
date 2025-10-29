@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { Button } from '@/components/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/Card';
-import { RefreshCw, LogOut, Users, FileText, TrendingUp, BarChart3, Activity, Zap, MessageSquare } from 'lucide-react';
+import { RefreshCw, LogOut, Users, FileText, BarChart3, Activity, Zap, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 
 interface HealthData {
