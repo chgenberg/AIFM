@@ -110,12 +110,17 @@ async function main() {
     console.log(`✓ Found existing investor: ${investor.name}`);
   }
 
-  let kycRecord = await prisma.kycRecord.findFirst({
-    where: { investorId: investor.id },
-  });
+  let kycRecord = null;
+  try {
+    kycRecord = await prisma.kYCRecord.findFirst({
+      where: { investorId: investor.id },
+    });
+  } catch (e) {
+    console.log('Error finding KYC record:', e.message);
+  }
 
   if (!kycRecord) {
-    kycRecord = await prisma.kycRecord.create({
+    kycRecord = await prisma.kYCRecord.create({
       data: {
         clientId: client.id,
         investorId: investor.id,
