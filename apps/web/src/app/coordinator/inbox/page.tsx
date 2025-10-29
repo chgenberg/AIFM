@@ -19,7 +19,6 @@ interface Task {
 }
 
 export default function CoordinatorInboxPage() {
-  const userId = 'test-coordinator-001';
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; taskId: string | null }>({
