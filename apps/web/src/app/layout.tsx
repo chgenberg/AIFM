@@ -1,12 +1,11 @@
 import type { Metadata } from 'next';
-import { Navigation } from '@/components/Navigation';
-import { ToastContainer } from '@/components/Toast';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { ClerkProvider } from '@clerk/nextjs';
+import { dark } from '@clerk/themes';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'AIFM Agent Portal',
-  description: 'AI-powered fund accounting and reporting',
+  title: 'AIFM Portal',
+  description: 'AI-Powered Fund Management Portal',
 };
 
 export default function RootLayout({
@@ -15,18 +14,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="bg-background text-foreground">
-        <ErrorBoundary>
-          <Navigation />
-          <main className="flex-1">
-            {children}
-          </main>
-
-          {/* Toast & Notifications */}
-          <ToastContainer />
-        </ErrorBoundary>
-      </body>
-    </html>
+    <ClerkProvider appearance={{ baseTheme: dark }}>
+      <html lang="en">
+        <body>{children}</body>
+      </html>
+    </ClerkProvider>
   );
 }
