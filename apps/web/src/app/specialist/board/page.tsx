@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/Card';
-import { formatDate, getStatusColor } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
 import { Edit2, Check, Eye } from 'lucide-react';
 
 // Mock user for testing
