@@ -21,7 +21,7 @@ interface Report {
 }
 
 export default function ReportEditorPage() {
-  const router = useParams();
+  const params = useParams();
   const reportId = params.reportId as string;
 
   const [report, setReport] = useState<Report | null>(null);
