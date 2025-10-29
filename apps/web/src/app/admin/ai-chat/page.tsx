@@ -15,7 +15,7 @@ export default function AIChatPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: 'Hej! Jag är din AI-assistent för AIFM Portal. Jag har full insyn i systemet och kan hjälpa dig med:\n\n• Förklara vad som händer i systemet\n• Ge insikter om tasks och reports\n• Hjälpa med beslut och rekommendationer\n• Förklara workflows och processer\n\nVad kan jag hjälpa dig med idag?',
+      content: 'Hello! I\'m your AI assistant for AIFM Portal. I have full insight into the system and can help you with:\n\n• Explaining what\'s happening in the system\n• Providing insights about tasks and reports\n• Helping with decisions and recommendations\n• Explaining workflows and processes\n\nWhat can I help you with today?',
     },
   ]);
   const [input, setInput] = useState('');
@@ -55,7 +55,7 @@ export default function AIChatPage() {
         ...prev,
         {
           role: 'assistant',
-          content: 'Tyvärr kunde jag inte behandla din fråga just nu. Försök igen senare.',
+          content: 'Sorry, I couldn\'t process your question right now. Please try again later.',
         },
       ]);
     } finally {
@@ -137,7 +137,7 @@ export default function AIChatPage() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                placeholder="Fråga mig något om systemet..."
+                placeholder="Ask me anything about the system..."
                 className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:border-black transition-all uppercase tracking-wide text-sm"
                 disabled={loading}
               />
