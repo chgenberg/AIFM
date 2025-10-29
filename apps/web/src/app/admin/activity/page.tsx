@@ -108,14 +108,14 @@ export default function SystemActivityPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-5 gap-4">
+            <div className="grid grid-cols-5 gap-4 relative">
               {['QUEUED', 'IN_PROGRESS', 'NEEDS_REVIEW', 'BLOCKED', 'DONE'].map((status, idx) => {
                 const count = data.stats.tasksByStatus[status] || 0;
                 const total = data.stats.totalTasks;
                 const percentage = total > 0 ? (count / total) * 100 : 0;
                 
                 return (
-                  <div key={status} className="text-center">
+                  <div key={status} className="text-center relative">
                     <div className={`w-full h-8 rounded-2xl mb-2 flex items-center justify-center font-bold text-sm ${STATUS_COLORS[status as keyof typeof STATUS_COLORS] || 'bg-gray-200'}`}>
                       {count}
                     </div>
@@ -131,7 +131,7 @@ export default function SystemActivityPage() {
                       />
                     </div>
                     {idx < 4 && (
-                      <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-2">
+                      <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-2 hidden md:block">
                         <ArrowRight className="w-4 h-4 text-gray-400" />
                       </div>
                     )}
