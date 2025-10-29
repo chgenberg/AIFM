@@ -7,7 +7,7 @@ import { Modal } from '@/components/Modal';
 import { exportTasksToCSV } from '@/lib/export';
 import { successToast, errorToast } from '@/lib/toast';
 import { formatDate } from '@/lib/utils';
-import { Check, X, Download, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import { Check, X, Download, AlertCircle, CheckCircle2, Clock, TrendingUp, FileText, Shield } from 'lucide-react';
 
 interface Task {
   id: string;
@@ -19,9 +19,19 @@ interface Task {
   payload?: any;
 }
 
+type TaskFilter = 'ALL' | 'BANK_RECON' | 'KYC_REVIEW' | 'REPORT_DRAFT';
+
+const TASK_KINDS = {
+  ALL: { label: 'All Tasks', icon: Clock, color: 'gray' },
+  BANK_RECON: { label: 'Bank Reconciliation', icon: TrendingUp, color: 'blue' },
+  KYC_REVIEW: { label: 'KYC Review', icon: Shield, color: 'purple' },
+  REPORT_DRAFT: { label: 'Report Draft', icon: FileText, color: 'green' },
+};
+
 export default function CoordinatorInboxPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<TaskFilter>('ALL');
   const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; taskId: string | null }>({
     isOpen: false,
     taskId: null,
@@ -84,82 +94,126 @@ export default function CoordinatorInboxPage() {
     }
   };
 
-  const errorCount = tasks.reduce((sum, t) => sum + (t.flags?.filter(f => f.severity === 'error').length || 0), 0);
-  const warningCount = tasks.reduce((sum, t) => sum + (t.flags?.filter(f => f.severity === 'warning').length || 0), 0);
+  const filteredTasks = activeTab === 'ALL' 
+    ? tasks 
+    : tasks.filter(t => t.kind === activeTab);
+
+  const errorCount = filteredTasks.reduce((sum, t) => sum + (t.flags?.filter(f => f.severity === 'error').length || 0), 0);
+  const warningCount = filteredTasks.reduce((sum, t) => sum + (t.flags?.filter(f => f.severity === 'warning').length || 0), 0);
+  const readyCount = filteredTasks.filter(t => !t.flags || t.flags.length === 0).length;
 
   return (
-    <div className="page-container">
-      {/* Header */}
-      <div className="mb-8 animate-slideInDown">
-        <h1 className="text-4xl font-bold text-black mb-2">Quality Control Inbox</h1>
-        <p className="text-gray-600">Review and approve pending quality checks</p>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="page-container py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-black mb-2 tracking-tight">QUALITY CONTROL INBOX</h1>
+          <p className="text-gray-600 text-sm uppercase tracking-wide">Review and approve pending quality checks</p>
+        </div>
 
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <Card className="border-gray-200 bg-white">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold">Total Tasks</p>
-                <p className="text-3xl font-bold text-black mt-2">{tasks.length}</p>
-              </div>
-              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                <Clock className="w-6 h-6 text-gray-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Tabs */}
+        <div className="mb-8 border-b border-gray-200">
+          <div className="flex gap-1 overflow-x-auto">
+            {(Object.keys(TASK_KINDS) as TaskFilter[]).map((key) => {
+              const config = TASK_KINDS[key];
+              const Icon = config.icon;
+              const count = key === 'ALL' ? tasks.length : tasks.filter(t => t.kind === key).length;
+              const isActive = activeTab === key;
+              
+              return (
+                <button
+                  key={key}
+                  onClick={() => setActiveTab(key)}
+                  className={`
+                    flex items-center gap-2 px-6 py-3 text-sm font-semibold uppercase tracking-wide
+                    border-b-2 transition-all duration-200 whitespace-nowrap
+                    ${isActive 
+                      ? 'border-black text-black bg-white' 
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }
+                  `}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{config.label}</span>
+                  {count > 0 && (
+                    <span className={`
+                      px-2 py-0.5 rounded-full text-xs font-bold
+                      ${isActive ? 'bg-black text-white' : 'bg-gray-200 text-gray-600'}
+                    `}>
+                      {count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-        <Card className="border-gray-200 bg-white">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold">Errors</p>
-                <p className="text-3xl font-bold text-red-600 mt-2">{errorCount}</p>
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <Card className="border-2 border-gray-200 bg-white hover:border-gray-300 transition-all duration-200 hover:shadow-lg rounded-3xl">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold">Total Tasks</p>
+                  <p className="text-3xl font-bold text-black mt-2">{filteredTasks.length}</p>
+                </div>
+                <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center">
+                  <Clock className="w-6 h-6 text-gray-600" />
+                </div>
               </div>
-              <div className="w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center">
-                <AlertCircle className="w-6 h-6 text-red-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        <Card className="border-gray-200 bg-white">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold">Warnings</p>
-                <p className="text-3xl font-bold text-orange-600 mt-2">{warningCount}</p>
+          <Card className="border-2 border-gray-200 bg-white hover:border-red-300 transition-all duration-200 hover:shadow-lg rounded-3xl">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold">Errors</p>
+                  <p className="text-3xl font-bold text-red-600 mt-2">{errorCount}</p>
+                </div>
+                <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center">
+                  <AlertCircle className="w-6 h-6 text-red-600" />
+                </div>
               </div>
-              <div className="w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center">
-                <AlertCircle className="w-6 h-6 text-orange-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        <Card className="border-gray-200 bg-white">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold">Ready</p>
-                <p className="text-3xl font-bold text-green-600 mt-2">{tasks.filter(t => !t.flags || t.flags.length === 0).length}</p>
+          <Card className="border-2 border-gray-200 bg-white hover:border-orange-300 transition-all duration-200 hover:shadow-lg rounded-3xl">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold">Warnings</p>
+                  <p className="text-3xl font-bold text-orange-600 mt-2">{warningCount}</p>
+                </div>
+                <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center">
+                  <AlertCircle className="w-6 h-6 text-orange-600" />
+                </div>
               </div>
-              <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center">
-                <CheckCircle2 className="w-6 h-6 text-green-600" />
+            </CardContent>
+          </Card>
+
+          <Card className="border-2 border-gray-200 bg-white hover:border-green-300 transition-all duration-200 hover:shadow-lg rounded-3xl">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold">Ready</p>
+                  <p className="text-3xl font-bold text-green-600 mt-2">{readyCount}</p>
+                </div>
+                <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center">
+                  <CheckCircle2 className="w-6 h-6 text-green-600" />
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
       </div>
 
       {/* Action Bar */}
       <div className="mb-6 flex items-center justify-between">
-        <div className="text-sm text-gray-600">
-          {tasks.length} pending task{tasks.length !== 1 ? 's' : ''}
+        <div className="text-sm text-gray-600 uppercase tracking-wide">
+          {filteredTasks.length} pending task{filteredTasks.length !== 1 ? 's' : ''}
         </div>
-        <Button onClick={handleExport} variant="outline" className="gap-2 border-gray-300">
+        <Button onClick={handleExport} variant="outline" className="gap-2 border-2 border-gray-300 hover:border-gray-400 rounded-2xl uppercase tracking-wide">
           <Download className="w-4 h-4" />
           Export CSV
         </Button>
@@ -167,91 +221,138 @@ export default function CoordinatorInboxPage() {
 
       {/* Tasks List */}
       {loading ? (
-        <div className="text-center py-12">
-          <div className="animate-pulse text-gray-500">Loading tasks...</div>
+        <div className="text-center py-16">
+          <div className="animate-pulse text-gray-500 uppercase tracking-wide">Loading tasks...</div>
         </div>
-      ) : tasks.length === 0 ? (
-        <Card className="border-2 border-dashed border-gray-300 bg-gray-50">
-          <CardContent className="text-center py-16">
-            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle2 className="w-8 h-8 text-green-600" />
+      ) : filteredTasks.length === 0 ? (
+        <Card className="border-2 border-dashed border-gray-300 bg-white rounded-3xl">
+          <CardContent className="text-center py-20">
+            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 className="w-10 h-10 text-green-600" />
             </div>
-            <p className="text-lg font-semibold text-black">All Done</p>
-            <p className="text-gray-600 mt-2">No pending QC tasks. Great work!</p>
+            <p className="text-xl font-bold text-black uppercase tracking-wide mb-2">All Done</p>
+            <p className="text-gray-600 text-sm uppercase tracking-wide">No pending QC tasks. Great work!</p>
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-3">
-          {tasks.map((task) => (
-            <Card key={task.id} className="border-gray-200 bg-white overflow-hidden hover:shadow-md">
-              <div className="flex">
-                {/* Left border indicator */}
-                <div className={`w-1 ${task.flags?.some(f => f.severity === 'error') ? 'bg-red-600' : task.flags?.length ? 'bg-orange-600' : 'bg-green-600'}`} />
-                
-                <div className="flex-1 p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <h3 className="text-base font-semibold text-black flex items-center gap-3">
-                        {task.kind.replace(/_/g, ' ')}
-                        {task.client && <span className="text-xs text-gray-500">({task.client.name})</span>}
-                        <span className={`text-xs font-medium px-2.5 py-1 rounded ${task.flags?.some(f => f.severity === 'error') ? 'bg-red-100 text-red-700' : task.flags?.length ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'}`}>
-                          {task.flags?.some(f => f.severity === 'error') ? 'Review' : task.flags?.length ? 'Warnings' : 'Ready'}
-                        </span>
-                      </h3>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Created {formatDate(task.createdAt)}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Flags */}
-                  {task.flags && task.flags.length > 0 && (
-                    <div className="mb-4 space-y-2">
-                      {task.flags.map((flag) => (
-                        <div
-                          key={flag.id}
-                          className={`flex items-start gap-3 p-3 rounded text-sm ${
-                            flag.severity === 'error'
-                              ? 'bg-red-50 border border-red-200 text-red-900'
-                              : 'bg-orange-50 border border-orange-200 text-orange-900'
-                          }`}
-                        >
-                          <div className="mt-0.5">
-                            <AlertCircle className={`w-4 h-4 ${flag.severity === 'error' ? 'text-red-600' : 'text-orange-600'}`} />
-                          </div>
-                          <div>
-                            <p className="font-medium text-xs uppercase">{flag.severity}</p>
-                            <p className="text-xs mt-1">{flag.message}</p>
+        <div className="space-y-4">
+          {filteredTasks.map((task) => {
+            const taskConfig = TASK_KINDS[task.kind as keyof typeof TASK_KINDS] || TASK_KINDS.ALL;
+            const TaskIcon = taskConfig.icon;
+            
+            return (
+              <Card 
+                key={task.id} 
+                className="border-2 border-gray-200 bg-white overflow-hidden hover:shadow-xl hover:border-gray-300 transition-all duration-300 rounded-3xl group"
+              >
+                <div className="flex">
+                  {/* Left border indicator */}
+                  <div className={`
+                    w-2 transition-all duration-300
+                    ${task.flags?.some(f => f.severity === 'error') 
+                      ? 'bg-red-600' 
+                      : task.flags?.length 
+                        ? 'bg-orange-600' 
+                        : 'bg-green-600'
+                    }
+                  `} />
+                  
+                  <div className="flex-1 p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-start gap-4 flex-1">
+                        <div className={`
+                          w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0
+                          ${task.kind === 'BANK_RECON' ? 'bg-blue-50' :
+                            task.kind === 'KYC_REVIEW' ? 'bg-purple-50' :
+                            task.kind === 'REPORT_DRAFT' ? 'bg-green-50' : 'bg-gray-50'
+                          }
+                        `}>
+                          <TaskIcon className={`
+                            w-6 h-6
+                            ${task.kind === 'BANK_RECON' ? 'text-blue-600' :
+                              task.kind === 'KYC_REVIEW' ? 'text-purple-600' :
+                              task.kind === 'REPORT_DRAFT' ? 'text-green-600' : 'text-gray-600'
+                            }
+                          `} />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-lg font-bold text-black flex items-center gap-3 mb-1">
+                            {task.kind.replace(/_/g, ' ')}
+                            {task.client && (
+                              <span className="text-xs font-normal text-gray-500">• {task.client.name}</span>
+                            )}
+                          </h3>
+                          <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">
+                            Created {formatDate(task.createdAt)}
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <span className={`
+                              text-xs font-bold uppercase tracking-wide px-3 py-1 rounded-full
+                              ${task.flags?.some(f => f.severity === 'error') 
+                                ? 'bg-red-100 text-red-700' 
+                                : task.flags?.length 
+                                  ? 'bg-orange-100 text-orange-700' 
+                                  : 'bg-green-100 text-green-700'
+                              }
+                            `}>
+                              {task.flags?.some(f => f.severity === 'error') ? 'Review' : task.flags?.length ? 'Warnings' : 'Ready'}
+                            </span>
                           </div>
                         </div>
-                      ))}
+                      </div>
                     </div>
-                  )}
 
-                  {/* Actions */}
-                  <div className="flex gap-2 pt-2">
-                    <Button
-                      size="sm"
-                      className="gap-2 bg-black text-white hover:bg-gray-900"
-                      onClick={() => setConfirmModal({ isOpen: true, taskId: task.id })}
-                    >
-                      <Check className="w-4 h-4" />
-                      Approve
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="gap-2 border-gray-300"
-                      onClick={() => setConfirmModal({ isOpen: true, taskId: task.id })}
-                    >
-                      <X className="w-4 h-4" />
-                      Reject
-                    </Button>
+                    {/* Flags */}
+                    {task.flags && task.flags.length > 0 && (
+                      <div className="mb-4 space-y-2">
+                        {task.flags.map((flag) => (
+                          <div
+                            key={flag.id}
+                            className={`
+                              flex items-start gap-3 p-4 rounded-2xl text-sm border-2 transition-all duration-200
+                              ${flag.severity === 'error'
+                                ? 'bg-red-50 border-red-200 text-red-900'
+                                : 'bg-orange-50 border-orange-200 text-orange-900'
+                              }
+                            `}
+                          >
+                            <div className="mt-0.5">
+                              <AlertCircle className={`w-5 h-5 ${flag.severity === 'error' ? 'text-red-600' : 'text-orange-600'}`} />
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-bold text-xs uppercase tracking-wide">{flag.severity}</p>
+                              <p className="text-xs mt-1">{flag.message}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Actions */}
+                    <div className="flex gap-3 pt-2">
+                      <Button
+                        size="sm"
+                        className="gap-2 bg-black text-white hover:bg-gray-900 rounded-2xl uppercase tracking-wide font-semibold transition-all duration-200 hover:scale-105"
+                        onClick={() => setConfirmModal({ isOpen: true, taskId: task.id })}
+                      >
+                        <Check className="w-4 h-4" />
+                        Approve
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-2 border-2 border-gray-300 hover:border-gray-400 rounded-2xl uppercase tracking-wide font-semibold transition-all duration-200 hover:scale-105"
+                        onClick={() => setConfirmModal({ isOpen: true, taskId: task.id })}
+                      >
+                        <X className="w-4 h-4" />
+                        Reject
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            );
+          })}
         </div>
       )}
 
