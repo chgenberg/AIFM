@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
-import { Activity, TrendingUp, FileText, Shield, CheckCircle2, AlertCircle, Zap, ArrowRight } from 'lucide-react';
+import { Activity, TrendingUp, FileText, Shield, CheckCircle2, Zap, ArrowRight } from 'lucide-react';
 
 interface ActivityData {
   recentTasks: Array<{
