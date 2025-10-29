@@ -186,7 +186,7 @@ export default function CoordinatorInboxPage() {
         </Card>
       ) : (
         <div className="space-y-3">
-          {tasks.map((task, idx) => (
+          {tasks.map((task) => (
             <Card key={task.id} className="border-gray-200 bg-white overflow-hidden hover:shadow-md">
               <div className="flex">
                 {/* Left border indicator */}
