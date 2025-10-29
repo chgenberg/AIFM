@@ -1,37 +1,81 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { auth } from '@/auth';
+import { prisma } from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { kind, clientId, payload, assigneeId, dueAt } = body;
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-    if (!kind || !clientId) {
+    const { clientId, kind, payload } = await request.json();
+
+    if (!clientId || !kind) {
       return NextResponse.json(
-        { error: 'Missing required fields: kind, clientId' },
+        { error: 'clientId and kind are required' },
         { status: 400 }
       );
     }
 
-    // Build task payload based on task kind
-    let taskPayload: any = { ...payload };
+    // Hämta data baserat på task kind
+    let context: any = {};
 
-    if (kind === 'INVESTOR_ONBOARD') {
-      const { investorId } = payload || {};
-      
+    if (kind === 'BANK_RECON') {
+      const periodStart = payload?.periodStart || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const periodEnd = payload?.periodEnd || new Date().toISOString();
+
+      const [bankLedgerEntries, allLedgerEntries] = await Promise.all([
+        prisma.ledgerEntry.findMany({
+          where: {
+            clientId,
+            source: 'BANK',
+            bookingDate: {
+              gte: new Date(periodStart),
+              lte: new Date(periodEnd),
+            },
+          },
+        }),
+        prisma.ledgerEntry.findMany({
+          where: {
+            clientId,
+            bookingDate: {
+              gte: new Date(periodStart),
+              lte: new Date(periodEnd),
+            },
+          },
+        }),
+      ]);
+
+      const bankBalance = bankLedgerEntries.reduce((sum, t) => sum + Number(t.amount), 0);
+      const ledgerBalance = allLedgerEntries.reduce((sum, e) => sum + Number(e.amount), 0);
+
+      context = {
+        bankBalance,
+        ledgerBalance,
+        discrepancy: bankBalance - ledgerBalance,
+        recentTransactions: bankLedgerEntries.slice(-10).map(t => ({
+          date: t.bookingDate,
+          amount: t.amount,
+          description: t.description,
+        })),
+        bankTransactions: bankLedgerEntries.length,
+        ledgerEntries: allLedgerEntries.length,
+      };
+    } else if (kind === 'KYC_REVIEW' || kind === 'INVESTOR_ONBOARD') {
+      const investorId = payload?.investorId;
       if (!investorId) {
         return NextResponse.json(
-          { error: 'investorId is required for INVESTOR_ONBOARD tasks' },
+          { error: 'investorId is required for KYC_REVIEW and INVESTOR_ONBOARD' },
           { status: 400 }
         );
       }
 
-      // Fetch investor with kycRecord
       const investor = await prisma.investor.findUnique({
         where: { id: investorId },
-        include: { kycRecord: true },
+        include: {
+          kycRecord: true,
+        },
       });
 
       if (!investor) {
@@ -41,44 +85,118 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Build payload - remove documentSet reference since it doesn't exist in schema
-      taskPayload = {
+      // Build context - removed documentSet reference since it doesn't exist in schema
+      context = {
         investorName: investor.name,
         investorId: investor.id,
         // documentSet removed - not in KYCRecord schema
         // Use documentUrl if needed: investor.kycRecord?.documentUrl || null
         kycStatus: investor.kycRecord?.status || null,
         kycRiskLevel: investor.kycRecord?.riskLevel || null,
+        pepStatus: investor.kycRecord?.pepStatus || null,
+        sanctionStatus: investor.kycRecord?.sanctionStatus || null,
       };
     } else if (kind === 'REPORT_DRAFT') {
       const reportType = payload?.reportType || 'FUND_ACCOUNTING';
-      taskPayload = {
+      const periodStart = payload?.periodStart || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const periodEnd = payload?.periodEnd || new Date().toISOString();
+
+      const client = await prisma.client.findUnique({
+        where: { id: clientId },
+      });
+
+      const [bankLedgerEntries, allLedgerEntries, investors] = await Promise.all([
+        prisma.ledgerEntry.findMany({
+          where: {
+            clientId,
+            source: 'BANK',
+            bookingDate: {
+              gte: new Date(periodStart),
+              lte: new Date(periodEnd),
+            },
+          },
+        }),
+        prisma.ledgerEntry.findMany({
+          where: {
+            clientId,
+            bookingDate: {
+              gte: new Date(periodStart),
+              lte: new Date(periodEnd),
+            },
+          },
+        }),
+        prisma.investor.findMany({
+          where: { clientId },
+        }),
+      ]);
+
+      context = {
+        clientName: client?.name || 'Unknown',
         reportType,
-        periodStart: payload?.periodStart,
-        periodEnd: payload?.periodEnd,
-        clientId,
+        periodStart,
+        periodEnd,
+        bankTransactions: bankLedgerEntries.length,
+        ledgerEntries: allLedgerEntries.length,
+        investors: investors.length,
+        totalBalance: bankLedgerEntries.reduce((sum, t) => sum + Number(t.amount), 0),
       };
     }
 
-    // Create the task
+    // Anropa AI för att analysera
+    const aiResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/ai/process`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        taskKind: kind,
+        context,
+      }),
+    });
+
+    if (!aiResponse.ok) {
+      throw new Error('AI processing failed');
+    }
+
+    const aiResult = await aiResponse.json();
+
+    // Skapa Task i databasen
     const task = await prisma.task.create({
       data: {
         clientId,
         kind,
-        status: 'QUEUED',
-        payload: taskPayload,
-        assigneeId: assigneeId || null,
-        dueAt: dueAt ? new Date(dueAt) : null,
+        status: 'NEEDS_REVIEW',
+        payload: {
+          ...payload,
+          ...aiResult,
+          processedAt: new Date().toISOString(),
+        },
+        flags: {
+          create: (aiResult.flags || []).map((flag: any) => ({
+            severity: flag.severity || 'info',
+            message: flag.message,
+            code: flag.code || 'AI_FLAG',
+          })),
+        },
+      },
+      include: {
+        flags: true,
+        client: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 
-    return NextResponse.json({ task }, { status: 201 });
+    return NextResponse.json({
+      success: true,
+      task,
+      message: `Task created successfully. Check Coordinator Inbox for review.`,
+    });
   } catch (error) {
-    console.error('Task creation error:', error);
+    console.error('Failed to create task:', error);
     return NextResponse.json(
-      { error: 'Task creation failed', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Failed to create task', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
 }
-
