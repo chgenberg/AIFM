@@ -112,7 +112,7 @@ export default function DataFeedsPage() {
     }
   };
 
-  const handleSync = async (feedId: string, clientId: string, source: string) => {
+  const handleSync = async (clientId: string, source: string) => {
     try {
       const response = await fetch('/api/datafeeds/sync', {
         method: 'POST',
@@ -333,7 +333,7 @@ export default function DataFeedsPage() {
                     <div className="space-y-3">
                       <Button
                         size="sm"
-                        onClick={() => handleSync(feed.id, feed.clientId, feed.source)}
+                        onClick={() => handleSync(feed.clientId, feed.source)}
                         className="w-full rounded-2xl uppercase tracking-wide"
                       >
                         <RefreshCw className="w-4 h-4 mr-2" />
