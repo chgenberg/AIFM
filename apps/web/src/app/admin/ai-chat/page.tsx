@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
 import { Button } from '@/components/Button';
+import { Header } from '@/components/Header';
 import { Send, Bot, User, Loader2 } from 'lucide-react';
 
 interface Message {
@@ -64,6 +65,7 @@ export default function AIChatPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Header />
       <div className="page-container py-8">
         {/* Header */}
         <div className="mb-8">

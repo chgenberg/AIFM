@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/Button';
 import { Card, CardContent } from '@/components/Card';
 import { Modal } from '@/components/Modal';
+import { Header } from '@/components/Header';
 import { exportTasksToCSV } from '@/lib/export';
 import { successToast, errorToast } from '@/lib/toast';
 import { formatDate } from '@/lib/utils';
@@ -104,6 +105,7 @@ export default function CoordinatorInboxPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Header />
       <div className="page-container py-8">
         {/* Header */}
         <div className="mb-8">

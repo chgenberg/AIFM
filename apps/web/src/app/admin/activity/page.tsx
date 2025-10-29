@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
+import { Header } from '@/components/Header';
 import { Activity, TrendingUp, FileText, Shield, CheckCircle2, Zap, ArrowRight } from 'lucide-react';
 
 interface ActivityData {
@@ -80,6 +81,7 @@ export default function SystemActivityPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Header />
       <div className="page-container py-8">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">

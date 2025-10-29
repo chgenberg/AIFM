@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSession, signOut } from 'next-auth/react';
 import { Button } from '@/components/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/Card';
+import { Header } from '@/components/Header';
 import { RefreshCw, LogOut, Users, FileText, BarChart3, Activity, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 
@@ -19,7 +19,6 @@ interface HealthData {
 type DashboardTab = 'OVERVIEW' | 'TASKS' | 'REPORTS';
 
 export default function AdminDashboardPage() {
-  const { data: session } = useSession();
   const [health, setHealth] = useState<HealthData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<DashboardTab>('OVERVIEW');
@@ -60,23 +59,7 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Simple Header */}
-      <div className="border-b border-gray-200 bg-white sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="font-bold text-xl uppercase tracking-wide">AIFM ADMIN</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">{session?.user?.email}</span>
-            <button
-              onClick={() => signOut({ redirect: true, callbackUrl: '/' })}
-              className="flex items-center gap-2 px-3 py-2 text-sm font-medium bg-gray-900 text-white rounded-2xl hover:bg-gray-800 transition uppercase tracking-wide"
-            >
-              <LogOut className="w-4 h-4" />
-              Sign Out
-            </button>
-          </div>
-        </div>
-      </div>
-
+      <Header />
       {/* Main Content */}
       <div className="page-container py-8">
       <div className="mb-8 flex items-center justify-between">
