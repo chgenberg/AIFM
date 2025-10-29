@@ -195,7 +195,7 @@ export default function SystemActivityPage() {
                   No recent activity
                 </div>
               ) : (
-                data.activity.map((item, idx) => {
+                data.activity.map((item) => {
                   const Icon = KIND_ICONS[item.kind as keyof typeof KIND_ICONS] || Activity;
                   const statusColor = STATUS_COLORS[item.status as keyof typeof STATUS_COLORS] || 'bg-gray-200';
                   
