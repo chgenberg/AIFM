@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
 import { ArrowLeft, Save } from 'lucide-react';
@@ -23,6 +23,7 @@ interface Report {
 
 export default function ReportEditorPage() {
   const params = useParams();
+  const router = useRouter();
   const reportId = params.reportId as string;
 
   const [report, setReport] = useState<Report | null>(null);
