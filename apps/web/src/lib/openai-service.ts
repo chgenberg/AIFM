@@ -39,7 +39,7 @@ export async function processAITask(payload: AITaskPayload): Promise<AIResponse>
     const systemPrompt = SYSTEM_PROMPTS[payload.taskKind];
     
     const response = await openai.chat.completions.create({
-      model: process.env.NEXT_PUBLIC_OPENAI_MODEL || 'gpt-4-turbo',
+      model: process.env.NEXT_PUBLIC_OPENAI_MODEL || 'gpt-5-mini',
       messages: [
         {
           role: 'system',
@@ -50,7 +50,6 @@ export async function processAITask(payload: AITaskPayload): Promise<AIResponse>
           content: `Process this task: ${JSON.stringify(payload.context)}`,
         },
       ],
-      temperature: 0.7,
       response_format: { type: 'json_object' },
     });
 
@@ -71,7 +70,7 @@ export async function generateReport(
 ): Promise<string> {
   try {
     const response = await openai.chat.completions.create({
-      model: process.env.NEXT_PUBLIC_OPENAI_MODEL || 'gpt-4-turbo',
+      model: process.env.NEXT_PUBLIC_OPENAI_MODEL || 'gpt-5-mini',
       messages: [
         {
           role: 'system',
@@ -82,7 +81,6 @@ export async function generateReport(
           content: `Generate a ${reportType} report for ${clientName}. Data: ${JSON.stringify(data)}`,
         },
       ],
-      temperature: 0.5,
     });
 
     return response.choices[0].message.content || '';
