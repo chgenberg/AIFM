@@ -21,7 +21,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <Image
-              src="/dwarf_favicon.png"
+              src="/dward_favicon.png"
               alt="AIFM Logo"
               width={40}
               height={40}
@@ -60,7 +60,7 @@ export default function HomePage() {
         <div className="text-center mb-16">
           <div className="flex justify-center mb-8">
             <Image
-              src="/dwarf_favicon.png"
+              src="/dward_favicon.png"
               alt="AIFM Logo"
               width={100}
               height={100}
