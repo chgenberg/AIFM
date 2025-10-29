@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { Button } from './Button';
 import {
-  ChevronRight,
   ChevronLeft,
   CheckCircle,
   BarChart3,
