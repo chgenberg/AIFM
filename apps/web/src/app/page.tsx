@@ -23,12 +23,11 @@ export default function HomePage() {
             <Image
               src="/dwarf.png"
               alt="AIFM Logo"
-              width={40}
-              height={40}
+              width={80}
+              height={80}
               className="rounded-xl"
               unoptimized
             />
-            <h1 className="text-2xl font-bold tracking-tight">AIFM PORTAL</h1>
           </div>
           <div className="flex gap-4 items-center">
             {session ? (

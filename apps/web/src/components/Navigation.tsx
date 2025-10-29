@@ -35,12 +35,11 @@ export default function Navigation() {
             <Image
               src="/dwarf.png"
               alt="AIFM Logo"
-              width={32}
-              height={32}
+              width={64}
+              height={64}
               className="rounded-lg"
               unoptimized
             />
-            <span className="font-bold text-lg">AIFM</span>
           </Link>
           
           <div className="flex gap-6">

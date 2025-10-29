@@ -22,12 +22,11 @@ export function Header() {
             <Image
               src="/dwarf.png"
               alt="AIFM Logo"
-              width={40}
-              height={40}
+              width={80}
+              height={80}
               className="rounded-lg"
               unoptimized
             />
-            <h1 className="font-bold text-xl">AIFM PORTAL</h1>
           </Link>
         </div>
         <div className="flex items-center gap-4">
