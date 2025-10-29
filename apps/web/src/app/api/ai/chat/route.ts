@@ -84,7 +84,11 @@ Always use English and be professional but friendly. You have access to real-tim
       temperature: 0.7,
     });
 
-    const response = completion.choices[0].message.content;
+    const response = completion.choices[0]?.message?.content;
+
+    if (!response) {
+      return NextResponse.json({ error: 'No response from AI' }, { status: 500 });
+    }
 
     return NextResponse.json({ response });
   } catch (error) {

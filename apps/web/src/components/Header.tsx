@@ -25,6 +25,7 @@ export function Header() {
               width={40}
               height={40}
               className="rounded-lg"
+              unoptimized
             />
             <h1 className="font-bold text-xl">AIFM PORTAL</h1>
           </Link>

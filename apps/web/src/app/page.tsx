@@ -26,6 +26,7 @@ export default function HomePage() {
               width={40}
               height={40}
               className="rounded-xl"
+              unoptimized
             />
             <h1 className="text-2xl font-bold tracking-tight">AIFM PORTAL</h1>
           </div>
@@ -71,6 +72,7 @@ export default function HomePage() {
               width={100}
               height={100}
               className="rounded-3xl shadow-lg"
+              unoptimized
             />
           </div>
           <h2 className="text-6xl font-bold tracking-tighter mb-6">AI-POWERED FUND MANAGEMENT</h2>

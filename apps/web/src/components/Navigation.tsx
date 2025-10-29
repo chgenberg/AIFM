@@ -38,6 +38,7 @@ export default function Navigation() {
               width={32}
               height={32}
               className="rounded-lg"
+              unoptimized
             />
             <span className="font-bold text-lg">AIFM</span>
           </Link>
