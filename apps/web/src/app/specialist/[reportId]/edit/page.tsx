@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { ArrowLeft, Save } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { formatDate } from '@/lib/utils';
+import { FormGroup, Label, Textarea } from '@/components/Form';
 
 // Mock user for testing
 const userId = 'test-specialist-001';
