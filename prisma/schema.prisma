@@ -98,6 +98,7 @@ model User {
   auditLogs       AuditLog[] @relation("AuditActors")
   accounts        Account[]
   sessions        Session[]
+  tasks           Task[] @relation("UserTasks")
 
   @@index([role])
   @@index([email])
