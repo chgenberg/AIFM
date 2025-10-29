@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
-import { successToast, errorToast } from '@/lib/toast';
 import { ArrowLeft, Save } from 'lucide-react';
 
 // Mock user for testing
