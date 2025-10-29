@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma';
  * Exports all personal data associated with the authenticated user
  * GET /api/privacy/data-export
  */
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user) {
