@@ -25,10 +25,11 @@ export async function POST(request: NextRequest) {
       const periodStart = payload?.periodStart || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       const periodEnd = payload?.periodEnd || new Date().toISOString();
 
-      const [bankTransactions, ledgerEntries] = await Promise.all([
-        prisma.bankTransaction.findMany({
+      const [bankLedgerEntries, allLedgerEntries] = await Promise.all([
+        prisma.ledgerEntry.findMany({
           where: {
             clientId,
+            source: 'BANK',
             bookingDate: {
               gte: new Date(periodStart),
               lte: new Date(periodEnd),
@@ -46,20 +47,20 @@ export async function POST(request: NextRequest) {
         }),
       ]);
 
-      const bankBalance = bankTransactions.reduce((sum, t) => sum + Number(t.amount), 0);
-      const ledgerBalance = ledgerEntries.reduce((sum, e) => sum + Number(e.amount), 0);
+      const bankBalance = bankLedgerEntries.reduce((sum, t) => sum + Number(t.amount), 0);
+      const ledgerBalance = allLedgerEntries.reduce((sum, e) => sum + Number(e.amount), 0);
 
       context = {
         bankBalance,
         ledgerBalance,
         discrepancy: bankBalance - ledgerBalance,
-        recentTransactions: bankTransactions.slice(-10).map(t => ({
+        recentTransactions: bankLedgerEntries.slice(-10).map(t => ({
           date: t.bookingDate,
           amount: t.amount,
           description: t.description,
         })),
-        bankTransactions: bankTransactions.length,
-        ledgerEntries: ledgerEntries.length,
+        bankTransactions: bankLedgerEntries.length,
+        ledgerEntries: allLedgerEntries.length,
       };
     } else if (kind === 'KYC_REVIEW') {
       const investorId = payload?.investorId;
