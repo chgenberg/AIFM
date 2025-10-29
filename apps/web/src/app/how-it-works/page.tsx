@@ -158,39 +158,39 @@ export default function HowItWorksPage() {
 
         {/* Step-by-Step Guide */}
         <div className="mb-16">
-          <h2 className="text-3xl font-bold mb-6">SÅ GÖR DU - STEG FÖR STEG</h2>
+          <h2 className="text-3xl font-bold mb-6">STEP-BY-STEP GUIDE</h2>
           
           {userRole === 'coordinator' && (
             <Card className="mb-8">
               <CardHeader>
-                <CardTitle>📋 Som COORDINATOR - Granska Tasks</CardTitle>
+                <CardTitle>📋 As COORDINATOR - Review Tasks</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex gap-4">
                   <div className="w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center font-bold flex-shrink-0">1</div>
                   <div>
-                    <p className="font-semibold">Gå till Coordinator Inbox</p>
-                    <p className="text-sm text-gray-600">Du ser alla tasks som behöver granskas</p>
+                    <p className="font-semibold">Go to Coordinator Inbox</p>
+                    <p className="text-sm text-gray-600">You'll see all tasks that need review</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center font-bold flex-shrink-0">2</div>
                   <div>
-                    <p className="font-semibold">Granska task-detaljer</p>
-                    <p className="text-sm text-gray-600">Läs flags och se vad AI har flaggat för diskrepanser</p>
+                    <p className="font-semibold">Review task details</p>
+                    <p className="text-sm text-gray-600">Read flags and see what AI has flagged for discrepancies</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center font-bold flex-shrink-0">3</div>
                   <div>
-                    <p className="font-semibold">Godkänn eller avvisa</p>
-                    <p className="text-sm text-gray-600">Klicka "APPROVE" om allt stämmer, eller "REJECT" om det behöver ändras</p>
+                    <p className="font-semibold">Approve or reject</p>
+                    <p className="text-sm text-gray-600">Click "APPROVE" if everything checks out, or "REJECT" if changes are needed</p>
                   </div>
                 </div>
                 <div className="mt-6">
                   <Link href="/coordinator/inbox">
                     <Button>
-                      Öppna Coordinator Inbox
+                      Open Coordinator Inbox
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </Link>
@@ -202,34 +202,34 @@ export default function HowItWorksPage() {
           {userRole === 'specialist' && (
             <Card className="mb-8">
               <CardHeader>
-                <CardTitle>📊 Som SPECIALIST - Hantera Rapporter</CardTitle>
+                <CardTitle>📊 As SPECIALIST - Manage Reports</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex gap-4">
                   <div className="w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center font-bold flex-shrink-0">1</div>
                   <div>
-                    <p className="font-semibold">Gå till Specialist Board</p>
-                    <p className="text-sm text-gray-600">Du ser rapporter i 4 kolumner: DRAFT, QC, APPROVAL, PUBLISHED</p>
+                    <p className="font-semibold">Go to Specialist Board</p>
+                    <p className="text-sm text-gray-600">You'll see reports in 4 columns: DRAFT, QC, APPROVAL, PUBLISHED</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center font-bold flex-shrink-0">2</div>
                   <div>
-                    <p className="font-semibold">Redigera rapport</p>
-                    <p className="text-sm text-gray-600">Klicka på penna-ikonen för att redigera AI-genererad text</p>
+                    <p className="font-semibold">Edit report</p>
+                    <p className="text-sm text-gray-600">Click the pencil icon to edit AI-generated text</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center font-bold flex-shrink-0">3</div>
                   <div>
-                    <p className="font-semibold">Flytta till nästa steg</p>
-                    <p className="text-sm text-gray-600">Klicka på check-ikonen för att flytta rapporten till nästa stage</p>
+                    <p className="font-semibold">Move to next stage</p>
+                    <p className="text-sm text-gray-600">Click the check icon to move the report to the next stage</p>
                   </div>
                 </div>
                 <div className="mt-6">
                   <Link href="/specialist/board">
                     <Button>
-                      Öppna Specialist Board
+                      Open Specialist Board
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </Link>
@@ -241,34 +241,34 @@ export default function HowItWorksPage() {
           {userRole === 'admin' && (
             <Card className="mb-8">
               <CardHeader>
-                <CardTitle>⚙️ Som ADMIN - Översikt</CardTitle>
+                <CardTitle>⚙️ As ADMIN - Overview</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex gap-4">
                   <div className="w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center font-bold flex-shrink-0">1</div>
                   <div>
-                    <p className="font-semibold">Gå till Admin Dashboard</p>
-                    <p className="text-sm text-gray-600">Se systemstatistik: antal clients, tasks, reports, investors</p>
+                    <p className="font-semibold">Go to Admin Dashboard</p>
+                    <p className="text-sm text-gray-600">See system statistics: number of clients, tasks, reports, investors</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center font-bold flex-shrink-0">2</div>
                   <div>
-                    <p className="font-semibold">Monitorera status</p>
-                    <p className="text-sm text-gray-600">Se breakdown av tasks och reports per status</p>
+                    <p className="font-semibold">Monitor status</p>
+                    <p className="text-sm text-gray-600">See breakdown of tasks and reports by status</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
                   <div className="w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center font-bold flex-shrink-0">3</div>
                   <div>
-                    <p className="font-semibold">Övervaka systemet</p>
-                    <p className="text-sm text-gray-600">Klicka "Refresh" för att uppdatera statistik</p>
+                    <p className="font-semibold">Monitor system</p>
+                    <p className="text-sm text-gray-600">Click "Refresh" to update statistics</p>
                   </div>
                 </div>
                 <div className="mt-6">
                   <Link href="/admin/dashboard">
                     <Button>
-                      Öppna Admin Dashboard
+                      Open Admin Dashboard
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </Link>

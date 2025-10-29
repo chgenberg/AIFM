@@ -42,7 +42,7 @@ export default function DataFeedsPage() {
     try {
       const [feedsRes, clientsRes] = await Promise.all([
         fetch('/api/datafeeds'),
-        fetch('/api/clients'), // Du behöver skapa denna route
+        fetch('/api/clients'), // You need to create this route
       ]);
 
       if (feedsRes.ok) {
@@ -54,7 +54,7 @@ export default function DataFeedsPage() {
         const clientsData = await clientsRes.json();
         setClients(clientsData);
       } else {
-        // Fallback: hämta från tasks
+        // Fallback: fetch from tasks
         const tasksRes = await fetch('/api/tasks');
         if (tasksRes.ok) {
           const tasks = await tasksRes.json();

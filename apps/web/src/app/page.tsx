@@ -11,7 +11,7 @@ export default function HomePage() {
   const router = useRouter();
 
   if (status === 'loading') {
-    return <div className="flex items-center justify-center min-h-screen">Laddar...</div>;
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
 
   return (

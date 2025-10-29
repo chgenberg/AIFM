@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hämta data baserat på task kind
+    // Fetch data based on task kind
     let context: any = {};
 
     if (kind === 'BANK_RECON') {
@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
 
     const aiResult = await aiResponse.json();
 
-    // Skapa Task i databasen
+    // Create Task in database
     const task = await prisma.task.create({
       data: {
         clientId,

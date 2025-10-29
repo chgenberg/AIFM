@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hitta DataFeed
+    // Find DataFeed
     const dataFeed = await prisma.dataFeed.findFirst({
       where: {
         clientId,
@@ -33,11 +33,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Här skulle du normalt lägga till ett job i ETL queue
-    // Men för nu returnerar vi bara success
-    // TODO: Implementera faktisk ETL sync via workers
+    // Here you would normally add a job to the ETL queue
+    // But for now we just return success
+    // TODO: Implement actual ETL sync via workers
     
-    // Uppdatera DataFeed status
+    // Update DataFeed status
     await prisma.dataFeed.update({
       where: { id: dataFeed.id },
       data: {

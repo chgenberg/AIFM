@@ -18,8 +18,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Skapa eller uppdatera DataFeed
-    // Först försök hitta befintlig
+    // Create or update DataFeed
+    // First try to find existing
     const existing = await prisma.dataFeed.findFirst({
       where: {
         clientId,
