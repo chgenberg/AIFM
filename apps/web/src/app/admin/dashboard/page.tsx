@@ -4,23 +4,15 @@ import { useEffect, useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { Button } from '@/components/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/Card';
-import { RefreshCw, CheckCircle, AlertCircle, LogOut } from 'lucide-react';
-
-// Mock user for testing
-const userId = 'test-admin-001';
+import { RefreshCw, LogOut } from 'lucide-react';
 
 interface HealthData {
-  timestamp: string;
-  checks: {
-    database: {
-      status: string;
-      latency: string;
-    };
-    queue: {
-      status: string;
-      queues: Record<string, any>;
-    };
-  };
+  clients: number;
+  tasks: number;
+  reports: number;
+  investors: number;
+  taskStats: Record<string, number>;
+  reportStats: Record<string, number>;
 }
 
 export default function AdminDashboardPage() {
@@ -30,35 +22,20 @@ export default function AdminDashboardPage() {
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
 
   useEffect(() => {
-    if (!userId) return;
     loadHealth();
     const interval = setInterval(loadHealth, 30000); // Refresh every 30s
     return () => clearInterval(interval);
-  }, [userId]);
+  }, []);
 
   const loadHealth = async () => {
     try {
       setLoading(true);
-      // In a real application, you would use an authenticated API client here
-      // For this example, we'll simulate a successful response
-      const mockHealthData: HealthData = {
-        timestamp: new Date().toISOString(),
-        checks: {
-          database: {
-            status: 'healthy',
-            latency: '10ms',
-          },
-          queue: {
-            status: 'healthy',
-            queues: {
-              'email-queue': { count: 10, active: 2, delayed: 0 },
-              'notification-queue': { count: 5, active: 1, delayed: 0 },
-              'payment-queue': { count: 2, active: 0, delayed: 0 },
-            },
-          },
-        },
-      };
-      setHealth(mockHealthData);
+      const response = await fetch('/api/admin/stats');
+      if (!response.ok) {
+        throw new Error('Failed to load stats');
+      }
+      const data = await response.json();
+      setHealth(data);
       setLastRefresh(new Date());
     } catch (error) {
       console.error('Failed to load health:', error);
@@ -69,14 +46,13 @@ export default function AdminDashboardPage() {
 
   if (!health) {
     return (
-      <div className="page-container text-center py-12">
-        <div className="animate-pulse">Loading system status...</div>
+      <div className="min-h-screen bg-white">
+        <div className="page-container text-center py-12">
+          <div className="animate-pulse">Loading system status...</div>
+        </div>
       </div>
     );
   }
-
-  const dbHealthy = health.checks.database.status === 'healthy';
-  const queueHealthy = health.checks.queue.status === 'healthy';
 
   return (
     <div className="min-h-screen bg-white">
@@ -111,77 +87,82 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Overall Status */}
-        <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">Database</CardTitle>
-                {dbHealthy ? (
-                  <CheckCircle className="w-6 h-6 text-success" />
-                ) : (
-                  <AlertCircle className="w-6 h-6 text-danger" />
-                )}
-              </div>
-              <CardDescription>{health.checks.database.status}</CardDescription>
+              <CardTitle className="text-lg">Clients</CardTitle>
+              <CardDescription>Total clients</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-sm space-y-1">
-                <div>
-                  <span className="text-muted-foreground">Latency:</span>
-                  <span className="ml-2 font-semibold">{health.checks.database.latency}</span>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Timestamp:</span>
-                  <span className="ml-2 font-semibold">
-                    {new Date(health.timestamp).toLocaleTimeString()}
-                  </span>
-                </div>
+              <div className="text-3xl font-bold">{health.clients}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Tasks</CardTitle>
+              <CardDescription>Total tasks</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{health.tasks}</div>
+              <div className="text-sm text-gray-600 mt-2">
+                {health.taskStats.NEEDS_REVIEW || 0} need review
               </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">Job Queue</CardTitle>
-                {queueHealthy ? (
-                  <CheckCircle className="w-6 h-6 text-success" />
-                ) : (
-                  <AlertCircle className="w-6 h-6 text-danger" />
-                )}
-              </div>
-              <CardDescription>{health.checks.queue.status}</CardDescription>
+              <CardTitle className="text-lg">Reports</CardTitle>
+              <CardDescription>Total reports</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-sm text-muted-foreground">
-                {Object.keys(health.checks.queue.queues).length} queues active
+              <div className="text-3xl font-bold">{health.reports}</div>
+              <div className="text-sm text-gray-600 mt-2">
+                {health.reportStats.DRAFT || 0} drafts
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Investors</CardTitle>
+              <CardDescription>Total investors</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{health.investors}</div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Queue Details */}
+        {/* Task Status Breakdown */}
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">Queue Status</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {Object.entries(health.checks.queue.queues).map(([name, stats]: any) => (
-              <Card key={name}>
+          <h2 className="text-2xl font-semibold mb-4">Task Status</h2>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {Object.entries(health.taskStats).map(([status, count]) => (
+              <Card key={status}>
                 <CardHeader>
-                  <CardTitle className="text-sm capitalize">{name}</CardTitle>
+                  <CardTitle className="text-sm capitalize">{status.replace(/_/g, ' ')}</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2 text-sm">
-                  <div>
-                    <span className="text-muted-foreground">Waiting:</span>
-                    <span className="ml-2 font-semibold">{stats.count || 0}</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Active:</span>
-                    <span className="ml-2 font-semibold">{stats.active || 0}</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Delayed:</span>
-                    <span className="ml-2 font-semibold">{stats.delayed || 0}</span>
-                  </div>
+                <CardContent>
+                  <div className="text-2xl font-bold">{count as number}</div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Report Status Breakdown */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold mb-4">Report Status</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {Object.entries(health.reportStats).map(([status, count]) => (
+              <Card key={status}>
+                <CardHeader>
+                  <CardTitle className="text-sm capitalize">{status}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{count as number}</div>
                 </CardContent>
               </Card>
             ))}

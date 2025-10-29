@@ -54,7 +54,16 @@ export default function CoordinatorInboxPage() {
     if (!confirmModal.taskId) return;
     try {
       setApproving(true);
-      await apiClient.approveTask(confirmModal.taskId);
+      const response = await fetch(`/api/tasks/${confirmModal.taskId}/approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'approve' }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to approve task');
+      }
+
       setTasks((prev) => prev.filter((t) => t.id !== confirmModal.taskId));
       setConfirmModal({ isOpen: false, taskId: null });
       successToast('Task approved successfully');
