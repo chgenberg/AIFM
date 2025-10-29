@@ -101,8 +101,7 @@ async function main() {
       clientId: client.id,
       name: "Pension Fund Sweden AB",
       email: "investor@pensionfund.se",
-      investmentAmount: 50000000,
-      investmentDate: new Date(2024, 0, 15),
+      ubo: "State Pension Fund",
     },
   });
 
@@ -113,14 +112,11 @@ async function main() {
       clientId: client.id,
       investorId: investor.id,
       status: "PENDING_REVIEW",
-      riskLevel: "MEDIUM",
-      pepStatus: "CLEAR",
-      sanctionStatus: "CLEAR",
-      uboVerified: true,
-      documents: {
-        identityVerified: true,
-        addressVerified: true,
-        beneficiaryVerified: true,
+      riskLevel: "medium",
+      pepStatus: "clear",
+      sanctionStatus: "clear",
+      uboTree: {
+        owners: [{ name: "State Pension Fund", ownership: 100 }],
       },
     },
   });
