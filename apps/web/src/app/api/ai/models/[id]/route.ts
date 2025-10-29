@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma';
  * Get specific AI model with all details
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -148,7 +148,7 @@ export async function PATCH(
  * Delete AI model (soft delete by setting isActive=false)
  */
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
