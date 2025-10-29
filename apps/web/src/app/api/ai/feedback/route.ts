@@ -45,17 +45,8 @@ export async function POST(request: NextRequest) {
     });
 
     // Update example success rates if feedback indicates correctness
-    if (wasCorrect !== undefined && modelId) {
-      const model = await prisma.aIModel.findUnique({
-        where: { id: modelId },
-        include: {
-          examples: true,
-        },
-      });
-
-      // Update example statistics (simplified - could be improved with better matching)
-      // This is a basic implementation
-    }
+    // TODO: Implement example matching and success rate updates
+    // This will be implemented when we have better example matching logic
 
     return NextResponse.json({ success: true, feedback });
   } catch (error: any) {
