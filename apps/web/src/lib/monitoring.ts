@@ -91,7 +91,7 @@ class MonitoringService {
   /**
    * Add breadcrumb for debugging
    */
-  addBreadcrumb(message: string, level: string = 'info') {
+  addBreadcrumb(message: string) {
     if (this.initialized) {
       console.debug(`[BREADCRUMB] ${message}`);
     }
