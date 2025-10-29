@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
 import { Button } from '@/components/Button';
 import { Header } from '@/components/Header';
-import { Send, Bot, User, Loader2, XCircle } from 'lucide-react';
+import { Send, Bot, User, Loader2 } from 'lucide-react';
 
 interface Message {
   role: 'user' | 'assistant';
