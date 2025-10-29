@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/Button';
 import { Card, CardContent } from '@/components/Card';
 import { Modal } from '@/components/Modal';
-import { apiClient } from '@/lib/api-client';
 import { exportTasksToCSV } from '@/lib/export';
 import { successToast, errorToast } from '@/lib/toast';
 import { formatDate } from '@/lib/utils';
