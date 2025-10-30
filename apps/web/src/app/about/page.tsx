@@ -1,13 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
 import Image from 'next/image';
-import { Shield, Zap, BarChart3, TrendingUp, CheckCircle2, Building2 } from 'lucide-react';
+import { Shield, Zap, BarChart3, TrendingUp, CheckCircle2, Building2, X, ZoomIn } from 'lucide-react';
 import '@/styles/animations.css';
 
 export default function AboutPage() {
+  const [imageZoomed, setImageZoomed] = useState(false);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
       <Header />
@@ -24,27 +27,71 @@ export default function AboutPage() {
           
           {/* Large Pulsing AIFM Logo */}
           <div className="flex justify-center mb-16">
-            <div className="relative group">
+            <div 
+              className="relative group cursor-pointer"
+              onClick={() => setImageZoomed(true)}
+            >
               {/* Pulserande ram och skugga */}
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 rounded-3xl blur-xl opacity-50 animate-pulse group-hover:opacity-70 transition-opacity"></div>
-              <div className="relative p-2 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 rounded-3xl animate-gradient">
-                <div className="bg-white rounded-2xl p-6">
+              <div className="relative p-3 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 rounded-3xl animate-gradient">
+                <div className="bg-white rounded-2xl p-8 relative">
                   <Image
                     src="/AIFM.jpeg"
                     alt="AIFM - AI-Powered Fund Management"
-                    width={400}
-                    height={160}
+                    width={600}
+                    height={240}
                     className="rounded-xl"
                     unoptimized
                     onError={(e) => {
                       e.currentTarget.src = '/dwarf.png';
                     }}
                   />
+                  {/* Zoom indicator */}
+                  <div className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ZoomIn className="w-5 h-5" />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Zoom Modal */}
+        {imageZoomed && (
+          <div
+            className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 animate-in fade-in"
+            onClick={() => setImageZoomed(false)}
+          >
+            <div className="relative max-w-7xl w-full max-h-[90vh] flex items-center justify-center">
+              {/* Close button */}
+              <button
+                onClick={() => setImageZoomed(false)}
+                className="absolute top-4 right-4 bg-white text-black p-3 rounded-full hover:bg-gray-200 transition-all z-10 shadow-lg"
+              >
+                <X className="w-6 h-6" />
+              </button>
+              
+              {/* Zoomed image */}
+              <div className="relative w-full h-full flex items-center justify-center">
+                <div className="relative p-4 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 rounded-3xl">
+                  <div className="bg-white rounded-2xl p-6">
+                    <Image
+                      src="/AIFM.jpeg"
+                      alt="AIFM - AI-Powered Fund Management"
+                      width={1200}
+                      height={480}
+                      className="rounded-xl max-w-full max-h-[80vh] object-contain"
+                      unoptimized
+                      onError={(e) => {
+                        e.currentTarget.src = '/dwarf.png';
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* What We Built Section */}
         <div className="mb-16">
