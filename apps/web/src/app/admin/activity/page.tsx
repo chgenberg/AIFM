@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
 import { Header } from '@/components/Header';
-import { Activity, TrendingUp, FileText, Shield, CheckCircle2, Zap, ArrowRight } from 'lucide-react';
+import { Activity, TrendingUp, FileText, Shield, CheckCircle2, Zap, ArrowRight, Power, PowerOff } from 'lucide-react';
 
 interface ActivityData {
   recentTasks: Array<{
@@ -91,13 +91,23 @@ export default function SystemActivityPage() {
           </div>
           <button
             onClick={() => setAutoRefresh(!autoRefresh)}
-            className={`px-4 py-2 rounded-2xl text-sm font-semibold uppercase tracking-wide transition-all ${
+            className={`px-4 py-2 rounded-2xl text-sm font-semibold uppercase tracking-wide transition-all flex items-center gap-2 ${
               autoRefresh
                 ? 'bg-green-100 text-green-700 border-2 border-green-300'
                 : 'bg-gray-100 text-gray-700 border-2 border-gray-300'
             }`}
           >
-            {autoRefresh ? '🟢 Auto Refresh ON' : '⚪ Auto Refresh OFF'}
+            {autoRefresh ? (
+              <>
+                <Power className="w-4 h-4 text-green-600" />
+                Auto Refresh ON
+              </>
+            ) : (
+              <>
+                <PowerOff className="w-4 h-4 text-gray-600" />
+                Auto Refresh OFF
+              </>
+            )}
           </button>
         </div>
 
