@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { SessionProvider } from 'next-auth/react';
 import './globals.css';
+import '@/styles/animations.css';
 
 export const metadata: Metadata = {
   title: 'AIFM Portal',

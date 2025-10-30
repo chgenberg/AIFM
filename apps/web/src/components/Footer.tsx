@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -74,8 +75,36 @@ export function Footer() {
           </div>
         </div>
 
+        {/* AIFM Image */}
+        <div className="border-t border-gray-200 pt-8 pb-4">
+          <div className="flex justify-center">
+            <Link href="/" className="block group">
+              <div className="relative">
+                {/* Pulserande ram och skugga */}
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 rounded-2xl blur-md opacity-50 animate-pulse group-hover:opacity-70 transition-opacity"></div>
+                <div className="relative p-1 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 rounded-2xl">
+                  <div className="bg-white rounded-xl p-2">
+                    <Image
+                      src="/AIFM.jpeg"
+                      alt="AIFM - AI-Powered Fund Management"
+                      width={200}
+                      height={80}
+                      className="rounded-lg"
+                      unoptimized
+                      onError={(e) => {
+                        // Fallback om bilden inte finns
+                        e.currentTarget.src = '/dwarf.png';
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+
         {/* Copyright */}
-        <div className="border-t border-gray-200 pt-6 text-center text-sm text-gray-600">
+        <div className="pt-4 text-center text-sm text-gray-600">
           <p>AIFM Portal © {currentYear} | AI-Powered Fund Management</p>
         </div>
       </div>
