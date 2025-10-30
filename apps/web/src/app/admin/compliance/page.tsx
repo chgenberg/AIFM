@@ -6,7 +6,7 @@ import { Header } from '@/components/Header';
 import { Button } from '@/components/Button';
 import { RefreshCw, Shield, AlertCircle, Calendar, FileCheck, CheckCircle2, Clock, XCircle } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
-import { successToast, errorToast } from '@/lib/toast';
+import { errorToast } from '@/lib/toast';
 
 interface KYCRecord {
   id: string;
