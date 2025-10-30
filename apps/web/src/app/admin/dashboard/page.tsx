@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/Card';
 import { Header } from '@/components/Header';
-import { RefreshCw, Users, FileText, BarChart3, Activity, MessageSquare } from 'lucide-react';
+import { RefreshCw, Users, FileText, BarChart3, Activity, MessageSquare, Shield, TrendingDown } from 'lucide-react';
 import Link from 'next/link';
 
 interface HealthData {
@@ -74,7 +74,7 @@ export default function AdminDashboardPage() {
       </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
           <Link href="/admin/activity">
             <Card className="border-2 border-gray-200 bg-white hover:shadow-xl hover:border-blue-300 transition-all duration-200 rounded-3xl cursor-pointer group">
               <CardContent className="pt-6">
@@ -115,6 +115,36 @@ export default function AdminDashboardPage() {
                   </div>
                   <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
                     <FileText className="w-6 h-6 text-green-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link href="/admin/risk-management">
+            <Card className="border-2 border-gray-200 bg-white hover:shadow-xl hover:border-red-300 transition-all duration-200 rounded-3xl cursor-pointer group">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg uppercase tracking-wide mb-2">Risk Management</CardTitle>
+                    <p className="text-sm text-gray-600">Monitor portfolio risks</p>
+                  </div>
+                  <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <TrendingDown className="w-6 h-6 text-red-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link href="/admin/compliance">
+            <Card className="border-2 border-gray-200 bg-white hover:shadow-xl hover:border-orange-300 transition-all duration-200 rounded-3xl cursor-pointer group">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg uppercase tracking-wide mb-2">Compliance</CardTitle>
+                    <p className="text-sm text-gray-600">Regulatory compliance</p>
+                  </div>
+                  <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Shield className="w-6 h-6 text-orange-600" />
                   </div>
                 </div>
               </CardContent>
