@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
 import Image from 'next/image';
@@ -13,7 +12,6 @@ export default function PasswordGatePage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
