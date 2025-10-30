@@ -262,8 +262,7 @@ export default function CoordinatorInboxPage() {
                   <div className="flex-1 p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-start gap-4 flex-1">
-                          w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 bg-blue-50
-                        `}>
+                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 bg-blue-50">
                           <TaskIcon className="w-6 h-6 text-blue-900" />
                         </div>
                         <div className="flex-1">
