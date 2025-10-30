@@ -145,7 +145,7 @@ export default function AIChatPage() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
                 placeholder="Ask me anything about the system..."
-                className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:border-black transition-all uppercase tracking-wide text-sm"
+                className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:border-black transition-all text-sm"
                 disabled={loading}
               />
               <Button
