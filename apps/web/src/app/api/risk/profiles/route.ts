@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
 
     const varValues = profiles
       .map(p => p.var95)
-      .filter((v): v is number => v !== null)
+      .filter((v): v is NonNullable<typeof v> => v !== null)
       .map(v => Number(v));
 
     const avgVaR = varValues.length > 0
