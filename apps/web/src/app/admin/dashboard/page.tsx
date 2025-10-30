@@ -84,67 +84,67 @@ export default function AdminDashboardPage() {
                     <p className="text-sm text-gray-600">Live monitoring of workflow</p>
                   </div>
                   <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Activity className="w-6 h-6 text-blue-600" />
+                    <Activity className="w-6 h-6 text-blue-900" />
                   </div>
                 </div>
               </CardContent>
             </Card>
           </Link>
           <Link href="/admin/ai-chat">
-            <Card className="border-2 border-gray-200 bg-white hover:shadow-xl hover:border-purple-300 transition-all duration-200 rounded-3xl cursor-pointer group">
+            <Card className="border-2 border-gray-200 bg-white hover:shadow-xl hover:border-blue-300 transition-all duration-200 rounded-3xl cursor-pointer group">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-lg uppercase tracking-wide mb-2">AI Assistant</CardTitle>
                     <p className="text-sm text-gray-600">Chat with AI about your system</p>
                   </div>
-                  <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <MessageSquare className="w-6 h-6 text-purple-600" />
+                  <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <MessageSquare className="w-6 h-6 text-blue-900" />
                   </div>
                 </div>
               </CardContent>
             </Card>
           </Link>
           <Link href="/admin/datafeeds">
-            <Card className="border-2 border-gray-200 bg-white hover:shadow-xl hover:border-green-300 transition-all duration-200 rounded-3xl cursor-pointer group">
+            <Card className="border-2 border-gray-200 bg-white hover:shadow-xl hover:border-blue-300 transition-all duration-200 rounded-3xl cursor-pointer group">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-lg uppercase tracking-wide mb-2">Data Feeds</CardTitle>
                     <p className="text-sm text-gray-600">Configure Fortnox & Bank APIs</p>
                   </div>
-                  <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <FileText className="w-6 h-6 text-green-600" />
+                  <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <FileText className="w-6 h-6 text-blue-900" />
                   </div>
                 </div>
               </CardContent>
             </Card>
           </Link>
           <Link href="/admin/risk-management">
-            <Card className="border-2 border-gray-200 bg-white hover:shadow-xl hover:border-red-300 transition-all duration-200 rounded-3xl cursor-pointer group">
+            <Card className="border-2 border-gray-200 bg-white hover:shadow-xl hover:border-blue-300 transition-all duration-200 rounded-3xl cursor-pointer group">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-lg uppercase tracking-wide mb-2">Risk Management</CardTitle>
                     <p className="text-sm text-gray-600">Monitor portfolio risks</p>
                   </div>
-                  <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <TrendingDown className="w-6 h-6 text-red-600" />
+                  <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <TrendingDown className="w-6 h-6 text-blue-900" />
                   </div>
                 </div>
               </CardContent>
             </Card>
           </Link>
           <Link href="/admin/compliance">
-            <Card className="border-2 border-gray-200 bg-white hover:shadow-xl hover:border-orange-300 transition-all duration-200 rounded-3xl cursor-pointer group">
+            <Card className="border-2 border-gray-200 bg-white hover:shadow-xl hover:border-blue-300 transition-all duration-200 rounded-3xl cursor-pointer group">
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle className="text-lg uppercase tracking-wide mb-2">Compliance</CardTitle>
                     <p className="text-sm text-gray-600">Regulatory compliance</p>
                   </div>
-                  <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Shield className="w-6 h-6 text-orange-600" />
+                  <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Shield className="w-6 h-6 text-blue-900" />
                   </div>
                 </div>
               </CardContent>
@@ -230,7 +230,7 @@ export default function AdminDashboardPage() {
                   <div className="flex items-center justify-between">
                     <div className="text-3xl font-bold">{health.clients}</div>
                     <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center">
-                      <Users className="w-6 h-6 text-blue-600" />
+                      <Users className="w-6 h-6 text-blue-900" />
                     </div>
             </div>
                 </CardContent>
@@ -249,9 +249,9 @@ export default function AdminDashboardPage() {
                         {health.taskStats.NEEDS_REVIEW || 0} need review
                       </div>
               </div>
-                    <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center">
-                      <Activity className="w-6 h-6 text-orange-600" />
-              </div>
+                    <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center">
+                      <Activity className="w-6 h-6 text-blue-900" />
+                    </div>
             </div>
           </CardContent>
         </Card>
@@ -269,8 +269,8 @@ export default function AdminDashboardPage() {
                         {health.reportStats.DRAFT || 0} drafts
                       </div>
                     </div>
-                    <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center">
-                      <FileText className="w-6 h-6 text-green-600" />
+                    <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center">
+                      <FileText className="w-6 h-6 text-blue-900" />
                     </div>
             </div>
                 </CardContent>
@@ -284,8 +284,8 @@ export default function AdminDashboardPage() {
           <CardContent>
                   <div className="flex items-center justify-between">
                     <div className="text-3xl font-bold">{health.investors}</div>
-                    <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center">
-                      <Users className="w-6 h-6 text-purple-600" />
+                    <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center">
+                      <Users className="w-6 h-6 text-blue-900" />
                     </div>
             </div>
           </CardContent>

@@ -194,7 +194,7 @@ export default function SystemActivityPage() {
                       <p className="text-3xl font-bold text-black mt-2">{count as number}</p>
                     </div>
                     <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center">
-                      <Icon className="w-6 h-6 text-blue-600" />
+                      <Icon className="w-6 h-6 text-blue-900" />
                     </div>
                   </div>
                 </CardContent>

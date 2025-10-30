@@ -140,8 +140,8 @@ export default function HowItWorksPage() {
                 <div key={idx} className="relative">
                   <Card className="h-full">
                     <CardHeader>
-                      <div className={`w-12 h-12 rounded-lg bg-${workflow.color}-100 flex items-center justify-center mb-4`}>
-                        <Icon className={`w-6 h-6 text-${workflow.color}-600`} />
+                      <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center mb-4">
+                        <Icon className="w-6 h-6 text-blue-900" />
                       </div>
                       <CardTitle className="text-sm font-bold">{workflow.title}</CardTitle>
                     </CardHeader>

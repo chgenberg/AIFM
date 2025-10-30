@@ -202,7 +202,7 @@ export default function RiskManagementPage() {
                       <p className="text-3xl font-bold text-black">{profiles.length}</p>
                     </div>
                     <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center">
-                      <BarChart3 className="w-6 h-6 text-blue-600" />
+                      <BarChart3 className="w-6 h-6 text-blue-900" />
                     </div>
                   </div>
                 </CardContent>
@@ -217,8 +217,8 @@ export default function RiskManagementPage() {
                         {avgVaR ? `${(avgVaR / 1000000).toFixed(2)}M` : 'N/A'}
                       </p>
                     </div>
-                    <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center">
-                      <TrendingDown className="w-6 h-6 text-purple-600" />
+                    <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center">
+                      <TrendingDown className="w-6 h-6 text-blue-900" />
                     </div>
                   </div>
                 </CardContent>
@@ -231,8 +231,8 @@ export default function RiskManagementPage() {
                       <CardTitle className="text-sm uppercase tracking-wide text-gray-600 mb-2">Limit Breaches</CardTitle>
                       <p className="text-3xl font-bold text-black">{totalBreaches}</p>
                     </div>
-                    <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center">
-                      <AlertTriangle className="w-6 h-6 text-red-600" />
+                    <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center">
+                      <AlertTriangle className="w-6 h-6 text-blue-900" />
                     </div>
                   </div>
                 </CardContent>
@@ -245,8 +245,8 @@ export default function RiskManagementPage() {
                       <CardTitle className="text-sm uppercase tracking-wide text-gray-600 mb-2">High Risk Clients</CardTitle>
                       <p className="text-3xl font-bold text-black">{highRiskClients}</p>
                     </div>
-                    <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center">
-                      <Shield className="w-6 h-6 text-orange-600" />
+                    <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center">
+                      <Shield className="w-6 h-6 text-blue-900" />
                     </div>
                   </div>
                 </CardContent>

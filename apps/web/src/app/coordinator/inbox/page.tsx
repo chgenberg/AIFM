@@ -262,20 +262,9 @@ export default function CoordinatorInboxPage() {
                   <div className="flex-1 p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-start gap-4 flex-1">
-                        <div className={`
-                          w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0
-                          ${task.kind === 'BANK_RECON' ? 'bg-blue-50' :
-                            task.kind === 'KYC_REVIEW' ? 'bg-purple-50' :
-                            task.kind === 'REPORT_DRAFT' ? 'bg-green-50' : 'bg-gray-50'
-                          }
+                          w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 bg-blue-50
                         `}>
-                          <TaskIcon className={`
-                            w-6 h-6
-                            ${task.kind === 'BANK_RECON' ? 'text-blue-600' :
-                              task.kind === 'KYC_REVIEW' ? 'text-purple-600' :
-                              task.kind === 'REPORT_DRAFT' ? 'text-green-600' : 'text-gray-600'
-                            }
-                          `} />
+                          <TaskIcon className="w-6 h-6 text-blue-900" />
                         </div>
                         <div className="flex-1">
                           <h3 className="text-lg font-bold text-black flex items-center gap-3 mb-1">
