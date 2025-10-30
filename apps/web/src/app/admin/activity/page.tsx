@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
 import { Header } from '@/components/Header';
-import { Activity, TrendingUp, FileText, Shield, CheckCircle2, Zap, ArrowRight, Power, PowerOff } from 'lucide-react';
+import { Activity, TrendingUp, FileText, Shield, CheckCircle2, Zap, ArrowRight, Power, PowerOff, Clock, AlertCircle, AlertTriangle, CheckCircle } from 'lucide-react';
 
 interface ActivityData {
   recentTasks: Array<{
@@ -34,6 +34,14 @@ const STATUS_COLORS = {
   NEEDS_REVIEW: 'bg-orange-200 text-orange-700',
   BLOCKED: 'bg-red-200 text-red-700',
   DONE: 'bg-green-200 text-green-700',
+};
+
+const STATUS_ICONS = {
+  QUEUED: Clock,
+  IN_PROGRESS: Activity,
+  NEEDS_REVIEW: AlertCircle,
+  BLOCKED: AlertTriangle,
+  DONE: CheckCircle,
 };
 
 const KIND_ICONS = {
@@ -125,10 +133,13 @@ export default function SystemActivityPage() {
                 const count = data.stats.tasksByStatus[status] || 0;
                 const total = data.stats.totalTasks;
                 const percentage = total > 0 ? (count / total) * 100 : 0;
+                const StatusIcon = STATUS_ICONS[status as keyof typeof STATUS_ICONS] || Activity;
+                const statusColor = STATUS_COLORS[status as keyof typeof STATUS_COLORS] || 'bg-gray-200';
                 
                 return (
                   <div key={status} className="text-center relative">
-                    <div className={`w-full h-8 rounded-2xl mb-2 flex items-center justify-center font-bold text-sm ${STATUS_COLORS[status as keyof typeof STATUS_COLORS] || 'bg-gray-200'}`}>
+                    <div className={`w-full h-8 rounded-2xl mb-2 flex items-center justify-center gap-2 font-bold text-sm ${statusColor}`}>
+                      <StatusIcon className="w-4 h-4" />
                       {count}
                     </div>
                     <div className="text-xs font-semibold uppercase tracking-wide text-gray-700 mb-1">
@@ -210,6 +221,7 @@ export default function SystemActivityPage() {
                 data.activity.map((item) => {
                   const Icon = KIND_ICONS[item.kind as keyof typeof KIND_ICONS] || Activity;
                   const statusColor = STATUS_COLORS[item.status as keyof typeof STATUS_COLORS] || 'bg-gray-200';
+                  const StatusIcon = STATUS_ICONS[item.status as keyof typeof STATUS_ICONS] || Activity;
                   
                   return (
                     <div
@@ -232,7 +244,8 @@ export default function SystemActivityPage() {
                           {new Date(item.updatedAt).toLocaleString()}
                         </div>
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${statusColor}`}>
+                      <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${statusColor}`}>
+                        <StatusIcon className="w-3 h-3" />
                         {item.status.replace(/_/g, ' ')}
                       </span>
                     </div>

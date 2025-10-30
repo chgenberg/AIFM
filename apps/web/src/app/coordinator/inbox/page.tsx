@@ -8,7 +8,7 @@ import { Header } from '@/components/Header';
 import { exportTasksToCSV } from '@/lib/export';
 import { successToast, errorToast } from '@/lib/toast';
 import { formatDate } from '@/lib/utils';
-import { Check, X, Download, AlertCircle, CheckCircle2, Clock, TrendingUp, FileText, Shield } from 'lucide-react';
+import { Check, X, Download, AlertCircle, CheckCircle2, Clock, TrendingUp, FileText, Shield, AlertTriangle } from 'lucide-react';
 
 interface Task {
   id: string;
@@ -289,7 +289,7 @@ export default function CoordinatorInboxPage() {
                           </p>
                           <div className="flex items-center gap-2">
                             <span className={`
-                              text-xs font-bold uppercase tracking-wide px-3 py-1 rounded-full
+                              flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide px-3 py-1 rounded-full
                               ${task.flags?.some(f => f.severity === 'error') 
                                 ? 'bg-red-100 text-red-700' 
                                 : task.flags?.length 
@@ -297,7 +297,22 @@ export default function CoordinatorInboxPage() {
                                   : 'bg-green-100 text-green-700'
                               }
                             `}>
-                              {task.flags?.some(f => f.severity === 'error') ? 'Review' : task.flags?.length ? 'Warnings' : 'Ready'}
+                              {task.flags?.some(f => f.severity === 'error') ? (
+                                <>
+                                  <AlertTriangle className="w-3 h-3 text-red-600" />
+                                  Review
+                                </>
+                              ) : task.flags?.length ? (
+                                <>
+                                  <AlertCircle className="w-3 h-3 text-orange-600" />
+                                  Warnings
+                                </>
+                              ) : (
+                                <>
+                                  <CheckCircle2 className="w-3 h-3 text-green-600" />
+                                  Ready
+                                </>
+                              )}
                             </span>
                           </div>
                         </div>
