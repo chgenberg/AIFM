@@ -2,7 +2,6 @@ import { auth } from '@/auth';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const REQUIRED_PASSWORD = 'AIFM';
 const GATE_COOKIE_NAME = 'aifm_gate_access';
 const GATE_COOKIE_VALUE = 'granted';
 
