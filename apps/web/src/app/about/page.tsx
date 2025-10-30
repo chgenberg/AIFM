@@ -33,13 +33,13 @@ export default function AboutPage() {
             >
               {/* Pulserande ram och skugga */}
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 rounded-3xl blur-xl opacity-50 animate-pulse group-hover:opacity-70 transition-opacity"></div>
-              <div className="relative p-3 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 rounded-3xl animate-gradient">
-                <div className="bg-white rounded-2xl p-8 relative">
+              <div className="relative p-4 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 rounded-3xl animate-gradient">
+                <div className="bg-white rounded-2xl p-10 relative">
                   <Image
                     src="/AIFM.jpeg"
                     alt="AIFM - AI-Powered Fund Management"
-                    width={600}
-                    height={240}
+                    width={800}
+                    height={320}
                     className="rounded-xl"
                     unoptimized
                     onError={(e) => {
@@ -72,15 +72,15 @@ export default function AboutPage() {
               </button>
               
               {/* Zoomed image */}
-              <div className="relative w-full h-full flex items-center justify-center">
-                <div className="relative p-4 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 rounded-3xl">
-                  <div className="bg-white rounded-2xl p-6">
+              <div className="relative w-full h-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+                <div className="relative p-6 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 rounded-3xl animate-gradient">
+                  <div className="bg-white rounded-2xl p-8">
                     <Image
                       src="/AIFM.jpeg"
                       alt="AIFM - AI-Powered Fund Management"
-                      width={1200}
-                      height={480}
-                      className="rounded-xl max-w-full max-h-[80vh] object-contain"
+                      width={1600}
+                      height={640}
+                      className="rounded-xl max-w-full max-h-[85vh] object-contain"
                       unoptimized
                       onError={(e) => {
                         e.currentTarget.src = '/dwarf.png';
