@@ -35,19 +35,15 @@ export default function RiskManagementPage() {
   const [riskData, setRiskData] = useState<RiskData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<RiskTab>('OVERVIEW');
-  const [selectedClient, setSelectedClient] = useState<string | null>(null);
 
   useEffect(() => {
     loadRiskData();
-  }, [selectedClient]);
+  }, []);
 
   const loadRiskData = async () => {
     try {
       setLoading(true);
-      const url = selectedClient 
-        ? `/api/risk/profiles?clientId=${selectedClient}`
-        : '/api/risk/profiles';
-      const response = await fetch(url);
+      const response = await fetch('/api/risk/profiles');
       if (!response.ok) {
         throw new Error('Failed to load risk data');
       }
