@@ -179,7 +179,6 @@ export default function DocumentsPage() {
         throw new Error(error.error || 'Upload failed');
       }
 
-      const data = await response.json();
       setUploadProgress(`Successfully uploaded ${file.name}!`);
       successToast(`Document "${file.name}" uploaded successfully`);
       
