@@ -248,7 +248,7 @@ function checkPresence(document: any, rule: PolicyRule): Omit<ComplianceCheckRes
 /**
  * Check date rule
  */
-function checkDate(document: any, rule: PolicyRule): Omit<ComplianceCheckResult, 'policyId' | 'policyName' | 'requirement'> {
+function checkDate(document: any, _rule: PolicyRule): Omit<ComplianceCheckResult, 'policyId' | 'policyName' | 'requirement'> {
   // Check if document has required dates
   const hasPublishDate = !!document.publishDate;
   const hasEffectiveDate = !!document.effectiveDate;
