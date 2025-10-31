@@ -271,14 +271,14 @@ export default function DocumentDetailPage() {
 
                 <EditableField
                   label="Title"
-                  value={document.title}
+                  value={document.title ?? null}
                   onSave={async (value) => handleUpdate({ title: value })}
                   placeholder="Enter document title..."
                 />
 
                 <EditableField
                   label="Description"
-                  value={document.description}
+                  value={document.description ?? null}
                   onSave={async (value) => handleUpdate({ description: value })}
                   multiline
                   placeholder="Enter document description..."
