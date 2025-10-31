@@ -30,6 +30,7 @@ model Client {
   investors     Investor[]
   users         User[]         @relation("UserToClient")
   ledgers       LedgerEntry[]  @relation("ClientLedgers")
+  documents     Document[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
@@ -450,6 +451,164 @@ model AuditLog {
   @@index([refType, refId])
   @@index([actorId])
   @@index([createdAt])
+}
+
+// ============================================================================
+// DOCUMENT MANAGEMENT (Compliance & Q&A)
+// ============================================================================
+
+model Document {
+  id       String  @id @default(cuid())
+  clientId String?
+  client   Client? @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  // File information
+  fileName   String
+  fileType   String // MIME type: "application/pdf", "image/png", etc.
+  fileSize   Int // Size in bytes
+  storageKey String // Key in storage (S3 or local)
+  storageUrl String // URL to access file
+  fileHash   String // SHA256 hash for integrity
+
+  // Classification
+  documentType String? // "policy", "regulation", "report", "evidence", etc.
+  category     String? // "compliance", "legal", "financial", etc.
+  version      String? // Document version
+  language     String? @default("sv") // Document language
+
+  // Metadata
+  title         String?
+  description   String?   @db.Text
+  author        String?
+  publishDate   DateTime?
+  effectiveDate DateTime?
+  expiryDate    DateTime?
+  tags          String[]
+
+  // Extraction
+  extractedText     String? @db.Text // OCR/parsed text content
+  extractedMetadata Json? // Structured metadata from document
+
+  // Indexing
+  embedding String? // Vector embedding for RAG (JSON array as string)
+  indexedAt DateTime? // When document was indexed
+
+  // Compliance
+  policyChecks Json? // Results of policy compliance checks
+  gaps         Json? // Identified gaps in compliance
+
+  // Status
+  status     DocumentStatus @default(PENDING)
+  uploadedBy String? // User ID who uploaded
+  uploadedAt DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  // Relations
+  complianceChecks ComplianceCheck[]
+  questions        DocumentQuestion[]
+  Policy           Policy?            @relation(fields: [policyId], references: [id])
+  policyId         String?
+
+  @@index([clientId])
+  @@index([documentType])
+  @@index([category])
+  @@index([status])
+  @@index([storageKey])
+  @@index([tags])
+  @@index([indexedAt])
+}
+
+enum DocumentStatus {
+  PENDING // Uploaded but not processed
+  PROCESSING // Being classified/indexed
+  INDEXED // Fully processed and indexed
+  ERROR // Processing failed
+  ARCHIVED // Archived/deleted
+}
+
+model ComplianceCheck {
+  id         String   @id @default(cuid())
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  policyId    String? // Reference to policy
+  policyName  String
+  requirement String // What requirement is being checked
+  status      ComplianceStatus @default(PENDING)
+
+  result    Json? // Check results
+  notes     String?  @db.Text
+  checkedBy String? // User ID
+  checkedAt DateTime @default(now())
+
+  @@index([documentId])
+  @@index([status])
+}
+
+enum ComplianceStatus {
+  PENDING
+  COMPLIANT
+  NON_COMPLIANT
+  NEEDS_REVIEW
+}
+
+model DocumentQuestion {
+  id         String    @id @default(cuid())
+  documentId String?
+  document   Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+
+  question String  @db.Text
+  answer   String? @db.Text // AI-generated answer
+  sources  Json? // Array of { documentId, excerpt, page } citations
+
+  askedBy    String? // User ID
+  answeredAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([documentId])
+}
+
+model Policy {
+  id          String  @id @default(cuid())
+  name        String
+  description String? @db.Text
+  category    String // "regulation", "internal", "legal", etc.
+
+  rules        Json // Policy rules definition
+  requirements Json // Requirements checklist
+
+  effectiveDate DateTime?
+  expiryDate    DateTime?
+
+  documents Document[]
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([isActive])
+}
+
+model Regulation {
+  id        String @id @default(cuid())
+  name      String
+  authority String // "FI", "SKV", "EU", etc.
+  category  String // "AML", "KYC", "tax", etc.
+
+  content     String? @db.Text // Full text or summary
+  externalUrl String? // Link to official source
+
+  effectiveDate DateTime?
+  updatedDate   DateTime?
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([authority])
+  @@index([category])
+  @@index([isActive])
 }
 
 // ============================================================================

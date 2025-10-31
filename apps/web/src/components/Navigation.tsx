@@ -16,6 +16,11 @@ export default function Navigation() {
   const dashboardLinks = {
     admin: [
       { label: 'Dashboard', href: '/admin/dashboard' },
+      { label: 'Documents', href: '/admin/documents' },
+      { label: 'Q&A', href: '/admin/qa' },
+      { label: 'Q&A History', href: '/admin/qa/history' },
+      { label: 'Compliance', href: '/admin/compliance' },
+      { label: 'Policies', href: '/admin/policies' },
     ],
     coordinator: [
       { label: 'Inbox', href: '/coordinator/inbox' },

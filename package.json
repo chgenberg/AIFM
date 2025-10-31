@@ -28,7 +28,7 @@
     "test:e2e:report": "playwright show-report"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^20.19.24",
     "concurrently": "^8.2.2",
     "eslint": "^8.54.0",
     "prettier": "^3.1.0",
@@ -36,16 +36,16 @@
     "typescript": "^5.3.2"
   },
   "dependencies": {
-    "winston": "^3.11.0",
-    "isomorphic-dompurify": "^2.3.0",
-    "openai": "^4.24.0",
-    "dotenv": "^16.3.1",
-    "next-auth": "^5.0.0-beta.20",
     "@auth/prisma-adapter": "^2.0.0",
     "bcryptjs": "^2.4.3",
+    "dotenv": "^16.3.1",
+    "isomorphic-dompurify": "^2.3.0",
     "next": "^15.5.6",
+    "next-auth": "^5.0.0-beta.20",
+    "openai": "^4.24.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "winston": "^3.11.0"
   },
   "engines": {
     "node": ">=18.0.0"

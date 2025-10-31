@@ -4,16 +4,36 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/Button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/Card';
 import { Header } from '@/components/Header';
-import { RefreshCw, Users, FileText, BarChart3, Activity, MessageSquare, Shield, TrendingDown } from 'lucide-react';
+import { RefreshCw, Users, FileText, BarChart3, Activity, MessageSquare, Shield, TrendingDown, FolderOpen } from 'lucide-react';
 import Link from 'next/link';
+import { DocumentStatsChart, ComplianceScoreChart } from '@/components/Charts';
 
 interface HealthData {
   clients: number;
   tasks: number;
   reports: number;
   investors: number;
+  documents: number;
+  policies: number;
+  regulations: number;
   taskStats: Record<string, number>;
   reportStats: Record<string, number>;
+  documentStats: Record<string, number>;
+  complianceStats: {
+    total: number;
+    compliant: number;
+    nonCompliant: number;
+    needsReview: number;
+    score: number;
+  };
+  recentDocuments: Array<{
+    id: string;
+    fileName: string;
+    title: string | null;
+    status: string;
+    uploadedAt: string;
+    client?: { id: string; name: string } | null;
+  }>;
 }
 
 type DashboardTab = 'OVERVIEW' | 'TASKS' | 'REPORTS';
@@ -150,6 +170,36 @@ export default function AdminDashboardPage() {
               </CardContent>
             </Card>
           </Link>
+          <Link href="/admin/policies">
+            <Card className="border-2 border-gray-200 bg-white hover:shadow-xl hover:border-blue-300 transition-all duration-200 rounded-3xl cursor-pointer group">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg uppercase tracking-wide mb-2">Policies</CardTitle>
+                    <p className="text-sm text-gray-600">Manage compliance policies</p>
+                  </div>
+                  <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Shield className="w-6 h-6 text-blue-900" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link href="/admin/documents">
+            <Card className="border-2 border-gray-200 bg-white hover:shadow-xl hover:border-blue-300 transition-all duration-200 rounded-3xl cursor-pointer group">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg uppercase tracking-wide mb-2">Documents</CardTitle>
+                    <p className="text-sm text-gray-600">Upload & manage files</p>
+                  </div>
+                  <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <FolderOpen className="w-6 h-6 text-blue-900" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         {/* Tabs */}
@@ -220,7 +270,7 @@ export default function AdminDashboardPage() {
         {activeTab === 'OVERVIEW' && (
           <>
             {/* Overall Status */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
               <Card className="border-2 border-gray-200 bg-white hover:shadow-lg transition-all duration-200 rounded-3xl">
                 <CardHeader>
                   <CardTitle className="text-lg uppercase tracking-wide">Clients</CardTitle>
@@ -278,19 +328,97 @@ export default function AdminDashboardPage() {
 
               <Card className="border-2 border-gray-200 bg-white hover:shadow-lg transition-all duration-200 rounded-3xl">
                 <CardHeader>
-                  <CardTitle className="text-lg uppercase tracking-wide">Investors</CardTitle>
-                  <CardDescription className="text-xs uppercase tracking-wide">Total investors</CardDescription>
-          </CardHeader>
-          <CardContent>
+                  <CardTitle className="text-lg uppercase tracking-wide">Documents</CardTitle>
+                  <CardDescription className="text-xs uppercase tracking-wide">Total documents</CardDescription>
+                </CardHeader>
+                <CardContent>
                   <div className="flex items-center justify-between">
-                    <div className="text-3xl font-bold">{health.investors}</div>
+                    <div className="text-3xl font-bold">{health.documents}</div>
                     <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center">
-                      <Users className="w-6 h-6 text-blue-900" />
+                      <FileText className="w-6 h-6 text-blue-900" />
                     </div>
+                  </div>
+                  <div className="mt-2 text-sm text-gray-600">
+                    {health.documentStats?.INDEXED || 0} indexed
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-2 border-gray-200 bg-white hover:shadow-lg transition-all duration-200 rounded-3xl">
+                <CardHeader>
+                  <CardTitle className="text-lg uppercase tracking-wide">Compliance</CardTitle>
+                  <CardDescription className="text-xs uppercase tracking-wide">Overall score</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <div className="text-3xl font-bold">
+                      {(health.complianceStats?.score * 100 || 0).toFixed(0)}%
+                    </div>
+                    <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center">
+                      <Shield className="w-6 h-6 text-blue-900" />
+                    </div>
+                  </div>
+                  <div className="mt-2 text-sm text-gray-600">
+                    {health.complianceStats?.compliant || 0} compliant
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+            {/* Recent Documents */}
+            <Card className="border-2 border-gray-200 bg-white rounded-3xl">
+              <CardHeader>
+                <CardTitle className="text-xl uppercase tracking-wide">Recent Documents</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {health.recentDocuments && health.recentDocuments.length > 0 ? (
+                  <div className="space-y-3">
+                    {health.recentDocuments.map((doc) => (
+                      <div key={doc.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-2xl">
+                        <div className="flex-1">
+                          <p className="font-semibold text-black">{doc.title || doc.fileName}</p>
+                          {doc.client && (
+                            <p className="text-sm text-gray-600">{doc.client.name}</p>
+                          )}
+                          <p className="text-xs text-gray-500 mt-1">
+                            {new Date(doc.uploadedAt).toLocaleDateString('sv-SE')}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                            doc.status === 'INDEXED' ? 'bg-green-100 text-green-700' :
+                            doc.status === 'PROCESSING' ? 'bg-blue-100 text-blue-700' :
+                            'bg-gray-100 text-gray-700'
+                          }`}>
+                            {doc.status}
+                          </span>
+                          <Link href={`/admin/documents/${doc.id}`}>
+                            <Button variant="outline" size="sm" className="rounded-2xl">
+                              View
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-center py-8">No recent documents</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Charts */}
+            <div className="grid md:grid-cols-2 gap-6">
+              {health.documentStats && Object.keys(health.documentStats).length > 0 && (
+                <DocumentStatsChart documentStats={health.documentStats} />
+              )}
+              {health.complianceStats && health.complianceStats.total > 0 && (
+                <ComplianceScoreChart
+                  compliant={health.complianceStats.compliant}
+                  nonCompliant={health.complianceStats.nonCompliant}
+                  needsReview={health.complianceStats.needsReview}
+                />
+              )}
+            </div>
           </>
         )}
 

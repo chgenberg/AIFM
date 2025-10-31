@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { SessionProvider } from 'next-auth/react';
+import { ToastContainer } from '@/components/Toast';
 import './globals.css';
 import '@/styles/animations.css';
 
@@ -18,6 +19,7 @@ export default function RootLayout({
       <body>
         <SessionProvider>
           {children}
+          <ToastContainer />
         </SessionProvider>
       </body>
     </html>
