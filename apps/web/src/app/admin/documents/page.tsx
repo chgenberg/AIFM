@@ -294,10 +294,10 @@ export default function DocumentsPage() {
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `documents-export-${Date.now()}.${format === 'csv' ? 'csv' : 'txt'}`;
-      a.click();
+      const linkElement = window.document.createElement('a');
+      linkElement.href = url;
+      linkElement.download = `documents-export-${Date.now()}.${format === 'csv' ? 'csv' : 'txt'}`;
+      linkElement.click();
       successToast(`Exported ${selectedDocuments.size} document(s) as ${format.toUpperCase()}`);
     } catch (error) {
       console.error('Export error:', error);
@@ -305,6 +305,11 @@ export default function DocumentsPage() {
     } finally {
       setExporting(false);
     }
+  };
+
+  const handlePreview = (doc: Document) => {
+    setPreviewDocument(doc);
+    setShowPreview(true);
   };
 
   const getStatusColor = (status: string): string => {
