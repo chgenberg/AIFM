@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid export type' }, { status: 400 });
     }
 
-    return new NextResponse(wordBuffer, {
+    return new NextResponse(new Uint8Array(wordBuffer), {
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'Content-Disposition': `attachment; filename="${type}-${Date.now()}.docx"`,
@@ -108,7 +108,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid export type' }, { status: 400 });
     }
 
-    return new NextResponse(wordBuffer, {
+    return new NextResponse(new Uint8Array(wordBuffer), {
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'Content-Disposition': `attachment; filename="${type}-${Date.now()}.docx"`,
