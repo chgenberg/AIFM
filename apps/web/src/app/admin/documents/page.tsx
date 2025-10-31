@@ -21,6 +21,8 @@ interface Document {
   documentType?: string | null;
   category?: string | null;
   title?: string | null;
+  description?: string | null;
+  tags?: string[];
   client?: {
     id: string;
     name: string;
