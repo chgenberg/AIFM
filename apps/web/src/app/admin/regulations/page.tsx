@@ -382,8 +382,8 @@ export default function RegulationsPage() {
                   <CardContent>
                     {regulation.effectiveDate && (
                       <p className="text-xs text-gray-500">
-                        Effective: {new Date(regulation.effectiveDate).toLocaleDateString('sv-SE')}
-                        {regulation.updatedDate && ` | Updated: ${new Date(regulation.updatedDate).toLocaleDateString('sv-SE')}`}
+                        Effective: {new Date(regulation.effectiveDate).toLocaleDateString('en-US')}
+                        {regulation.updatedDate && ` | Updated: ${new Date(regulation.updatedDate).toLocaleDateString('en-US')}`}
                       </p>
                     )}
                   </CardContent>

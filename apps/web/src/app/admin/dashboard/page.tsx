@@ -380,7 +380,7 @@ export default function AdminDashboardPage() {
                             <p className="text-sm text-gray-600">{doc.client.name}</p>
                           )}
                           <p className="text-xs text-gray-500 mt-1">
-                            {new Date(doc.uploadedAt).toLocaleDateString('sv-SE')}
+                            {new Date(doc.uploadedAt).toLocaleDateString('en-US')}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">

@@ -62,7 +62,7 @@ export async function exportRAGResponseToPDF(
 
     // Footer
     doc.fontSize(8).text(
-      `Generated on ${new Date().toLocaleString('sv-SE')}`,
+      `Generated on ${new Date().toLocaleString('en-US')}`,
       { align: 'center' }
     );
 
@@ -137,7 +137,7 @@ export async function exportComplianceCheckToPDF(
 
     // Footer
     doc.fontSize(8).text(
-      `Generated on ${new Date().toLocaleString('sv-SE')}`,
+      `Generated on ${new Date().toLocaleString('en-US')}`,
       { align: 'center' }
     );
 
@@ -213,7 +213,7 @@ export async function exportGapAnalysisToPDF(
 
     // Footer
     doc.fontSize(8).text(
-      `Generated on ${new Date().toLocaleString('sv-SE')}`,
+      `Generated on ${new Date().toLocaleString('en-US')}`,
       { align: 'center' }
     );
 
@@ -252,7 +252,7 @@ export async function exportDocumentListToPDF(
       doc.fontSize(10).text(`   Type: ${docItem.documentType || 'N/A'}`, { indent: 20 });
       doc.fontSize(10).text(`   Category: ${docItem.category || 'N/A'}`, { indent: 20 });
       doc.fontSize(10).text(`   Status: ${docItem.status}`, { indent: 20 });
-      doc.fontSize(10).text(`   Uploaded: ${new Date(docItem.uploadedAt).toLocaleDateString('sv-SE')}`, { indent: 20 });
+      doc.fontSize(10).text(`   Uploaded: ${new Date(docItem.uploadedAt).toLocaleDateString('en-US')}`, { indent: 20 });
       doc.moveDown(0.5);
     });
 

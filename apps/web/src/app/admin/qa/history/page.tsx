@@ -179,7 +179,7 @@ export default function QAHistoryPage() {
                         )}
                       </div>
                       <span className="text-xs text-gray-500">
-                        {new Date(question.createdAt).toLocaleDateString('sv-SE')}
+                        {new Date(question.createdAt).toLocaleDateString('en-US')}
                       </span>
                     </div>
                   </CardHeader>

@@ -291,7 +291,7 @@ export default function QAPage() {
                           {item.question}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {item.timestamp.toLocaleTimeString('sv-SE')}
+                          {item.timestamp.toLocaleTimeString('en-US')}
                         </p>
                       </div>
                     ))}

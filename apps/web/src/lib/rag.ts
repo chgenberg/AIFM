@@ -77,7 +77,7 @@ Instructions:
 - If the documents don't contain enough information, say so
 - Cite specific documents when referencing information (e.g., "According to Document 1...")
 - Be concise and accurate
-- If documents are in Swedish, respond in Swedish; if in English, respond in English
+- Respond in English
 
 Answer:`;
 

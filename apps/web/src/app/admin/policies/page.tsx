@@ -408,8 +408,8 @@ export default function PoliciesPage() {
                   <CardContent>
                     {policy.effectiveDate && (
                       <p className="text-xs text-gray-500">
-                        Effective: {new Date(policy.effectiveDate).toLocaleDateString('sv-SE')}
-                        {policy.expiryDate && ` - Expires: ${new Date(policy.expiryDate).toLocaleDateString('sv-SE')}`}
+                        Effective: {new Date(policy.effectiveDate).toLocaleDateString('en-US')}
+                        {policy.expiryDate && ` - Expires: ${new Date(policy.expiryDate).toLocaleDateString('en-US')}`}
                       </p>
                     )}
                   </CardContent>

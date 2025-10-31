@@ -261,7 +261,7 @@ export default function DocumentDetailPage() {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-1">Uploaded</p>
-                    <p className="text-black">{new Date(document.uploadedAt).toLocaleDateString('sv-SE')}</p>
+                    <p className="text-black">{new Date(document.uploadedAt).toLocaleDateString('en-US')}</p>
                   </div>
                   {document.client && (
                     <div>
@@ -458,7 +458,7 @@ export default function DocumentDetailPage() {
                           <p className="text-sm text-gray-600">{q.answer}</p>
                         )}
                         <p className="text-xs text-gray-500 mt-2">
-                          {new Date(q.createdAt).toLocaleDateString('sv-SE')}
+                          {new Date(q.createdAt).toLocaleDateString('en-US')}
                         </p>
                       </div>
                     ))}

@@ -84,7 +84,7 @@ export async function exportRAGResponseToWord(
             : []),
 
           new Paragraph({
-            text: `Generated on ${new Date().toLocaleString('sv-SE')}`,
+            text: `Generated on ${new Date().toLocaleString('en-US')}`,
             alignment: AlignmentType.CENTER,
           }),
         ],
@@ -207,7 +207,7 @@ export async function exportComplianceCheckToWord(
           ]),
 
           new Paragraph({
-            text: `Generated on ${new Date().toLocaleString('sv-SE')}`,
+            text: `Generated on ${new Date().toLocaleString('en-US')}`,
             alignment: AlignmentType.CENTER,
           }),
         ],
@@ -340,7 +340,7 @@ export async function exportGapAnalysisToWord(analysis: GapAnalysisResult): Prom
             : []),
 
           new Paragraph({
-            text: `Generated on ${new Date().toLocaleString('sv-SE')}`,
+            text: `Generated on ${new Date().toLocaleString('en-US')}`,
             alignment: AlignmentType.CENTER,
           }),
         ],
