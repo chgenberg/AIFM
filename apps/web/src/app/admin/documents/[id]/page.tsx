@@ -6,7 +6,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
 import { Button } from '@/components/Button';
-import { FileText, Shield, Loader2, ArrowLeft, MessageSquare, Trash2, Edit, Archive } from 'lucide-react';
+import { FileText, Shield, Loader2, ArrowLeft, MessageSquare, Trash2, Archive } from 'lucide-react';
 import Link from 'next/link';
 import { errorToast, successToast } from '@/lib/toast';
 import { EditableField } from '@/components/EditableField';
