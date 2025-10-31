@@ -33,6 +33,7 @@ export function ComplianceBarChart({ data, title }: ComplianceChartProps) {
 }
 
 export function CompliancePieChart({ data, title }: ComplianceChartProps) {
+  const COLORS = ['#10b981', '#f59e0b', '#ef4444', '#6b7280'];
 
   return (
     <div className="bg-white rounded-3xl border-2 border-gray-200 p-6">
