@@ -252,7 +252,6 @@ function checkDate(document: any, _rule: PolicyRule): Omit<ComplianceCheckResult
   // Check if document has required dates
   const hasPublishDate = !!document.publishDate;
   const hasEffectiveDate = !!document.effectiveDate;
-  const hasExpiryDate = !!document.expiryDate;
 
   // Check if dates are valid
   const now = new Date();
