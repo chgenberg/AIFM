@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma';
  * Get a specific policy
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
