@@ -5,7 +5,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
 import { Button } from '@/components/Button';
-import { FileText, Plus, Edit, Trash2, X, Save, Loader2, ExternalLink } from 'lucide-react';
+import { FileText, Plus, Edit, Trash2, X, Save, ExternalLink } from 'lucide-react';
 import { successToast, errorToast } from '@/lib/toast';
 
 interface Regulation {
