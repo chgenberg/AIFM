@@ -118,7 +118,7 @@ export async function PUT(
  * Delete a policy (soft delete by setting isActive to false)
  */
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
