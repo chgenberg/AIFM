@@ -105,6 +105,25 @@ export default function DocumentDetailPage() {
     }
   };
 
+  const handleUpdate = async (updates: { title?: string; description?: string; category?: string }) => {
+    try {
+      const response = await fetch(`/api/documents/${documentId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      });
+
+      if (!response.ok) throw new Error('Failed to update document');
+
+      const data = await response.json();
+      setDocument(data.document);
+      successToast('Document updated successfully');
+    } catch (error) {
+      console.error('Failed to update document:', error);
+      errorToast('Failed to update document');
+    }
+  };
+
   const handleDelete = async (permanent: boolean = false) => {
     if (!confirm(`Are you sure you want to ${permanent ? 'permanently delete' : 'archive'} this document?`)) {
       return;
