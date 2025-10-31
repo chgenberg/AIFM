@@ -125,7 +125,6 @@ export default function DocumentDetailPage() {
       errorToast('Failed to delete document');
     } finally {
       setDeleting(false);
-      setShowDeleteModal(false);
     }
   };
 
