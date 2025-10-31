@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid export type' }, { status: 400 });
     }
 
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(pdfBuffer as Uint8Array, {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="${type}-${Date.now()}.pdf"`,
@@ -132,7 +132,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Invalid export type' }, { status: 400 });
     }
 
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(pdfBuffer as Uint8Array, {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="${type}-${Date.now()}.pdf"`,
