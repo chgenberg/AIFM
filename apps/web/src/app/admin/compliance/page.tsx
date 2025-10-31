@@ -5,7 +5,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
 import { Button } from '@/components/Button';
-import { Shield, AlertTriangle, CheckCircle2, XCircle, Download, RefreshCw, Loader2, Mail, BarChart3 } from 'lucide-react';
+import { Shield, CheckCircle2, XCircle, Download, RefreshCw, Loader2, Mail, BarChart3 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { errorToast, successToast } from '@/lib/toast';
 import Link from 'next/link';
