@@ -5,7 +5,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
 import { Button } from '@/components/Button';
-import { MessageSquare, Send, FileText, Loader2, Download } from 'lucide-react';
+import { Send, FileText, Loader2, Download } from 'lucide-react';
 import { errorToast, successToast } from '@/lib/toast';
 
 interface RAGResponse {
