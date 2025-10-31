@@ -7,7 +7,7 @@ import { auth } from '@/auth';
  * Serve uploaded files
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ key: string[] }> }
 ) {
   try {
