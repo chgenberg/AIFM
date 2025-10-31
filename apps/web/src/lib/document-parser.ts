@@ -8,7 +8,8 @@ async function loadPdfParse() {
   try {
     const pdfParseModule = await import('pdf-parse');
     // Handle both default and named exports
-    return pdfParseModule.default || pdfParseModule;
+    const pdfParse = (pdfParseModule as any).default || pdfParseModule;
+    return pdfParse;
   } catch (error) {
     throw new Error('pdf-parse module not available');
   }
