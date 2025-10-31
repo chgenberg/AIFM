@@ -156,7 +156,6 @@ async function checkRule(
   rule: PolicyRule
 ): Promise<Omit<ComplianceCheckResult, 'policyId' | 'policyName' | 'requirement'>> {
   const text = document.extractedText || '';
-  const metadata = document.extractedMetadata || {};
 
   switch (rule.checkType) {
     case 'text_match':
