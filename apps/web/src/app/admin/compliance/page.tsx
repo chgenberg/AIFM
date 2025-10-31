@@ -196,14 +196,14 @@ function ComplianceDashboardContent() {
     if (!selectedDocumentId || !complianceStatus) return;
 
     try {
-      const document = documents.find(d => d.id === selectedDocumentId);
+      const doc = documents.find(d => d.id === selectedDocumentId);
       const response = await fetch('/api/export/pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'compliance',
           data: {
-            documentName: document?.fileName || 'Unknown',
+            documentName: doc?.fileName || 'Unknown',
             checks: complianceStatus.checks,
           },
         }),
@@ -213,10 +213,10 @@ function ComplianceDashboardContent() {
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `compliance-report-${Date.now()}.pdf`;
-      a.click();
+      const linkElement = window.document.createElement('a');
+      linkElement.href = url;
+      linkElement.download = `compliance-report-${Date.now()}.pdf`;
+      linkElement.click();
       successToast('Compliance report exported successfully');
     } catch (error) {
       console.error('Export error:', error);
