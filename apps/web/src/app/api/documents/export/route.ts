@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { documentIds, format, includeMetadata } = await request.json();
+    const { documentIds, format } = await request.json();
 
     if (!documentIds || !Array.isArray(documentIds) || documentIds.length === 0) {
       return NextResponse.json(
