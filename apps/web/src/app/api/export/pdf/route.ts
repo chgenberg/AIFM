@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { exportRAGResponseToPDF, exportComplianceCheckToPDF, exportGapAnalysisToPDF, exportDocumentListToPDF } from '@/lib/pdf-export';
-import { generateRAGResponse } from '@/lib/rag';
 import { checkAllPolicies } from '@/lib/compliance-engine';
 import { performGapAnalysis } from '@/lib/gap-analysis';
 import { prisma } from '@/lib/prisma';
