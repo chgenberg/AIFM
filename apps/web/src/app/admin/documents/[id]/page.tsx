@@ -59,7 +59,6 @@ export default function DocumentDetailPage() {
   const [loading, setLoading] = useState(true);
   const [checking, setChecking] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     if (documentId) {
