@@ -8,7 +8,7 @@ import { auth } from '@/auth';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ key: string }> }
+  { params }: { params: Promise<{ key: string[] }> }
 ) {
   try {
     // Check authentication
@@ -18,7 +18,7 @@ export async function GET(
     }
 
     const { key } = await params;
-    const decodedKey = decodeURIComponent(key);
+    const decodedKey = decodeURIComponent(key.join('/'));
 
     // Get file from storage
     const storage = getStorage();

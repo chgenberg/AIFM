@@ -3,7 +3,16 @@
  * Extracts text and metadata from various document formats
  */
 
-import pdfParse from 'pdf-parse';
+// Dynamic import for pdf-parse to handle different module formats
+async function loadPdfParse() {
+  try {
+    const pdfParseModule = await import('pdf-parse');
+    // Handle both default and named exports
+    return pdfParseModule.default || pdfParseModule;
+  } catch (error) {
+    throw new Error('pdf-parse module not available');
+  }
+}
 
 export interface ParsedDocument {
   text: string;
@@ -24,6 +33,7 @@ export interface ParsedDocument {
  */
 export async function parsePDF(buffer: Buffer): Promise<ParsedDocument> {
   try {
+    const pdfParse = await loadPdfParse();
     const data = await pdfParse(buffer);
 
     return {
