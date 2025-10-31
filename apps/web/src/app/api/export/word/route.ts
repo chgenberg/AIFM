@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { exportRAGResponseToWord, exportComplianceCheckToWord, exportGapAnalysisToWord } from '@/lib/word-export';
-import { generateRAGResponse } from '@/lib/rag';
 import { checkAllPolicies } from '@/lib/compliance-engine';
 import { performGapAnalysis } from '@/lib/gap-analysis';
 import { prisma } from '@/lib/prisma';
