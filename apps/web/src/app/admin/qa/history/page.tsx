@@ -5,7 +5,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
 import { Button } from '@/components/Button';
-import { MessageSquare, FileText, Search, Loader2, ExternalLink } from 'lucide-react';
+import { MessageSquare, FileText, Search, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 
 interface Question {
