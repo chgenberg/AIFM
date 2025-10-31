@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma';
  * Get a specific regulation
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -109,7 +109,7 @@ export async function PUT(
  * Delete a regulation (soft delete by setting isActive to false)
  */
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
