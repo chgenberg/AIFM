@@ -5,7 +5,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
 import { Button } from '@/components/Button';
-import { Shield, Plus, Edit, Trash2, X, Save, Loader2 } from 'lucide-react';
+import { Shield, Plus, Edit, Trash2, X, Save } from 'lucide-react';
 import { successToast, errorToast } from '@/lib/toast';
 
 interface Policy {
