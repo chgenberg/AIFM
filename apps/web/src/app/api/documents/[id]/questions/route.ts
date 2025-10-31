@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma';
  * Get all questions asked about a specific document
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
