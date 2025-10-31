@@ -33,7 +33,6 @@ export default function DocumentsPage() {
   const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(new Set());
   const [previewDocument, setPreviewDocument] = useState<Document | null>(null);
   const [showPreview, setShowPreview] = useState(false);
-  const [bulkAction, setBulkAction] = useState<'archive' | 'delete' | null>(null);
   const [exporting, setExporting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
