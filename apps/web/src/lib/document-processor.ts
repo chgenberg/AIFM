@@ -89,7 +89,7 @@ export async function processDocument(documentId: string): Promise<ProcessDocume
     await prisma.auditLog.create({
       data: {
         actorId: document.uploadedBy,
-        actorRole: 'SYSTEM',
+        actorRole: null,
         action: 'UPDATE',
         refType: 'Document',
         refId: documentId,
