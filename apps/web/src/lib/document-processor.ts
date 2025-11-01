@@ -96,7 +96,7 @@ export async function processDocument(documentId: string): Promise<ProcessDocume
         diffJson: {
           status: 'PROCESSING -> INDEXED',
           extractedTextLength: parsed.text.length,
-          classification,
+          classification: classification as any,
         },
       },
     });
