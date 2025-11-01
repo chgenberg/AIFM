@@ -72,7 +72,7 @@ export async function parseText(buffer: Buffer): Promise<ParsedDocument> {
 /**
  * Parse image (placeholder - OCR would go here)
  */
-export async function parseImage(buffer: Buffer, mimeType: string): Promise<ParsedDocument> {
+export async function parseImage(_buffer: Buffer, _mimeType: string): Promise<ParsedDocument> {
   // TODO: Implement OCR with Tesseract.js
   // For now, return empty text
   return {
@@ -86,7 +86,7 @@ export async function parseImage(buffer: Buffer, mimeType: string): Promise<Pars
 /**
  * Parse Word document (placeholder)
  */
-export async function parseWord(buffer: Buffer): Promise<ParsedDocument> {
+export async function parseWord(_buffer: Buffer): Promise<ParsedDocument> {
   // TODO: Implement Word parsing with mammoth or docx library
   // For now, return empty
   return {
