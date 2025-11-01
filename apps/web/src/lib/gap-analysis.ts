@@ -4,7 +4,7 @@
  */
 
 import { prisma } from '@/lib/prisma';
-import { getDocumentComplianceStatus, checkAllPolicies } from './compliance-engine';
+import { getDocumentComplianceStatus } from './compliance-engine';
 
 export interface Gap {
   id: string;
