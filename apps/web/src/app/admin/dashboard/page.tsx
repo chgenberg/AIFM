@@ -9,7 +9,6 @@ import {
   Shield, TrendingDown, FolderOpen, Database
 } from 'lucide-react';
 import Link from 'next/link';
-import { DocumentStatsChart, ComplianceScoreChart } from '@/components/Charts';
 
 interface HealthData {
   clients: number;
