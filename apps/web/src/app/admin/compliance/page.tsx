@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
+import { Card, CardContent, CardTitle } from '@/components/Card';
 import { Button } from '@/components/Button';
 import { 
   Shield, RefreshCw, Download, Mail, BarChart3, 
