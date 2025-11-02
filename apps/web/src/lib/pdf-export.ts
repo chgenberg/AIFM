@@ -76,7 +76,7 @@ export async function exportRAGResponseToPDF(
 export async function exportComplianceCheckToPDF(
   documentName: string,
   checks: ComplianceCheckResult[],
-  outputPath?: string
+  _outputPath?: string
 ): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
@@ -150,7 +150,7 @@ export async function exportComplianceCheckToPDF(
  */
 export async function exportGapAnalysisToPDF(
   analysis: GapAnalysisResult,
-  outputPath?: string
+  _outputPath?: string
 ): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
