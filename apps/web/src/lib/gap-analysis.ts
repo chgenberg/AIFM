@@ -285,7 +285,7 @@ export async function createTasksForGaps(gaps: Gap[], assignedTo?: string): Prom
         data: {
           clientId,
           kind: 'QC_CHECK',
-          description: `${gap.title}\n\n${gap.description}${gap.recommendation ? `\n\nRecommendation: ${gap.recommendation}` : ''}`,
+          comment: `${gap.title}\n\n${gap.description}${gap.recommendation ? `\n\nRecommendation: ${gap.recommendation}` : ''}`,
           status: 'NEEDS_REVIEW',
           payload: {
             gapId: gap.id,
@@ -293,6 +293,9 @@ export async function createTasksForGaps(gaps: Gap[], assignedTo?: string): Prom
             severity: gap.severity,
             documentId: gap.documentId,
             policyId: gap.policyId,
+            title: gap.title,
+            description: gap.description,
+            recommendation: gap.recommendation,
           },
           assigneeId: assignedTo,
         },
