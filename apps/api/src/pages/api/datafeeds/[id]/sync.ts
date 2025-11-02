@@ -1,18 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient } from '@prisma/client';
+import { enqueueETLJob } from '../../../../lib/queue-client';
 
 const prisma = new PrismaClient();
 
-// TODO: Import enqueueETLJob from queue utils
-// For now, we'll stub it
-async function enqueueETLJob(payload: any) {
-  console.log('ETL Job enqueued:', payload);
-  // In production, this would call:
-  // return etlQueue.add('sync', payload, { ... })
-  return { jobId: 'mock-' + Date.now() };
-}
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // TODO: Get actual user from session/auth
   const userId = 'demo-admin';
 
   if (!userId) {
@@ -35,15 +28,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(404).json({ error: 'Data feed not found' });
     }
 
-    // Enqueue ETL job
+    // Calculate period (default: last 30 days)
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 30);
+
+    // Enqueue ETL job using shared function
     const job = await enqueueETLJob({
       clientId: feed.clientId,
-      source: feed.source,
+      source: feed.source as 'FORTNOX' | 'BANK',
       period: {
-        start: new Date(new Date().setDate(1)), // First day of current month
-        end: new Date(),
+        start: startDate.toISOString(),
+        end: endDate.toISOString(),
       },
-      configJson: feed.configJson,
+      configJson: feed.configJson as any,
     });
 
     // Log to audit
@@ -53,7 +51,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         action: 'SYNC',
         refType: 'DataFeed',
         refId: feed.id,
-        diffJson: { jobId: job.jobId },
+        diffJson: { jobId: job.id || 'unknown' },
+      },
+    });
+
+    // Update feed status
+    await prisma.dataFeed.update({
+      where: { id: feed.id },
+      data: {
+        status: 'SYNCING',
+        lastSyncAt: new Date(),
       },
     });
 
@@ -61,12 +68,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       success: true,
       data: {
         feedId: feed.id,
-        jobId: job.jobId,
+        jobId: job.id,
         status: 'queued',
+        message: 'Sync job queued successfully',
       },
     });
   } catch (error: any) {
     console.error('Sync error:', error);
-    return res.status(500).json({ error: error.message });
+    
+    // Update feed status to error
+    if (req.query.id) {
+      await prisma.dataFeed.update({
+        where: { id: req.query.id as string },
+        data: {
+          status: 'ERROR',
+          lastError: error.message,
+        },
+      });
+    }
+    
+    return res.status(500).json({ 
+      error: error.message || 'Failed to queue sync job',
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+    });
   }
 }
