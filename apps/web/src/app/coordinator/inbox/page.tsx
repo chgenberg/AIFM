@@ -1,55 +1,75 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/Button';
-import { Card, CardContent } from '@/components/Card';
-import { Modal } from '@/components/Modal';
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { Header } from '@/components/Header';
-import { exportTasksToCSV } from '@/lib/export';
-import { successToast, errorToast } from '@/lib/toast';
-import { formatDate } from '@/lib/utils';
-import { Check, X, Download, AlertCircle, CheckCircle2, Clock, TrendingUp, FileText, Shield, AlertTriangle } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
+import { Button } from '@/components/Button';
+import { Badge } from '@/components/Badge';
+import { 
+  FileText, Clock, CheckCircle2, XCircle, AlertCircle, 
+  Calendar, Filter, Search, ChevronRight, Briefcase,
+  Building2, TrendingUp, Zap, Archive
+} from 'lucide-react';
+import Link from 'next/link';
+import { errorToast, successToast } from '@/lib/toast';
 
 interface Task {
   id: string;
-  kind: string;
+  type: string;
   status: string;
+  dueDate: string | null;
+  client: {
+    id: string;
+    name: string;
+  };
+  assignedTo?: {
+    id: string;
+    email: string;
+  };
+  report?: {
+    id: string;
+    type: string;
+    periodStart: string;
+    periodEnd: string;
+  };
+  comment?: string;
+  priority?: string;
   createdAt: string;
-  client?: { name: string };
-  flags?: Array<{ id: string; severity: string; message: string }>;
-  payload?: any;
+  updatedAt: string;
 }
 
-type TaskFilter = 'ALL' | 'BANK_RECON' | 'KYC_REVIEW' | 'REPORT_DRAFT';
-
-const TASK_KINDS = {
-  ALL: { label: 'All Tasks', icon: Clock, color: 'gray' },
-  BANK_RECON: { label: 'Bank Reconciliation', icon: TrendingUp, color: 'blue' },
-  KYC_REVIEW: { label: 'KYC Review', icon: Shield, color: 'purple' },
-  REPORT_DRAFT: { label: 'Report Draft', icon: FileText, color: 'green' },
-};
+type TaskTab = 'ALL' | 'PENDING' | 'IN_PROGRESS' | 'NEEDS_REVIEW' | 'COMPLETED';
+type TaskFilter = 'all' | 'my-tasks' | 'unassigned';
 
 export default function CoordinatorInboxPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<TaskFilter>('ALL');
-  const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; taskId: string | null }>({
-    isOpen: false,
-    taskId: null,
-  });
-  const [approving, setApproving] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterTab, setFilterTab] = useState<TaskTab>('ALL');
+  const [taskFilter, setTaskFilter] = useState<TaskFilter>('all');
 
   useEffect(() => {
+    if (status === 'loading') return;
+    if (!session) {
+      router.push('/sign-in');
+      return;
+    }
+    if ((session.user as any)?.role !== 'COORDINATOR') {
+      router.push('/dashboard');
+      return;
+    }
     loadTasks();
-  }, []);
+  }, [session, status]);
 
   const loadTasks = async () => {
     try {
       setLoading(true);
       const response = await fetch('/api/tasks');
-      if (!response.ok) {
-        throw new Error('Failed to load tasks');
-      }
+      if (!response.ok) throw new Error('Failed to load tasks');
       const data = await response.json();
       setTasks(data);
     } catch (error) {
@@ -60,318 +80,336 @@ export default function CoordinatorInboxPage() {
     }
   };
 
-  const handleApprove = async () => {
-    if (!confirmModal.taskId) return;
+  const handleAssignTask = async (taskId: string, userId: string | null) => {
     try {
-      setApproving(true);
-      const response = await fetch(`/api/tasks/${confirmModal.taskId}/approve`, {
+      const response = await fetch(`/api/tasks/${taskId}/assign`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'approve' }),
+        body: JSON.stringify({ userId }),
       });
       
-      if (!response.ok) {
-        throw new Error('Failed to approve task');
-      }
-
-      setTasks((prev) => prev.filter((t) => t.id !== confirmModal.taskId));
-      setConfirmModal({ isOpen: false, taskId: null });
-      successToast('Task approved successfully');
+      if (!response.ok) throw new Error('Failed to assign task');
+      
+      successToast('Task assigned successfully');
+      loadTasks();
     } catch (error) {
-      console.error('Approve failed:', error);
-      errorToast('Failed to approve task');
-    } finally {
-      setApproving(false);
+      console.error('Failed to assign task:', error);
+      errorToast('Failed to assign task');
     }
   };
 
-  const handleExport = () => {
+  const handleUpdateStatus = async (taskId: string, status: string) => {
     try {
-      exportTasksToCSV(tasks);
-      successToast('Tasks exported to CSV');
+      const response = await fetch(`/api/tasks/${taskId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+      
+      if (!response.ok) throw new Error('Failed to update task status');
+      
+      successToast('Task status updated');
+      loadTasks();
     } catch (error) {
-      console.error('Export failed:', error);
-      errorToast('Failed to export tasks');
+      console.error('Failed to update task status:', error);
+      errorToast('Failed to update task status');
     }
   };
 
-  const filteredTasks = activeTab === 'ALL' 
-    ? tasks 
-    : tasks.filter(t => t.kind === activeTab);
+  const getTaskIcon = (type: string) => {
+    switch (type) {
+      case 'REVIEW_REPORT':
+        return <FileText className="w-5 h-5" />;
+      case 'RECONCILE_BANK':
+        return <Building2 className="w-5 h-5" />;
+      case 'REVIEW_KYC':
+        return <Briefcase className="w-5 h-5" />;
+      case 'ANALYZE_PERFORMANCE':
+        return <TrendingUp className="w-5 h-5" />;
+      default:
+        return <Zap className="w-5 h-5" />;
+    }
+  };
 
-  const errorCount = filteredTasks.reduce((sum, t) => sum + (t.flags?.filter(f => f.severity === 'error').length || 0), 0);
-  const warningCount = filteredTasks.reduce((sum, t) => sum + (t.flags?.filter(f => f.severity === 'warning').length || 0), 0);
-  const readyCount = filteredTasks.filter(t => !t.flags || t.flags.length === 0).length;
+  const getStatusBadgeClass = (status: string) => {
+    switch (status) {
+      case 'PENDING':
+        return 'bg-gray-100 text-gray-700';
+      case 'IN_PROGRESS':
+        return 'bg-blue-100 text-blue-700';
+      case 'NEEDS_REVIEW':
+        return 'bg-yellow-100 text-yellow-700';
+      case 'COMPLETED':
+        return 'bg-green-100 text-green-700';
+      case 'REJECTED':
+        return 'bg-red-100 text-red-700';
+      default:
+        return 'bg-gray-100 text-gray-700';
+    }
+  };
+
+  const getPriorityBadgeClass = (priority?: string) => {
+    switch (priority) {
+      case 'HIGH':
+        return 'bg-red-50 text-red-700 border-red-200';
+      case 'MEDIUM':
+        return 'bg-yellow-50 text-yellow-700 border-yellow-200';
+      case 'LOW':
+        return 'bg-green-50 text-green-700 border-green-200';
+      default:
+        return 'bg-gray-50 text-gray-700 border-gray-200';
+    }
+  };
+
+  const filteredTasks = tasks.filter(task => {
+    // Filter by tab
+    if (filterTab !== 'ALL' && task.status !== filterTab) return false;
+    
+    // Filter by assignment
+    if (taskFilter === 'my-tasks' && task.assignedTo?.id !== (session?.user as any)?.id) return false;
+    if (taskFilter === 'unassigned' && task.assignedTo) return false;
+    
+    // Filter by search
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      return (
+        task.client.name.toLowerCase().includes(query) ||
+        task.type.toLowerCase().includes(query) ||
+        task.comment?.toLowerCase().includes(query)
+      );
+    }
+    
+    return true;
+  });
+
+  const taskCounts = {
+    ALL: tasks.length,
+    PENDING: tasks.filter(t => t.status === 'PENDING').length,
+    IN_PROGRESS: tasks.filter(t => t.status === 'IN_PROGRESS').length,
+    NEEDS_REVIEW: tasks.filter(t => t.status === 'NEEDS_REVIEW').length,
+    COMPLETED: tasks.filter(t => t.status === 'COMPLETED').length,
+  };
+
+  if (status === 'loading' || loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="flex items-center justify-center">
+            <div className="animate-pulse text-gray-500">Loading tasks...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <div className="page-container py-8">
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-black mb-2 tracking-tight">QUALITY CONTROL INBOX</h1>
-          <p className="text-gray-600 text-sm uppercase tracking-wide">Review and approve pending quality checks</p>
+          <h1 className="text-3xl font-bold text-gray-900">TASK COORDINATION</h1>
+          <p className="text-sm text-gray-600 uppercase tracking-wide mt-1">
+            Manage and assign tasks across specialists
+          </p>
         </div>
 
-        {/* Tabs */}
-        <div className="mb-8 border-b border-gray-200">
-          <div className="flex gap-1 overflow-x-auto">
-            {(Object.keys(TASK_KINDS) as TaskFilter[]).map((key) => {
-              const config = TASK_KINDS[key];
-              const Icon = config.icon;
-              const count = key === 'ALL' ? tasks.length : tasks.filter(t => t.kind === key).length;
-              const isActive = activeTab === key;
-              
-              return (
-                <button
-                  key={key}
-                  onClick={() => setActiveTab(key)}
-                  className={`
-                    flex items-center gap-2 px-6 py-3 text-sm font-semibold uppercase tracking-wide
-                    border-b-2 transition-all duration-200 whitespace-nowrap
-                    ${isActive 
-                      ? 'border-black text-black bg-white' 
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }
-                  `}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span>{config.label}</span>
-                  {count > 0 && (
-                    <span className={`
-                      px-2 py-0.5 rounded-full text-xs font-bold
-                      ${isActive ? 'bg-black text-white' : 'bg-gray-200 text-gray-600'}
-                    `}>
-                      {count}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
+        {/* Summary Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <Card className="bg-white border border-gray-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-xs font-medium text-gray-600 uppercase tracking-wide">
+                  Total Tasks
+                </h4>
+                <FileText className="w-4 h-4 text-gray-400" />
+              </div>
+              <p className="text-2xl font-bold text-gray-900">{tasks.length}</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white border border-gray-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-xs font-medium text-gray-600 uppercase tracking-wide">
+                  Needs Review
+                </h4>
+                <AlertCircle className="w-4 h-4 text-yellow-600" />
+              </div>
+              <p className="text-2xl font-bold text-yellow-600">
+                {taskCounts.NEEDS_REVIEW}
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white border border-gray-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-xs font-medium text-gray-600 uppercase tracking-wide">
+                  In Progress
+                </h4>
+                <Clock className="w-4 h-4 text-blue-600" />
+              </div>
+              <p className="text-2xl font-bold text-blue-600">
+                {taskCounts.IN_PROGRESS}
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white border border-gray-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-xs font-medium text-gray-600 uppercase tracking-wide">
+                  Completed
+                </h4>
+                <CheckCircle2 className="w-4 h-4 text-green-600" />
+              </div>
+              <p className="text-2xl font-bold text-green-600">
+                {taskCounts.COMPLETED}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Filters and Search */}
+        <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+          <div className="flex items-center gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search tasks..."
+                className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400"
+              />
+            </div>
+            <select
+              value={taskFilter}
+              onChange={(e) => setTaskFilter(e.target.value as TaskFilter)}
+              className="px-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400"
+            >
+              <option value="all">All Tasks</option>
+              <option value="my-tasks">My Tasks</option>
+              <option value="unassigned">Unassigned</option>
+            </select>
           </div>
         </div>
 
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card className="border-2 border-gray-200 bg-white hover:border-gray-300 transition-all duration-200 hover:shadow-lg rounded-3xl">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold">Total Tasks</p>
-                  <p className="text-3xl font-bold text-black mt-2">{filteredTasks.length}</p>
-                </div>
-                <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center">
-                  <Clock className="w-6 h-6 text-gray-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-2 border-gray-200 bg-white hover:border-red-300 transition-all duration-200 hover:shadow-lg rounded-3xl">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold">Errors</p>
-                  <p className="text-3xl font-bold text-red-600 mt-2">{errorCount}</p>
-                </div>
-                <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center">
-                  <AlertCircle className="w-6 h-6 text-red-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-2 border-gray-200 bg-white hover:border-orange-300 transition-all duration-200 hover:shadow-lg rounded-3xl">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold">Warnings</p>
-                  <p className="text-3xl font-bold text-orange-600 mt-2">{warningCount}</p>
-                </div>
-                <div className="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center">
-                  <AlertCircle className="w-6 h-6 text-orange-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-2 border-gray-200 bg-white hover:border-green-300 transition-all duration-200 hover:shadow-lg rounded-3xl">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold">Ready</p>
-                  <p className="text-3xl font-bold text-green-600 mt-2">{readyCount}</p>
-                </div>
-                <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center">
-                  <CheckCircle2 className="w-6 h-6 text-green-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Action Bar */}
-        <div className="mb-6 flex items-center justify-between">
-        <div className="text-sm text-gray-600 uppercase tracking-wide">
-          {filteredTasks.length} pending task{filteredTasks.length !== 1 ? 's' : ''}
-        </div>
-        <Button onClick={handleExport} variant="outline" className="gap-2 border-2 border-gray-300 hover:border-gray-400 rounded-2xl uppercase tracking-wide">
-          <Download className="w-4 h-4" />
-          Export CSV
-        </Button>
-      </div>
-
-      {/* Tasks List */}
-      {loading ? (
-        <div className="text-center py-16">
-          <div className="animate-pulse text-gray-500 uppercase tracking-wide">Loading tasks...</div>
-        </div>
-      ) : filteredTasks.length === 0 ? (
-        <Card className="border-2 border-dashed border-gray-300 bg-white rounded-3xl">
-          <CardContent className="text-center py-20">
-            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle2 className="w-10 h-10 text-green-600" />
-            </div>
-            <p className="text-xl font-bold text-black uppercase tracking-wide mb-2">All Done</p>
-            <p className="text-gray-600 text-sm uppercase tracking-wide">No pending QC tasks. Great work!</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-4">
-          {filteredTasks.map((task) => {
-            const taskConfig = TASK_KINDS[task.kind as keyof typeof TASK_KINDS] || TASK_KINDS.ALL;
-            const TaskIcon = taskConfig.icon;
-            
-            return (
-              <Card 
-                key={task.id} 
-                className="border-2 border-gray-200 bg-white overflow-hidden hover:shadow-xl hover:border-gray-300 transition-all duration-300 rounded-3xl group"
-              >
-                <div className="flex">
-                  {/* Left border indicator */}
-                  <div className={`
-                    w-2 transition-all duration-300
-                    ${task.flags?.some(f => f.severity === 'error') 
-                      ? 'bg-red-600' 
-                      : task.flags?.length 
-                        ? 'bg-orange-600' 
-                        : 'bg-green-600'
+        {/* Task Tabs */}
+        <div className="bg-white rounded-lg border border-gray-200 mb-6">
+          <div className="border-b border-gray-200">
+            <nav className="flex -mb-px">
+              {(['ALL', 'PENDING', 'IN_PROGRESS', 'NEEDS_REVIEW', 'COMPLETED'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setFilterTab(tab)}
+                  className={`
+                    px-6 py-3 text-sm font-medium uppercase tracking-wide border-b-2 transition-colors
+                    ${filterTab === tab
+                      ? 'text-gray-900 border-gray-900'
+                      : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300'
                     }
-                  `} />
-                  
-                  <div className="flex-1 p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-start gap-4 flex-1">
-                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 bg-blue-50">
-                          <TaskIcon className="w-6 h-6 text-blue-900" />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-lg font-bold text-black flex items-center gap-3 mb-1">
-                            {task.kind.replace(/_/g, ' ')}
-                            {task.client && (
-                              <span className="text-xs font-normal text-gray-500">• {task.client.name}</span>
-                            )}
+                  `}
+                >
+                  <div className="flex items-center gap-2">
+                    <span>{tab.replace('_', ' ')}</span>
+                    <span className={`
+                      px-2 py-0.5 text-xs font-semibold rounded-full
+                      ${filterTab === tab ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'}
+                    `}>
+                      {taskCounts[tab]}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+
+        {/* Task List */}
+        {filteredTasks.length === 0 ? (
+          <div className="bg-white rounded-lg border border-gray-200 p-8">
+            <div className="text-center">
+              <Archive className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500">No tasks found</p>
+            </div>
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div className="divide-y divide-gray-200">
+              {filteredTasks.map((task) => (
+                <div key={task.id} className="p-4 hover:bg-gray-50 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4 flex-1">
+                      <div className="p-2 bg-gray-100 rounded-lg">
+                        {getTaskIcon(task.type)}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="text-sm font-medium text-gray-900">
+                            {task.type.replace(/_/g, ' ')}
                           </h3>
-                          <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">
-                            Created {formatDate(task.createdAt)}
-                          </p>
-                          <div className="flex items-center gap-2">
+                          {task.priority && (
                             <span className={`
-                              flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide px-3 py-1 rounded-full
-                              ${task.flags?.some(f => f.severity === 'error') 
-                                ? 'bg-red-100 text-red-700' 
-                                : task.flags?.length 
-                                  ? 'bg-orange-100 text-orange-700' 
-                                  : 'bg-green-100 text-green-700'
-                              }
+                              px-2 py-0.5 text-xs font-medium rounded border
+                              ${getPriorityBadgeClass(task.priority)}
                             `}>
-                              {task.flags?.some(f => f.severity === 'error') ? (
-                                <>
-                                  <AlertTriangle className="w-3 h-3 text-red-600" />
-                                  Review
-                                </>
-                              ) : task.flags?.length ? (
-                                <>
-                                  <AlertCircle className="w-3 h-3 text-orange-600" />
-                                  Warnings
-                                </>
-                              ) : (
-                                <>
-                                  <CheckCircle2 className="w-3 h-3 text-green-600" />
-                                  Ready
-                                </>
-                              )}
+                              {task.priority}
                             </span>
-                          </div>
+                          )}
                         </div>
+                        <div className="flex items-center gap-4 text-xs text-gray-600">
+                          <span className="flex items-center gap-1">
+                            <Building2 className="w-3 h-3" />
+                            {task.client.name}
+                          </span>
+                          {task.dueDate && (
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-3 h-3" />
+                              {new Date(task.dueDate).toLocaleDateString('en-US')}
+                            </span>
+                          )}
+                          {task.assignedTo && (
+                            <span className="flex items-center gap-1">
+                              Assigned to: {task.assignedTo.email}
+                            </span>
+                          )}
+                        </div>
+                        {task.comment && (
+                          <p className="text-xs text-gray-500 mt-1">
+                            {task.comment}
+                          </p>
+                        )}
                       </div>
                     </div>
-
-                    {/* Flags */}
-                    {task.flags && task.flags.length > 0 && (
-                      <div className="mb-4 space-y-2">
-                        {task.flags.map((flag) => (
-                          <div
-                            key={flag.id}
-                            className={`
-                              flex items-start gap-3 p-4 rounded-2xl text-sm border-2 transition-all duration-200
-                              ${flag.severity === 'error'
-                                ? 'bg-red-50 border-red-200 text-red-900'
-                                : 'bg-orange-50 border-orange-200 text-orange-900'
-                              }
-                            `}
-                          >
-                            <div className="mt-0.5">
-                              <AlertCircle className={`w-5 h-5 ${flag.severity === 'error' ? 'text-red-600' : 'text-orange-600'}`} />
-                            </div>
-                            <div className="flex-1">
-                              <p className="font-bold text-xs uppercase tracking-wide">{flag.severity}</p>
-                              <p className="text-xs mt-1">{flag.message}</p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Actions */}
-                    <div className="flex gap-3 pt-2">
+                    <div className="flex items-center gap-2">
+                      <span className={`
+                        px-2 py-1 text-xs font-medium rounded
+                        ${getStatusBadgeClass(task.status)}
+                      `}>
+                        {task.status.replace('_', ' ')}
+                      </span>
+                      {task.report && (
+                        <Link href={`/specialist/${task.report.id}/edit`}>
+                          <Button variant="outline" size="sm" className="text-xs">
+                            VIEW REPORT
+                          </Button>
+                        </Link>
+                      )}
                       <Button
-                        size="sm"
-                        className="gap-2 bg-black text-white hover:bg-gray-900 rounded-2xl uppercase tracking-wide font-semibold transition-all duration-200 hover:scale-105"
-                        onClick={() => setConfirmModal({ isOpen: true, taskId: task.id })}
-                      >
-                        <Check className="w-4 h-4" />
-                        Approve
-                      </Button>
-                      <Button
-                        size="sm"
                         variant="outline"
-                        className="gap-2 border-2 border-gray-300 hover:border-gray-400 rounded-2xl uppercase tracking-wide font-semibold transition-all duration-200 hover:scale-105"
-                        onClick={() => setConfirmModal({ isOpen: true, taskId: task.id })}
+                        size="sm"
+                        className="p-2"
                       >
-                        <X className="w-4 h-4" />
-                        Reject
+                        <ChevronRight className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
                 </div>
-              </Card>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Confirmation Modal */}
-      <Modal
-        isOpen={confirmModal.isOpen}
-        title="Confirm Action"
-        onConfirm={handleApprove}
-        onCancel={() => setConfirmModal({ isOpen: false, taskId: null })}
-        confirmText="Approve"
-        isLoading={approving}
-      >
-        <p className="text-gray-700">Are you sure you want to approve this task?</p>
-        </Modal>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

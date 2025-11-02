@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
 import { Button } from '@/components/Button';
-import { Send, FileText, Loader2, Download } from 'lucide-react';
+import { Send, FileText, Loader2, Download, MessageSquare, Clock, Search } from 'lucide-react';
 import { errorToast, successToast } from '@/lib/toast';
 
 interface RAGResponse {
@@ -19,50 +18,101 @@ interface RAGResponse {
   citations: string[];
 }
 
+interface Document {
+  id: string;
+  fileName: string;
+  title?: string;
+}
+
+interface Question {
+  id: string;
+  question: string;
+  answer: string;
+  sources: any[];
+  citations: string[];
+  askedAt: Date;
+}
+
 export default function QAPage() {
   const [question, setQuestion] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [selectedDocumentIds, setSelectedDocumentIds] = useState<string[]>([]);
+  const [documents, setDocuments] = useState<Document[]>([]);
   const [response, setResponse] = useState<RAGResponse | null>(null);
-  const [history, setHistory] = useState<Array<{ question: string; response: RAGResponse; timestamp: Date }>>([]);
+  const [recentQuestions, setRecentQuestions] = useState<Question[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [loadingDocs, setLoadingDocs] = useState(true);
 
-  // Get documentId from URL params if present
   useEffect(() => {
+    loadDocuments();
+    loadRecentQuestions();
+    
+    // Check for documentId in URL
     const params = new URLSearchParams(window.location.search);
-    const documentId = params.get('documentId');
-    if (documentId) {
-      // Could pre-fill question or filter to specific document
+    const docId = params.get('documentId');
+    if (docId) {
+      setSelectedDocumentIds([docId]);
     }
   }, []);
 
-  const handleAsk = async () => {
-    if (!question.trim()) return;
-
-    setLoading(true);
+  const loadDocuments = async () => {
     try {
-      const params = new URLSearchParams(window.location.search);
-      const documentId = params.get('documentId');
-      
-      const res = await fetch('/api/documents/ask', {
+      setLoadingDocs(true);
+      const response = await fetch('/api/documents?status=INDEXED');
+      if (response.ok) {
+        const data = await response.json();
+        setDocuments(data);
+      }
+    } catch (error) {
+      console.error('Failed to load documents:', error);
+    } finally {
+      setLoadingDocs(false);
+    }
+  };
+
+  const loadRecentQuestions = async () => {
+    try {
+      const response = await fetch('/api/documents/questions?limit=5');
+      if (response.ok) {
+        const data = await response.json();
+        setRecentQuestions(data);
+      }
+    } catch (error) {
+      console.error('Failed to load recent questions:', error);
+    }
+  };
+
+  const handleAskQuestion = async () => {
+    if (!question.trim()) {
+      errorToast('Please enter a question');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const filters = selectedDocumentIds.length > 0 
+        ? { documentIds: selectedDocumentIds }
+        : undefined;
+
+      const response = await fetch('/api/documents/rag', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          question,
-          filters: documentId ? { documentIds: [documentId] } : undefined,
+        body: JSON.stringify({
+          query: question,
+          filters,
         }),
       });
 
-      if (!res.ok) {
-        throw new Error('Failed to get answer');
-      }
+      if (!response.ok) throw new Error('Failed to get response');
 
-      const data = await res.json();
+      const data = await response.json();
       setResponse(data);
-      setHistory([{ question, response: data, timestamp: new Date() }, ...history]);
-      setQuestion('');
       successToast('Question answered successfully');
+      
+      // Reload recent questions
+      loadRecentQuestions();
     } catch (error) {
-      console.error('Error asking question:', error);
-      errorToast('Failed to get answer. Please try again.');
+      console.error('Failed to ask question:', error);
+      errorToast('Failed to get answer');
     } finally {
       setLoading(false);
     }
@@ -72,187 +122,184 @@ export default function QAPage() {
     if (!response) return;
 
     try {
-      const res = await fetch('/api/export/pdf', {
+      const pdfResponse = await fetch('/api/export/pdf?type=rag', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          type: 'rag',
-          data: {
-            question: history[0]?.question || question,
-            response,
-          },
+          question,
+          response,
         }),
       });
 
-      if (!res.ok) throw new Error('Failed to export');
+      if (!pdfResponse.ok) throw new Error('Failed to export PDF');
 
-      const blob = await res.blob();
+      const blob = await pdfResponse.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = `qa-response-${Date.now()}.pdf`;
       a.click();
+      window.URL.revokeObjectURL(url);
+      
       successToast('PDF exported successfully');
     } catch (error) {
-      console.error('Export error:', error);
+      console.error('Failed to export PDF:', error);
       errorToast('Failed to export PDF');
     }
   };
 
-  const handleExportWord = async () => {
-    if (!response) return;
-
-    try {
-      const res = await fetch('/api/export/word', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'rag',
-          data: {
-            question: history[0]?.question || question,
-            response,
-          },
-        }),
-      });
-
-      if (!res.ok) throw new Error('Failed to export');
-
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `qa-response-${Date.now()}.docx`;
-      a.click();
-      successToast('Word document exported successfully');
-    } catch (error) {
-      console.error('Export error:', error);
-      errorToast('Failed to export Word document');
-    }
+  const formatRelativeTime = (date: Date) => {
+    const now = new Date();
+    const diffInMinutes = Math.floor((now.getTime() - new Date(date).getTime()) / (1000 * 60));
+    
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
+    return `${Math.floor(diffInMinutes / 1440)}d ago`;
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <div className="page-container py-8">
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-black mb-2 tracking-tight">DOCUMENT Q&A</h1>
-          <p className="text-gray-600 text-sm uppercase tracking-wide">
-            Ask questions about your documents using AI-powered search
+          <h1 className="text-3xl font-bold text-gray-900">DOCUMENT Q&A</h1>
+          <p className="text-sm text-gray-600 uppercase tracking-wide mt-1">
+            Ask questions about your documents using AI
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main Q&A Panel */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Q&A Section */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Question Input */}
-            <Card className="border-2 border-gray-200 bg-white rounded-3xl">
+            {/* Ask Question Card */}
+            <Card className="bg-white border border-gray-200">
               <CardHeader>
-                <CardTitle className="text-xl uppercase tracking-wide">Ask a Question</CardTitle>
+                <CardTitle className="text-lg font-semibold text-gray-900">Ask a Question</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <textarea
-                  value={question}
-                  onChange={(e) => setQuestion(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && e.ctrlKey) {
-                      handleAsk();
-                    }
-                  }}
-                  placeholder="Ask a question about your documents... (Ctrl+Enter to submit)"
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-2xl focus:outline-none focus:border-black min-h-[120px] resize-none"
-                  disabled={loading}
-                />
-                <div className="flex justify-between items-center">
-                  <p className="text-xs text-gray-500 uppercase tracking-wide">
-                    The AI will search through all indexed documents
-                  </p>
-                  <Button
-                    onClick={handleAsk}
-                    disabled={loading || !question.trim()}
-                    className="rounded-2xl uppercase tracking-wide"
+                {/* Document Filter */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 uppercase tracking-wide mb-2">
+                    Filter by Documents (Optional)
+                  </label>
+                  <select
+                    multiple
+                    value={selectedDocumentIds}
+                    onChange={(e) => {
+                      const selected = Array.from(e.target.selectedOptions).map(opt => opt.value);
+                      setSelectedDocumentIds(selected);
+                    }}
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400"
+                    size={3}
                   >
-                    {loading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Asking...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4 mr-2" />
-                        Ask
-                      </>
-                    )}
-                  </Button>
+                    {documents.map((doc) => (
+                      <option key={doc.id} value={doc.id}>
+                        {doc.title || doc.fileName}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Hold Ctrl/Cmd to select multiple documents
+                  </p>
                 </div>
+
+                {/* Question Input */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 uppercase tracking-wide mb-2">
+                    Your Question
+                  </label>
+                  <textarea
+                    value={question}
+                    onChange={(e) => setQuestion(e.target.value)}
+                    placeholder="Ask anything about your documents..."
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 resize-none"
+                    rows={4}
+                  />
+                </div>
+
+                {/* Submit Button */}
+                <Button
+                  onClick={handleAskQuestion}
+                  disabled={loading || !question.trim()}
+                  className="w-full bg-gray-900 hover:bg-gray-800 text-white rounded-lg flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span className="uppercase text-xs font-medium tracking-wide">Processing</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      <span className="uppercase text-xs font-medium tracking-wide">Ask Question</span>
+                    </>
+                  )}
+                </Button>
               </CardContent>
             </Card>
 
-            {/* Response */}
+            {/* Response Card */}
             {response && (
-              <Card className="border-2 border-gray-200 bg-white rounded-3xl">
+              <Card className="bg-white border border-gray-200">
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl uppercase tracking-wide">Answer</CardTitle>
-                    <div className="flex gap-2">
-                      <Button
-                        onClick={handleExportPDF}
-                        variant="outline"
-                        size="sm"
-                        className="rounded-2xl uppercase tracking-wide"
-                      >
-                        <Download className="w-4 h-4 mr-2" />
-                        PDF
-                      </Button>
-                      <Button
-                        onClick={handleExportWord}
-                        variant="outline"
-                        size="sm"
-                        className="rounded-2xl uppercase tracking-wide"
-                      >
-                        <Download className="w-4 h-4 mr-2" />
-                        Word
-                      </Button>
-                    </div>
+                    <CardTitle className="text-lg font-semibold text-gray-900">Answer</CardTitle>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleExportPDF}
+                      className="flex items-center gap-2"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span className="text-xs uppercase tracking-wide">Export PDF</span>
+                    </Button>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="prose max-w-none">
-                    <p className="text-gray-900 whitespace-pre-wrap">{response.answer}</p>
+                  <div className="prose prose-sm max-w-none">
+                    <p className="text-gray-700 leading-relaxed">{response.answer}</p>
                   </div>
 
-                  {/* Sources */}
                   {response.sources.length > 0 && (
-                    <div className="mt-6 pt-6 border-t border-gray-200">
-                      <h3 className="text-lg font-bold uppercase tracking-wide mb-3">Sources</h3>
-                      <div className="space-y-3">
+                    <div>
+                      <h4 className="text-xs font-medium text-gray-700 uppercase tracking-wide mb-2">
+                        Sources
+                      </h4>
+                      <div className="space-y-2">
                         {response.sources.map((source, index) => (
-                          <div key={index} className="p-4 bg-gray-50 rounded-2xl">
-                            <div className="flex items-start justify-between mb-2">
-                              <div className="flex items-center gap-2">
-                                <FileText className="w-4 h-4 text-gray-600" />
-                                <span className="font-semibold text-black">{source.fileName}</span>
-                              </div>
-                              <span className="text-xs font-semibold text-gray-600 bg-white px-2 py-1 rounded-full">
-                                {(source.score * 100).toFixed(1)}% match
+                          <div
+                            key={index}
+                            className="p-3 bg-gray-50 rounded-lg border border-gray-200"
+                          >
+                            <div className="flex items-start justify-between gap-2 mb-1">
+                              <p className="text-sm font-medium text-gray-900">
+                                {source.fileName}
+                              </p>
+                              <span className="text-xs text-gray-500">
+                                {(source.score * 100).toFixed(0)}% match
                               </span>
                             </div>
-                            <p className="text-sm text-gray-600 line-clamp-2">{source.excerpt}</p>
+                            <p className="text-xs text-gray-600 leading-relaxed">
+                              {source.excerpt}
+                            </p>
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
 
-                  {/* Citations */}
                   {response.citations.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-gray-200">
-                      <h3 className="text-sm font-semibold uppercase tracking-wide mb-2">Cited Documents</h3>
+                    <div>
+                      <h4 className="text-xs font-medium text-gray-700 uppercase tracking-wide mb-2">
+                        Document References
+                      </h4>
                       <div className="flex flex-wrap gap-2">
                         {response.citations.map((citation, index) => (
                           <span
                             key={index}
-                            className="text-xs bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-semibold"
+                            className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded"
                           >
                             {citation}
                           </span>
@@ -265,44 +312,76 @@ export default function QAPage() {
             )}
           </div>
 
-          {/* History Sidebar */}
-          <div className="lg:col-span-1">
-            <Card className="border-2 border-gray-200 bg-white rounded-3xl sticky top-4">
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Recent Questions */}
+            <Card className="bg-white border border-gray-200">
               <CardHeader>
-                <CardTitle className="text-lg uppercase tracking-wide">History</CardTitle>
+                <CardTitle className="text-lg font-semibold text-gray-900">
+                  Recent Questions
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                {history.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-8">
-                    No questions asked yet
-                  </p>
-                ) : (
-                  <div className="space-y-3 max-h-[600px] overflow-y-auto">
-                    {history.map((item, index) => (
+                {recentQuestions.length > 0 ? (
+                  <div className="space-y-3">
+                    {recentQuestions.map((q) => (
                       <div
-                        key={index}
-                        className="p-3 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100 transition-colors"
+                        key={q.id}
+                        className="p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
                         onClick={() => {
-                          setQuestion(item.question);
-                          setResponse(item.response);
+                          setQuestion(q.question);
+                          setResponse({
+                            answer: q.answer,
+                            sources: q.sources || [],
+                            citations: q.citations || [],
+                          });
                         }}
                       >
-                        <p className="text-sm font-semibold text-black line-clamp-2 mb-1">
-                          {item.question}
+                        <p className="text-sm font-medium text-gray-900 line-clamp-2">
+                          {q.question}
                         </p>
-                        <p className="text-xs text-gray-500">
-                          {item.timestamp.toLocaleTimeString('en-US')}
-                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Clock className="w-3 h-3 text-gray-400" />
+                          <span className="text-xs text-gray-500">
+                            {formatRelativeTime(q.askedAt)}
+                          </span>
+                        </div>
                       </div>
                     ))}
                   </div>
+                ) : (
+                  <p className="text-sm text-gray-500 text-center py-4">
+                    No recent questions
+                  </p>
                 )}
+              </CardContent>
+            </Card>
+
+            {/* Tips */}
+            <Card className="bg-gray-50 border border-gray-200">
+              <CardContent className="p-4">
+                <h4 className="text-xs font-medium text-gray-700 uppercase tracking-wide mb-3">
+                  Pro Tips
+                </h4>
+                <ul className="space-y-2 text-xs text-gray-600">
+                  <li className="flex items-start gap-2">
+                    <MessageSquare className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                    <span>Ask specific questions for better answers</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Search className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                    <span>Filter by documents to narrow down results</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <FileText className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                    <span>Export answers as PDF for sharing</span>
+                  </li>
+                </ul>
               </CardContent>
             </Card>
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 }

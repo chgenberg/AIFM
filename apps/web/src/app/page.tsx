@@ -1,167 +1,258 @@
 'use client';
 
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/Button';
 import { Footer } from '@/components/Footer';
-import { Settings, CheckCircle2, BarChart3, Building2, Search, TrendingUp } from 'lucide-react';
+import { Header } from '@/components/Header';
+import { Card, CardContent } from '@/components/Card';
+import { 
+  CheckCircle2, BarChart3, Building2, Search, TrendingUp, 
+  Shield, Zap, Users, FileText, ArrowRight
+} from 'lucide-react';
 
 export default function HomePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
   if (status === 'loading') {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-pulse text-gray-500">Loading...</div>
+      </div>
+    );
   }
 
+  const features = [
+    {
+      icon: BarChart3,
+      title: 'AI-Powered Analysis',
+      description: 'Automated reconciliation and intelligent report generation'
+    },
+    {
+      icon: Shield,
+      title: 'Regulatory Compliance',
+      description: 'Stay compliant with automated checks and real-time monitoring'
+    },
+    {
+      icon: Users,
+      title: 'Multi-Role Platform',
+      description: 'Tailored interfaces for coordinators, specialists, and clients'
+    },
+    {
+      icon: Zap,
+      title: 'Real-time Processing',
+      description: 'Instant document analysis and compliance verification'
+    },
+  ];
+
+  const roleCards = [
+    {
+      role: 'COORDINATOR',
+      title: 'Coordinator Dashboard',
+      description: 'Manage tasks and oversee the entire workflow',
+      icon: Users,
+      href: '/coordinator/inbox',
+      color: 'border-blue-200 hover:border-blue-400'
+    },
+    {
+      role: 'SPECIALIST',
+      title: 'Specialist Workspace',
+      description: 'Review reports and complete specialized tasks',
+      icon: FileText,
+      href: '/specialist/board',
+      color: 'border-green-200 hover:border-green-400'
+    },
+    {
+      role: 'ADMIN',
+      title: 'Admin Panel',
+      description: 'System configuration and monitoring',
+      icon: Shield,
+      href: '/admin/dashboard',
+      color: 'border-purple-200 hover:border-purple-400'
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-white text-gray-900">
-      {/* Header */}
-      <header className="border-b border-gray-200 bg-white">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <Image
-              src="/dwarf.png"
-              alt="AIFM Logo"
-              width={80}
-              height={80}
-              className="rounded-xl"
-              unoptimized
-            />
-          </div>
-          <div className="flex gap-4 items-center">
-            {session ? (
-              <>
-                <Link href="/how-it-works" className="text-sm text-gray-600 hover:text-gray-900">
-                  HOW IT WORKS
-                </Link>
-                <span className="text-sm text-gray-600">{session.user?.email}</span>
-                <Button onClick={() => router.push('/dashboard')} size="sm">
-                  DASHBOARD
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+
+      {/* Hero Section */}
+      <section className="relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <div className="text-center">
+            <div className="flex justify-center mb-8">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl blur-2xl opacity-20"></div>
+                <Image
+                  src="/AIFM.jpeg"
+                  alt="AIFM"
+                  width={200}
+                  height={80}
+                  className="relative rounded-2xl shadow-lg"
+                  unoptimized
+                  onError={(e) => {
+                    e.currentTarget.src = '/dwarf.png';
+                  }}
+                />
+              </div>
+            </div>
+            <h1 className="text-5xl font-bold text-gray-900 mb-4">
+              AI-POWERED FUND MANAGEMENT
+            </h1>
+            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+              Automated bank reconciliation, KYC review, and intelligent report generation 
+              powered by advanced AI technology
+            </p>
+            {!session && (
+              <div className="flex justify-center gap-4">
+                <Button 
+                  size="lg" 
+                  onClick={() => router.push('/sign-in')}
+                  className="uppercase tracking-wide"
+                >
+                  Get Started
+                  <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
                 <Button 
-                  variant="minimal" 
-                  size="sm"
-                  onClick={() => signOut({ redirect: true, callbackUrl: '/' })}
+                  variant="outline" 
+                  size="lg" 
+                  onClick={() => router.push('/how-it-works')}
+                  className="uppercase tracking-wide"
                 >
-                  SIGN OUT
+                  Learn More
                 </Button>
-              </>
-            ) : (
-              <>
-                <Link href="/how-it-works" className="text-sm text-gray-600 hover:text-gray-900">
-                  HOW IT WORKS
-                </Link>
-                <Button variant="minimal" size="sm" onClick={() => router.push('/sign-in')}>
-                  SIGN IN
-                </Button>
-              </>
+              </div>
             )}
           </div>
         </div>
-      </header>
+      </section>
 
-      {/* Hero Section */}
-      <main className="max-w-7xl mx-auto px-6 py-20">
-        <div className="text-center mb-16">
-          <div className="flex justify-center mb-8">
-            <Image
-              src="/dwarf.png"
-              alt="AIFM Logo"
-              width={100}
-              height={100}
-              className="rounded-3xl shadow-lg"
-              unoptimized
-            />
-          </div>
-          <h2 className="text-6xl font-bold tracking-tighter mb-6">AI-POWERED FUND MANAGEMENT</h2>
-          <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
-            Automated bank reconciliation, KYC review, and intelligent report generation powered by AI
-          </p>
-          {!session && (
-            <div className="flex gap-4 justify-center">
-              <Button size="lg" onClick={() => router.push('/sign-in')}>
-                GET STARTED
-              </Button>
+      {/* Features Section */}
+      {!session && (
+        <section className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                POWERFUL FEATURES
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Everything you need to manage fund accounting efficiently
+              </p>
             </div>
-          )}
-        </div>
-
-        {/* Role Cards */}
-        {session && (
-          <div className="grid md:grid-cols-3 gap-8 mt-16">
-            <Link href="/admin/dashboard">
-              <div className="bg-white border-2 border-gray-200 rounded-3xl p-8 hover:border-gray-400 hover:shadow-lg transition-all cursor-pointer group">
-                <div className="mb-4 flex justify-center">
-                  <Settings className="w-12 h-12 text-blue-900 group-hover:scale-110 transition-transform" />
-                </div>
-                <h3 className="text-2xl font-bold mb-3 uppercase tracking-wide">ADMIN</h3>
-                <p className="text-gray-600">Manage clients and system configuration</p>
-                <div className="mt-6 inline-flex items-center text-sm font-semibold group-hover:translate-x-1 transition">
-                  Explore →
-                </div>
-              </div>
-            </Link>
-
-            <Link href="/coordinator/inbox">
-              <div className="bg-white border-2 border-gray-200 rounded-3xl p-8 hover:border-gray-400 hover:shadow-lg transition-all cursor-pointer group">
-                <div className="mb-4 flex justify-center">
-                  <CheckCircle2 className="w-12 h-12 text-blue-900 group-hover:scale-110 transition-transform" />
-                </div>
-                <h3 className="text-2xl font-bold mb-3 uppercase tracking-wide">COORDINATOR</h3>
-                <p className="text-gray-600">Review and approve pending tasks</p>
-                <div className="mt-6 inline-flex items-center text-sm font-semibold group-hover:translate-x-1 transition">
-                  Explore →
-                </div>
-              </div>
-            </Link>
-
-            <Link href="/specialist/board">
-              <div className="bg-white border-2 border-gray-200 rounded-3xl p-8 hover:border-gray-400 hover:shadow-lg transition-all cursor-pointer group">
-                <div className="mb-4 flex justify-center">
-                  <BarChart3 className="w-12 h-12 text-blue-900 group-hover:scale-110 transition-transform" />
-                </div>
-                <h3 className="text-2xl font-bold mb-3 uppercase tracking-wide">SPECIALIST</h3>
-                <p className="text-gray-600">Draft and finalize expert reports</p>
-                <div className="mt-6 inline-flex items-center text-sm font-semibold group-hover:translate-x-1 transition">
-                  Explore →
-                </div>
-              </div>
-            </Link>
-          </div>
-        )}
-
-        {/* Features Section */}
-        {!session && (
-          <div className="mt-24 grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="mb-4 flex justify-center">
-                <Building2 className="w-16 h-16 text-blue-900" />
-              </div>
-              <h4 className="text-lg font-bold mb-2 uppercase">BANK RECONCILIATION</h4>
-              <p className="text-gray-600">Automated matching and variance analysis</p>
-            </div>
-            <div className="text-center">
-              <div className="mb-4 flex justify-center">
-                <Search className="w-16 h-16 text-blue-900" />
-              </div>
-              <h4 className="text-lg font-bold mb-2 uppercase">KYC COMPLIANCE</h4>
-              <p className="text-gray-600">Intelligent investor verification</p>
-            </div>
-            <div className="text-center">
-              <div className="mb-4 flex justify-center">
-                <TrendingUp className="w-16 h-16 text-blue-900" />
-              </div>
-              <h4 className="text-lg font-bold mb-2 uppercase">SMART REPORTS</h4>
-              <p className="text-gray-600">AI-generated fund accounting reports</p>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {features.map((feature, index) => (
+                <Card key={index} className="border border-gray-200 hover:border-gray-400 transition-all duration-200">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                      <feature.icon className="w-6 h-6 text-gray-700" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      {feature.title}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {feature.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
-        )}
-      </main>
+        </section>
+      )}
 
-      {/* Footer */}
+      {/* Role Selection for Logged In Users */}
+      {session && (
+        <section className="py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                WELCOME BACK
+              </h2>
+              <p className="text-lg text-gray-600">
+                Select your workspace to continue
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              {roleCards.map((card) => {
+                const userRole = (session.user as any)?.role;
+                const isAccessible = userRole === card.role || userRole === 'ADMIN';
+                
+                return (
+                  <Link 
+                    key={card.role} 
+                    href={isAccessible ? card.href : '#'}
+                    className={!isAccessible ? 'pointer-events-none' : ''}
+                  >
+                    <Card className={`
+                      h-full border-2 transition-all duration-200 
+                      ${isAccessible 
+                        ? `${card.color} cursor-pointer hover:shadow-lg` 
+                        : 'border-gray-100 opacity-50'
+                      }
+                    `}>
+                      <CardContent className="p-6 text-center">
+                        <div className={`
+                          w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4
+                          ${isAccessible ? 'bg-gray-100' : 'bg-gray-50'}
+                        `}>
+                          <card.icon className={`
+                            w-8 h-8 
+                            ${isAccessible ? 'text-gray-700' : 'text-gray-400'}
+                          `} />
+                        </div>
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                          {card.title}
+                        </h3>
+                        <p className="text-sm text-gray-600 mb-4">
+                          {card.description}
+                        </p>
+                        {isAccessible ? (
+                          <span className="text-sm font-medium text-gray-900 flex items-center justify-center gap-1">
+                            Enter
+                            <ArrowRight className="w-4 h-4" />
+                          </span>
+                        ) : (
+                          <span className="text-xs text-gray-500">
+                            Not available for your role
+                          </span>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* CTA Section */}
+      {!session && (
+        <section className="py-20 bg-gray-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="text-3xl font-bold text-white mb-4">
+              READY TO GET STARTED?
+            </h2>
+            <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
+              Join leading fund managers who are already using AIFM Portal 
+              to streamline their operations
+            </p>
+            <Button
+              size="lg"
+              variant="secondary"
+              onClick={() => router.push('/sign-in')}
+              className="uppercase tracking-wide"
+            >
+              Start Free Trial
+              <ArrowRight className="ml-2 w-4 h-4" />
+            </Button>
+          </div>
+        </section>
+      )}
+
       <Footer />
     </div>
   );
