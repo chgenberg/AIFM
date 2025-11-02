@@ -130,17 +130,17 @@ export class S3StorageAdapter implements StorageAdapter {
     return `https://${this.bucket}.s3.${this.region}.amazonaws.com/${key}`;
   }
 
-  async delete(key: string): Promise<void> {
+  async delete(_key: string): Promise<void> {
     // TODO: Implement S3 delete
     throw new Error('S3 adapter not yet implemented');
   }
 
-  async exists(key: string): Promise<boolean> {
+  async exists(_key: string): Promise<boolean> {
     // TODO: Implement S3 exists check
     throw new Error('S3 adapter not yet implemented');
   }
 
-  async getFile(key: string): Promise<Buffer> {
+  async getFile(_key: string): Promise<Buffer> {
     // TODO: Implement S3 get
     throw new Error('S3 adapter not yet implemented');
   }
