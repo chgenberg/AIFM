@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Header } from '@/components/Header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
 import { Button } from '@/components/Button';
 import { 
   Upload, File, X, CheckCircle2, AlertCircle, Loader2, Search, 
