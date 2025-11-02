@@ -5,7 +5,7 @@ import { Header } from '@/components/Header';
 import { Card, CardContent } from '@/components/Card';
 import { Button } from '@/components/Button';
 import { 
-  Shield, RefreshCw, Download, Mail, BarChart3, 
+  Shield, RefreshCw, Download, BarChart3, 
   AlertTriangle, CheckCircle2, XCircle, FileText 
 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';

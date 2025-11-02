@@ -14,11 +14,13 @@ interface SendEmailOptions {
 let sgMail: any = null;
 
 // Initialize SendGrid (lazy load)
-function getSgMail() {
+async function getSgMail() {
   if (!sgMail) {
     try {
       // Try to load SendGrid if available
-      const sgMailModule = require('@sendgrid/mail');
+      // Using template string to prevent Next.js from statically analyzing the import
+      const moduleName = '@sendgrid/' + 'mail';
+      const sgMailModule = await import(moduleName);
       sgMail = sgMailModule.default || sgMailModule;
       if (process.env.SENDGRID_API_KEY) {
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -40,7 +42,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<boolean> {
 
     // Check if SendGrid is configured
     if (process.env.SENDGRID_API_KEY) {
-      const sg = getSgMail();
+      const sg = await getSgMail();
       if (sg) {
         const msg: any = {
           to,
