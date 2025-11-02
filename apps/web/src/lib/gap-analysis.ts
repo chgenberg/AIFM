@@ -266,14 +266,34 @@ function generateRecommendations(gaps: Gap[]): string[] {
 export async function createTasksForGaps(gaps: Gap[], assignedTo?: string): Promise<void> {
   for (const gap of gaps) {
     if (gap.severity === 'high' || gap.severity === 'medium') {
+      // Get clientId from document if available
+      let clientId: string | undefined;
+      if (gap.documentId) {
+        const document = await prisma.document.findUnique({
+          where: { id: gap.documentId },
+          select: { clientId: true },
+        });
+        clientId = document?.clientId || undefined;
+      }
+
+      if (!clientId) {
+        console.warn(`Cannot create task for gap ${gap.id}: no clientId available`);
+        continue;
+      }
+
       await prisma.task.create({
         data: {
-          clientId: gap.documentId ? undefined : undefined, // Will need to get from document
+          clientId,
           kind: 'QC_CHECK',
-          title: `Fix gap: ${gap.title}`,
-          description: gap.description + (gap.recommendation ? `\n\nRecommendation: ${gap.recommendation}` : ''),
+          description: `${gap.title}\n\n${gap.description}${gap.recommendation ? `\n\nRecommendation: ${gap.recommendation}` : ''}`,
           status: 'NEEDS_REVIEW',
-          priority: gap.severity === 'high' ? 'HIGH' : 'MEDIUM',
+          payload: {
+            gapId: gap.id,
+            gapType: gap.type,
+            severity: gap.severity,
+            documentId: gap.documentId,
+            policyId: gap.policyId,
+          },
           assigneeId: assignedTo,
         },
       });
