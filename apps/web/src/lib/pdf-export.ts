@@ -14,7 +14,7 @@ import { GapAnalysisResult } from './gap-analysis';
 export async function exportRAGResponseToPDF(
   question: string,
   response: RAGResponse,
-  outputPath?: string
+  _outputPath?: string
 ): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
