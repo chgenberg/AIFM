@@ -83,7 +83,7 @@ export function Footer() {
         {/* AIFM Image */}
         <div className="border-t border-gray-200 pt-8 pb-4">
           <div className="flex justify-center">
-            <Link href="/" className="block group">
+            <Link href="/about" className="block group">
               <div className="relative">
                 {/* Pulserande ram och skugga */}
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 rounded-2xl blur-md opacity-50 animate-pulse group-hover:opacity-70 transition-opacity"></div>
