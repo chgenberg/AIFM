@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/Button';
 import { 
-  Upload, File, X, CheckCircle2, AlertCircle, Loader2, Search, 
+  Upload, X, CheckCircle2, AlertCircle, Loader2, Search, 
   Filter, Shield, MessageSquare, Eye, Trash2, Archive, Download,
   FolderOpen, FileText, Calendar, Tag, ChevronRight
 } from 'lucide-react';
