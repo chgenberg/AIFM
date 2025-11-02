@@ -44,7 +44,6 @@ export default function AdminDashboardPage() {
   const [health, setHealth] = useState<HealthData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<DashboardTab>('OVERVIEW');
-  const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
 
   useEffect(() => {
     loadHealth();
@@ -61,7 +60,6 @@ export default function AdminDashboardPage() {
       }
       const data = await response.json();
       setHealth(data);
-      setLastRefresh(new Date());
     } catch (error) {
       console.error('Failed to load health:', error);
     } finally {
