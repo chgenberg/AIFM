@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/Card';
 import { Header } from '@/components/Header';
 import { 
   RefreshCw, Users, FileText, BarChart3, Activity, MessageSquare, 
-  Shield, TrendingDown, FolderOpen, Database, Link2, AlertTriangle 
+  Shield, TrendingDown, FolderOpen, Database, AlertTriangle 
 } from 'lucide-react';
 import Link from 'next/link';
 import { DocumentStatsChart, ComplianceScoreChart } from '@/components/Charts';
