@@ -60,7 +60,6 @@ export default function CompliancePage() {
   const [loading, setLoading] = useState(true);
   const [checking, setChecking] = useState(false);
   const [activeTab, setActiveTab] = useState<ComplianceTab>('OVERVIEW');
-  const [selectedDocument, setSelectedDocument] = useState<string>(documentId || '');
 
   useEffect(() => {
     loadComplianceData();
