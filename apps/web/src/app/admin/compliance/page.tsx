@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/Card';
 import { Button } from '@/components/Button';
 import { 
   Shield, RefreshCw, Download, BarChart3, 
-  AlertTriangle, CheckCircle2, XCircle, FileText 
+  AlertTriangle, CheckCircle2, XCircle
 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { errorToast, successToast } from '@/lib/toast';
