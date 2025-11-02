@@ -117,7 +117,7 @@ export class S3StorageAdapter implements StorageAdapter {
     this.region = region;
   }
 
-  async upload(key: string, file: Buffer, metadata?: StorageMetadata): Promise<StorageResult> {
+  async upload(_key: string, _file: Buffer, _metadata?: StorageMetadata): Promise<StorageResult> {
     // TODO: Implement S3 upload when needed
     // const { S3Client, PutObjectCommand } = await import('@aws-sdk/client-s3');
     // const s3 = new S3Client({ region: this.region });
