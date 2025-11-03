@@ -5,7 +5,7 @@ import { Header } from '@/components/Header';
 import { Button } from '@/components/Button';
 import { 
   Upload, X, Loader2, Search, 
-  Filter, Shield, MessageSquare, Eye, Trash2, Archive, Download,
+  Filter, Shield, MessageSquare, Eye, Archive, Download,
   FolderOpen, FileText, Calendar, Tag, ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
