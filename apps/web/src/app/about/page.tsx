@@ -9,7 +9,7 @@ import Image from 'next/image';
 import { 
   Shield, Zap, BarChart3, TrendingUp, CheckCircle2, X, ZoomIn,
   Users, FileText, Database, Globe, Lock, Activity, AlertTriangle, 
-  ArrowRight, Settings, ClipboardList, RefreshCw
+  Settings, ClipboardList, RefreshCw
 } from 'lucide-react';
 import '@/styles/animations.css';
 
