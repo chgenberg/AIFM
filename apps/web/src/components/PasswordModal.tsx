@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Lock, X, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Lock, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/Button';
 
 interface PasswordModalProps {
