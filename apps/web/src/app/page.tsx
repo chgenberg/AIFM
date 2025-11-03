@@ -9,7 +9,7 @@ import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { Card, CardContent } from '@/components/Card';
 import { 
-  BarChart3, Search, TrendingUp, 
+  BarChart3, TrendingUp, 
   Shield, Zap, Users, FileText, ArrowRight
 } from 'lucide-react';
 
