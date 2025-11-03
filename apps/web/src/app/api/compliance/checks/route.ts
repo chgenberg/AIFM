@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
         score: check.status === 'COMPLIANT' ? 1 : check.status === 'NEEDS_REVIEW' ? 0.75 : 0,
         checkedAt: check.checkedAt,
         document: check.document,
-        policy: check.policy || {
+        policy: {
           id: check.policyId,
           name: check.policyName,
           requirement: check.requirement,
