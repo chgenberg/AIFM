@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -8,6 +9,7 @@ import { Button } from '@/components/Button';
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { Card, CardContent } from '@/components/Card';
+import { PasswordModal } from '@/components/PasswordModal';
 import { 
   BarChart3, 
   Shield, Zap, Users, FileText, ArrowRight
@@ -16,12 +18,51 @@ import {
 export default function HomePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
+  useEffect(() => {
+    // Check if user has already entered the correct code
+    const accessGranted = localStorage.getItem('aifm_access_granted');
+    const accessTime = localStorage.getItem('aifm_access_time');
+    
+    // Check if access was granted within the last 24 hours
+    if (accessGranted === 'true' && accessTime) {
+      const timeDiff = Date.now() - parseInt(accessTime);
+      const hours24 = 24 * 60 * 60 * 1000;
+      
+      if (timeDiff < hours24) {
+        setIsAuthorized(true);
+        return;
+      } else {
+        // Access expired, clear it
+        localStorage.removeItem('aifm_access_granted');
+        localStorage.removeItem('aifm_access_time');
+      }
+    }
+    
+    // Show modal if not authorized
+    setShowPasswordModal(true);
+  }, []);
+
+  const handlePasswordSuccess = () => {
+    setShowPasswordModal(false);
+    setIsAuthorized(true);
+  };
+
+  // Show loading state while checking session
   if (status === 'loading') {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-pulse text-gray-500">Loading...</div>
       </div>
+    );
+  }
+
+  // Don't render content until authorized
+  if (!isAuthorized) {
+    return (
+      <PasswordModal isOpen={showPasswordModal} onSuccess={handlePasswordSuccess} />
     );
   }
 
