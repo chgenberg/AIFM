@@ -89,6 +89,53 @@ export async function GET(request: NextRequest) {
         },
       });
 
+      // If database is empty, use mock data instead
+      if (checks.length === 0) {
+        console.log('Database is empty, using mock data');
+        await mockDelay(200);
+        const mockChecks = mockData.complianceChecks;
+        
+        let filteredChecks = mockChecks;
+        if (clientId) {
+          filteredChecks = mockChecks.filter((c: any) => 
+            c.document.client?.name?.includes(clientId) || 
+            c.document.clientId === clientId
+          );
+        }
+
+        const total = filteredChecks.length;
+        const compliant = filteredChecks.filter((c: any) => c.status === 'COMPLIANT').length;
+        const nonCompliant = filteredChecks.filter((c: any) => c.status === 'NON_COMPLIANT').length;
+        const needsReview = filteredChecks.filter((c: any) => c.status === 'NEEDS_REVIEW').length;
+        const overallScore = total > 0 ? compliant / total : 0;
+
+        const byCategory = filteredChecks.reduce((acc: any, check: any) => {
+          const category = check.policy.category || 'GENERAL';
+          if (!acc[category]) {
+            acc[category] = {
+              total: 0,
+              compliant: 0,
+              score: 0,
+            };
+          }
+          acc[category].total++;
+          if (check.status === 'COMPLIANT') {
+            acc[category].compliant++;
+          }
+          acc[category].score = acc[category].compliant / acc[category].total;
+          return acc;
+        }, {});
+
+        return NextResponse.json({
+          totalChecks: total,
+          compliant,
+          nonCompliant,
+          needsReview,
+          overallScore,
+          byCategory,
+        });
+      }
+
       // Calculate statistics
       const total = checks.length;
       const compliant = checks.filter(c => c.status === 'COMPLIANT').length;

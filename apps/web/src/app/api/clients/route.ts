@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { mockDelay, getMockData } from '@/lib/mockData';
 
 export async function GET() {
   try {
@@ -18,6 +19,17 @@ export async function GET() {
         name: 'asc',
       },
     });
+
+    // If database is empty, use mock data instead
+    if (clients.length === 0) {
+      console.log('Database is empty, using mock data');
+      await mockDelay(200);
+      const mockClients = getMockData('clients').map((c: any) => ({
+        id: c.id,
+        name: c.name,
+      }));
+      return NextResponse.json(mockClients);
+    }
 
     return NextResponse.json(clients);
   } catch (error) {

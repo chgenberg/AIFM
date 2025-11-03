@@ -81,6 +81,32 @@ export async function GET(request: NextRequest) {
         take: 50,
       });
 
+      // If database is empty, use mock data instead
+      if (tasks.length === 0) {
+        console.log('Database is empty, using mock data');
+        await mockDelay(200);
+        let mockTasks = getMockData('tasks');
+
+        // Apply role-based filtering
+        if (userRole === 'COORDINATOR') {
+          mockTasks = mockTasks.filter((t: any) => 
+            t.status === 'NEEDS_REVIEW' || t.status === 'QUEUED'
+          );
+        } else if (userRole === 'SPECIALIST') {
+          mockTasks = mockTasks.filter((t: any) => 
+            t.kind === 'REPORT_DRAFT' && 
+            (t.status === 'QUEUED' || t.status === 'IN_PROGRESS')
+          );
+        }
+
+        // Apply status filter if provided
+        if (status) {
+          mockTasks = mockTasks.filter((t: any) => t.status === status);
+        }
+
+        return NextResponse.json(mockTasks.slice(0, 50));
+      }
+
       return NextResponse.json(tasks);
     } catch (dbError: any) {
       // Fallback to mock data if database query fails

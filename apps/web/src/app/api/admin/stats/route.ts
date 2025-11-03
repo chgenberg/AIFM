@@ -97,6 +97,29 @@ export async function GET(_request: NextRequest) {
       const compliantChecks = complianceChecks.find(c => c.status === 'COMPLIANT')?._count || 0;
       const complianceScore = totalChecks > 0 ? compliantChecks / totalChecks : 0;
 
+      // If database is empty, use mock data instead
+      const totalCount = clients + tasks + reports + documents;
+      if (totalCount === 0) {
+        console.log('Database is empty, using mock data');
+        await mockDelay(200);
+        const stats = mockData.adminStats;
+        
+        return NextResponse.json({
+          clients: stats.clients,
+          tasks: stats.tasks,
+          reports: stats.reports,
+          investors: stats.investors,
+          documents: stats.documents,
+          policies: stats.policies,
+          regulations: stats.regulations,
+          taskStats: stats.taskStats,
+          reportStats: stats.reportStats,
+          documentStats: stats.documentStats,
+          complianceStats: stats.complianceStats,
+          recentDocuments: stats.recentDocuments,
+        });
+      }
+
       return NextResponse.json({
         clients,
         tasks,

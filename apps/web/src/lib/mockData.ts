@@ -4,6 +4,7 @@
  * Can be used when external APIs are unavailable or for demo mode
  */
 
+// Always use mock data when database is empty, or if explicitly enabled
 export const USE_MOCK_DATA = process.env.USE_MOCK_DATA === 'true' || process.env.NODE_ENV === 'development';
 
 // Mock data for demonstration
@@ -295,14 +296,305 @@ Value at Risk (95%): EUR 2,100,000
     },
   ],
 
+  dataFeeds: [
+    {
+      id: 'mock-feed-1',
+      clientId: 'mock-client-1',
+      source: 'FORTNOX',
+      status: 'ACTIVE',
+      configJson: {
+        apiKey: '***',
+        clientId: '12345',
+        lastSync: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      },
+      lastSyncAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+      updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+      client: { name: 'Nordic Tech Fund' },
+    },
+    {
+      id: 'mock-feed-2',
+      clientId: 'mock-client-1',
+      source: 'BANK_SWEDBANK',
+      status: 'ACTIVE',
+      configJson: {
+        accountId: '***',
+        lastSync: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+      },
+      lastSyncAt: new Date(Date.now() - 1 * 60 * 60 * 1000),
+      updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      client: { name: 'Nordic Tech Fund' },
+    },
+    {
+      id: 'mock-feed-3',
+      clientId: 'mock-client-2',
+      source: 'FORTNOX',
+      status: 'ACTIVE',
+      configJson: {
+        apiKey: '***',
+        clientId: '67890',
+        lastSync: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+      },
+      lastSyncAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
+      updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+      client: { name: 'Scandinavia Investment Partners' },
+    },
+    {
+      id: 'mock-feed-4',
+      clientId: 'mock-client-2',
+      source: 'SKV',
+      status: 'ERROR',
+      configJson: {
+        apiKey: '***',
+        lastSync: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+      },
+      lastSyncAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+      updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+      client: { name: 'Scandinavia Investment Partners' },
+      lastError: 'Connection timeout',
+    },
+  ],
+
+  policies: [
+    {
+      id: 'policy-1',
+      name: 'Bank Statement Verification',
+      description: 'Monthly verification of bank statements',
+      category: 'BANKING',
+      rules: {
+        frequency: 'monthly',
+        requiredFields: ['accountNumber', 'balance', 'transactions'],
+      },
+      requirements: {
+        verification: 'required',
+        documentation: 'mandatory',
+      },
+      effectiveDate: new Date('2024-01-01'),
+      isActive: true,
+      createdAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01'),
+    },
+    {
+      id: 'policy-2',
+      name: 'KYC Documentation',
+      description: 'Complete KYC documentation for all investors',
+      category: 'KYC',
+      rules: {
+        requiredDocuments: ['passport', 'proofOfAddress', 'sourceOfFunds'],
+        verificationLevel: 'enhanced',
+      },
+      requirements: {
+        reviewPeriod: '90 days',
+        updateFrequency: 'annually',
+      },
+      effectiveDate: new Date('2024-01-01'),
+      isActive: true,
+      createdAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01'),
+    },
+    {
+      id: 'policy-3',
+      name: 'Financial Reporting',
+      description: 'Quarterly financial reports must be submitted',
+      category: 'REPORTING',
+      rules: {
+        frequency: 'quarterly',
+        deadline: '30 days after quarter end',
+        format: 'PDF',
+      },
+      requirements: {
+        audit: 'required',
+        approval: 'mandatory',
+      },
+      effectiveDate: new Date('2024-01-01'),
+      isActive: true,
+      createdAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01'),
+    },
+    {
+      id: 'policy-4',
+      name: 'Risk Management',
+      description: 'Risk assessment and monitoring requirements',
+      category: 'RISK',
+      rules: {
+        assessmentFrequency: 'quarterly',
+        varCalculation: 'required',
+        stressTesting: 'annually',
+      },
+      requirements: {
+        documentation: 'mandatory',
+        review: 'required',
+      },
+      effectiveDate: new Date('2024-01-01'),
+      isActive: true,
+      createdAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01'),
+    },
+  ],
+
+  regulations: [
+    {
+      id: 'reg-1',
+      name: 'AIFM Directive',
+      authority: 'EU',
+      category: 'FUND_MANAGEMENT',
+      content: 'Alternative Investment Fund Managers Directive',
+      externalUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32011L0061',
+      effectiveDate: new Date('2013-07-22'),
+      isActive: true,
+      createdAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01'),
+    },
+    {
+      id: 'reg-2',
+      name: 'MiFID II',
+      authority: 'EU',
+      category: 'MARKET_CONDUCT',
+      content: 'Markets in Financial Instruments Directive II',
+      externalUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32014L0065',
+      effectiveDate: new Date('2018-01-03'),
+      isActive: true,
+      createdAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01'),
+    },
+    {
+      id: 'reg-3',
+      name: 'GDPR',
+      authority: 'EU',
+      category: 'DATA_PROTECTION',
+      content: 'General Data Protection Regulation',
+      externalUrl: 'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679',
+      effectiveDate: new Date('2018-05-25'),
+      isActive: true,
+      createdAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01'),
+    },
+    {
+      id: 'reg-4',
+      name: 'Finansinspektionens Förordning',
+      authority: 'FI',
+      category: 'REGULATORY',
+      content: 'Swedish Financial Supervisory Authority regulations',
+      externalUrl: 'https://www.fi.se/',
+      effectiveDate: new Date('2024-01-01'),
+      isActive: true,
+      createdAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01'),
+    },
+  ],
+
+  documentStats: {
+    byStatus: {
+      INDEXED: 3,
+      PROCESSING: 1,
+      PENDING: 0,
+      ERROR: 0,
+      ARCHIVED: 0,
+    },
+    byCategory: {
+      BANK_STATEMENT: 1,
+      KYC: 1,
+      REPORT: 1,
+      RISK_ASSESSMENT: 1,
+    },
+    byType: {
+      'application/pdf': 3,
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 1,
+    },
+    uploadsOverTime: [
+      { date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], count: 1 },
+      { date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], count: 1 },
+      { date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], count: 1 },
+      { date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], count: 1 },
+    ],
+  },
+
+  systemActivity: {
+    recentTasks: [
+      {
+        id: 'mock-task-1',
+        kind: 'BANK_RECON',
+        status: 'NEEDS_REVIEW',
+        updatedAt: new Date(Date.now() - 1 * 60 * 60 * 1000),
+        client: { name: 'Nordic Tech Fund' },
+        assignee: { name: 'Anna Svensson', email: 'anna@aifm.se' },
+        flags: [],
+      },
+      {
+        id: 'mock-task-2',
+        kind: 'KYC_REVIEW',
+        status: 'IN_PROGRESS',
+        updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+        client: { name: 'Nordic Tech Fund' },
+        assignee: { name: 'Carl Johansson', email: 'carl@aifm.se' },
+        flags: [],
+      },
+      {
+        id: 'mock-task-3',
+        kind: 'REPORT_DRAFT',
+        status: 'QUEUED',
+        updatedAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
+        client: { name: 'Scandinavia Investment Partners' },
+        assignee: null,
+        flags: [],
+      },
+    ],
+    stats: {
+      totalTasks: 5,
+      tasksByStatus: {
+        QUEUED: 1,
+        IN_PROGRESS: 2,
+        NEEDS_REVIEW: 1,
+        COMPLETED: 1,
+      },
+      tasksByKind: {
+        BANK_RECON: 2,
+        KYC_REVIEW: 1,
+        REPORT_DRAFT: 1,
+        RISK_ANALYSIS: 1,
+      },
+    },
+    recentReports: [
+      {
+        id: 'mock-report-1',
+        type: 'FUND_ACCOUNTING',
+        status: 'DRAFT',
+        updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        client: { name: 'Nordic Tech Fund' },
+      },
+      {
+        id: 'mock-report-2',
+        type: 'INVESTOR_REPORT',
+        status: 'QC',
+        updatedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
+        client: { name: 'Scandinavia Investment Partners' },
+      },
+    ],
+    activity: [
+      {
+        id: 'mock-task-1',
+        kind: 'BANK_RECON',
+        status: 'NEEDS_REVIEW',
+        updatedAt: new Date(Date.now() - 1 * 60 * 60 * 1000),
+        client: { name: 'Nordic Tech Fund' },
+      },
+      {
+        id: 'mock-task-2',
+        kind: 'KYC_REVIEW',
+        status: 'IN_PROGRESS',
+        updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+        client: { name: 'Nordic Tech Fund' },
+      },
+    ],
+  },
+
   adminStats: {
     clients: 3,
     tasks: 5,
     reports: 2,
     investors: 8,
     documents: 4,
-    policies: 12,
-    regulations: 15,
+    policies: 4,
+    regulations: 4,
     taskStats: {
       QUEUED: 1,
       IN_PROGRESS: 2,

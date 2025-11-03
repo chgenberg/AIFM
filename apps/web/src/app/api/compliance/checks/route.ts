@@ -57,6 +57,20 @@ export async function GET(request: NextRequest) {
         },
       });
 
+      // If database is empty, use mock data instead
+      if (checks.length === 0) {
+        console.log('Database is empty, using mock data');
+        await mockDelay(200);
+        let mockChecks = getMockData('complianceChecks');
+
+        // Filter by documentId if provided
+        if (documentId) {
+          mockChecks = mockChecks.filter((c: any) => c.documentId === documentId);
+        }
+
+        return NextResponse.json(mockChecks);
+      }
+
       // Transform to match expected format
       const formattedChecks = checks.map(check => ({
         id: check.id,

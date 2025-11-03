@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { mockDelay, getMockData } from '@/lib/mockData';
 
 /**
  * GET /api/regulations
@@ -28,6 +29,27 @@ export async function GET(request: NextRequest) {
         createdAt: 'desc',
       },
     });
+
+    // If database is empty, use mock data instead
+    if (regulations.length === 0) {
+      console.log('Database is empty, using mock data');
+      await mockDelay(200);
+      let mockRegulations = getMockData('regulations');
+      
+      // Apply filters
+      if (authority) {
+        mockRegulations = mockRegulations.filter((r: any) => r.authority === authority);
+      }
+      if (category) {
+        mockRegulations = mockRegulations.filter((r: any) => r.category === category);
+      }
+      if (isActive !== null) {
+        const isActiveBool = isActive === 'true';
+        mockRegulations = mockRegulations.filter((r: any) => r.isActive === isActiveBool);
+      }
+      
+      return NextResponse.json({ regulations: mockRegulations });
+    }
 
     return NextResponse.json({ regulations });
   } catch (error: any) {

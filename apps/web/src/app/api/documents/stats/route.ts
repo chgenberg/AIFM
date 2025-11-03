@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { mockDelay, getMockData } from '@/lib/mockData';
 
 /**
  * GET /api/documents/stats
@@ -67,6 +68,15 @@ export async function GET(request: NextRequest) {
       acc[date] = (acc[date] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
+
+    // If database is empty, use mock data instead
+    const totalDocuments = statusStats.reduce((sum, stat) => sum + stat._count, 0);
+    if (totalDocuments === 0) {
+      console.log('Database is empty, using mock data');
+      await mockDelay(200);
+      const mockStats = getMockData('documentStats');
+      return NextResponse.json(mockStats);
+    }
 
     return NextResponse.json({
       byStatus: statusStats.reduce((acc, stat) => {

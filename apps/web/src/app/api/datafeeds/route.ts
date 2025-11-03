@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { mockDelay, getMockData } from '@/lib/mockData';
 
 export async function POST(request: NextRequest) {
   try {
@@ -74,6 +75,13 @@ export async function GET() {
         updatedAt: 'desc',
       },
     });
+
+    // If database is empty, use mock data instead
+    if (dataFeeds.length === 0) {
+      console.log('Database is empty, using mock data');
+      await mockDelay(200);
+      return NextResponse.json(getMockData('dataFeeds'));
+    }
 
     return NextResponse.json(dataFeeds);
   } catch (error) {

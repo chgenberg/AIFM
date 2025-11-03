@@ -62,6 +62,26 @@ export async function GET(request: NextRequest) {
         take: 100,
       });
 
+      // If database is empty, use mock data instead
+      if (documents.length === 0) {
+        console.log('Database is empty, using mock data');
+        await mockDelay(200);
+        let mockDocuments = getMockData('documents');
+
+        // Apply filters
+        if (clientId) {
+          mockDocuments = mockDocuments.filter((d: any) => d.client.id === clientId);
+        }
+        if (category) {
+          mockDocuments = mockDocuments.filter((d: any) => d.category === category);
+        }
+        if (status) {
+          mockDocuments = mockDocuments.filter((d: any) => d.status === status);
+        }
+
+        return NextResponse.json({ documents: mockDocuments.slice(0, 100) });
+      }
+
       return NextResponse.json({ documents });
     } catch (dbError: any) {
       // Fallback to mock data if database query fails

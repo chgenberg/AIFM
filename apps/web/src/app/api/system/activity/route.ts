@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { mockDelay, getMockData } from '@/lib/mockData';
 
 export async function GET() {
   try {
@@ -57,6 +58,13 @@ export async function GET() {
       orderBy: { updatedAt: 'desc' },
       take: 50,
     });
+
+    // If database is empty, use mock data instead
+    if (totalTasks === 0) {
+      console.log('Database is empty, using mock data');
+      await mockDelay(200);
+      return NextResponse.json(getMockData('systemActivity'));
+    }
 
     return NextResponse.json({
       recentTasks,
