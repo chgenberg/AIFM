@@ -51,14 +51,6 @@ export async function GET(request: NextRequest) {
               },
             },
           },
-          policy: {
-            select: {
-              id: true,
-              name: true,
-              requirement: true,
-              category: true,
-            },
-          },
         },
         orderBy: {
           checkedAt: 'desc',
