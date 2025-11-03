@@ -4,16 +4,15 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Header } from '@/components/Header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
+import { Card, CardContent } from '@/components/Card';
 import { Button } from '@/components/Button';
-import { Badge } from '@/components/Badge';
 import { 
-  FileText, Clock, CheckCircle2, XCircle, AlertCircle, 
-  Calendar, Filter, Search, ChevronRight, Briefcase,
+  FileText, Clock, CheckCircle2, AlertCircle, 
+  Calendar, Search, ChevronRight, Briefcase,
   Building2, TrendingUp, Zap, Archive
 } from 'lucide-react';
 import Link from 'next/link';
-import { errorToast, successToast } from '@/lib/toast';
+import { errorToast } from '@/lib/toast';
 
 interface Task {
   id: string;
@@ -77,42 +76,6 @@ export default function CoordinatorInboxPage() {
       errorToast('Failed to load tasks');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleAssignTask = async (taskId: string, userId: string | null) => {
-    try {
-      const response = await fetch(`/api/tasks/${taskId}/assign`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
-      });
-      
-      if (!response.ok) throw new Error('Failed to assign task');
-      
-      successToast('Task assigned successfully');
-      loadTasks();
-    } catch (error) {
-      console.error('Failed to assign task:', error);
-      errorToast('Failed to assign task');
-    }
-  };
-
-  const handleUpdateStatus = async (taskId: string, status: string) => {
-    try {
-      const response = await fetch(`/api/tasks/${taskId}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status }),
-      });
-      
-      if (!response.ok) throw new Error('Failed to update task status');
-      
-      successToast('Task status updated');
-      loadTasks();
-    } catch (error) {
-      console.error('Failed to update task status:', error);
-      errorToast('Failed to update task status');
     }
   };
 
