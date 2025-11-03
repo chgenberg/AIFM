@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
-import { shouldUseMockData, mockData, mockDelay, getMockData } from '@/lib/mockData';
+import { shouldUseMockData, mockDelay, getMockData } from '@/lib/mockData';
 
 /**
  * GET /api/compliance/checks
