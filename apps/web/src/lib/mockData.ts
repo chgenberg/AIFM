@@ -508,6 +508,111 @@ Value at Risk (95%): EUR 2,100,000
     ],
   },
 
+  riskProfiles: [
+    {
+      id: 'mock-risk-1',
+      clientId: 'mock-client-1',
+      period: new Date('2024-10-01').toISOString(),
+      var95: 3500000, // 3.5M SEK - medium risk
+      concentration: {
+        top5: [
+          { name: 'Tech Company A', percentage: 35 },
+          { name: 'Tech Company B', percentage: 28 },
+          { name: 'Tech Company C', percentage: 22 },
+          { name: 'Tech Company D', percentage: 10 },
+          { name: 'Cash', percentage: 5 },
+        ],
+      },
+      limitBreaches: {
+        'Single Position Limit': false,
+        'Concentration Limit': false,
+        'Leverage Limit': false,
+      },
+      stressTest: {
+        scenario1: { impact: -12.5 },
+        scenario2: { impact: -8.3 },
+      },
+      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      client: { name: 'Nordic Tech Fund' },
+    },
+    {
+      id: 'mock-risk-2',
+      clientId: 'mock-client-2',
+      period: new Date('2024-10-01').toISOString(),
+      var95: 2100000, // 2.1M EUR - medium risk
+      concentration: {
+        top5: [
+          { name: 'Financial Services A', percentage: 30 },
+          { name: 'Real Estate B', percentage: 25 },
+          { name: 'Industrial C', percentage: 20 },
+          { name: 'Bonds', percentage: 15 },
+          { name: 'Cash', percentage: 10 },
+        ],
+      },
+      limitBreaches: {
+        'Single Position Limit': true,
+        'Concentration Limit': false,
+        'Leverage Limit': false,
+      },
+      stressTest: {
+        scenario1: { impact: -10.2 },
+        scenario2: { impact: -6.8 },
+      },
+      createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+      client: { name: 'Scandinavia Investment Partners' },
+    },
+    {
+      id: 'mock-risk-3',
+      clientId: 'mock-client-3',
+      period: new Date('2024-10-01').toISOString(),
+      var95: 2500000, // 2.5M SEK - medium risk
+      concentration: {
+        top5: [
+          { name: 'Energy Company A', percentage: 40 },
+          { name: 'Utility Company B', percentage: 30 },
+          { name: 'Infrastructure C', percentage: 20 },
+          { name: 'Cash', percentage: 10 },
+        ],
+      },
+      limitBreaches: {
+        'Single Position Limit': false,
+        'Concentration Limit': true,
+        'Leverage Limit': false,
+      },
+      stressTest: {
+        scenario1: { impact: -15.5 },
+        scenario2: { impact: -9.2 },
+      },
+      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      client: { name: 'Baltic Capital Management' },
+    },
+    {
+      id: 'mock-risk-4',
+      clientId: 'mock-client-1',
+      period: new Date('2024-11-01').toISOString(),
+      var95: 6200000, // 6.2M SEK - high risk
+      concentration: {
+        top5: [
+          { name: 'Tech Company A', percentage: 45 },
+          { name: 'Tech Company B', percentage: 35 },
+          { name: 'Tech Company C', percentage: 15 },
+          { name: 'Cash', percentage: 5 },
+        ],
+      },
+      limitBreaches: {
+        'Single Position Limit': true,
+        'Concentration Limit': true,
+        'Leverage Limit': false,
+      },
+      stressTest: {
+        scenario1: { impact: -18.5 },
+        scenario2: { impact: -12.3 },
+      },
+      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      client: { name: 'Nordic Tech Fund' },
+    },
+  ],
+
   systemActivity: {
     recentTasks: [
       {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { mockDelay, getMockData } from '@/lib/mockData';
 
 /**
  * GET /api/risk/profiles
@@ -31,6 +32,46 @@ export async function GET(request: NextRequest) {
         period: 'desc',
       },
     });
+
+    // If database is empty, use mock data instead
+    if (profiles.length === 0) {
+      console.log('Database is empty, using mock data');
+      await mockDelay(200);
+      let mockProfiles = getMockData('riskProfiles');
+      
+      // Filter by clientId if provided
+      if (clientId) {
+        mockProfiles = mockProfiles.filter((p: any) => p.clientId === clientId);
+      }
+
+      // Calculate statistics from mock data
+      const totalBreaches = mockProfiles.reduce((sum: number, profile: any) => {
+        if (!profile.limitBreaches || typeof profile.limitBreaches !== 'object') return sum;
+        return sum + Object.values(profile.limitBreaches).filter((v: any) => v === true).length;
+      }, 0);
+
+      const highRiskClients = mockProfiles.filter((profile: any) => {
+        if (!profile.var95) return false;
+        const var95 = Number(profile.var95);
+        return var95 >= 5000000; // >= 5M SEK
+      }).length;
+
+      const varValues = mockProfiles
+        .map((p: any) => p.var95)
+        .filter((v): v is number => v !== null && v !== undefined)
+        .map(v => Number(v));
+
+      const avgVaR = varValues.length > 0
+        ? varValues.reduce((a, b) => a + b, 0) / varValues.length
+        : null;
+
+      return NextResponse.json({
+        profiles: mockProfiles,
+        totalBreaches,
+        highRiskClients,
+        avgVaR,
+      });
+    }
 
     // Calculate statistics
     const totalBreaches = profiles.reduce((sum, profile) => {
