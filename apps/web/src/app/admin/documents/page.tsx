@@ -125,24 +125,6 @@ export default function DocumentsPage() {
     }
   };
 
-  const handleDelete = async (documentId: string) => {
-    if (!confirm('Are you sure you want to delete this document?')) return;
-
-    try {
-      const response = await fetch(`/api/documents/${documentId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) throw new Error('Delete failed');
-      
-      successToast('Document deleted successfully');
-      loadDocuments();
-    } catch (error) {
-      console.error('Delete error:', error);
-      errorToast('Failed to delete document');
-    }
-  };
-
   const handlePreview = (document: Document) => {
     setPreviewDocument(document);
     setShowPreview(true);
