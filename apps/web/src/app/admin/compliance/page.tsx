@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Header } from '@/components/Header';
 import { Card, CardContent } from '@/components/Card';
 import { Button } from '@/components/Button';
@@ -51,7 +51,7 @@ interface ComplianceSummary {
 
 type ComplianceTab = 'OVERVIEW' | 'BY_DOCUMENT' | 'BY_POLICY';
 
-export default function CompliancePage() {
+function CompliancePageContent() {
   const searchParams = useSearchParams();
   const documentId = searchParams.get('documentId');
   
@@ -500,5 +500,22 @@ export default function CompliancePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CompliancePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex items-center justify-center py-16">
+            <div className="animate-pulse text-gray-500">Loading...</div>
+          </div>
+        </div>
+      </div>
+    }>
+      <CompliancePageContent />
+    </Suspense>
   );
 }
