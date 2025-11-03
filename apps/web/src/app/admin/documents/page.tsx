@@ -439,6 +439,7 @@ export default function DocumentsPage() {
         {showPreview && previewDocument && (
           <DocumentPreviewModal
             document={previewDocument}
+            isOpen={showPreview}
             onClose={() => {
               setShowPreview(false);
               setPreviewDocument(null);
