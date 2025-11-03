@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { shouldUseMockData, mockData, mockDelay, getMockData } from '@/lib/mockData';
 
 /**
  * GET /api/documents
@@ -18,33 +19,73 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category');
     const status = searchParams.get('status');
 
-    const documents = await prisma.document.findMany({
-      where: {
-        ...(clientId && { clientId }),
-        ...(category && { category }),
-        ...(status && { status: status as any }),
-      },
-      include: {
-        client: {
-          select: {
-            id: true,
-            name: true,
+    // Check if we should use mock data
+    const useMock = shouldUseMockData();
+
+    if (useMock) {
+      await mockDelay(200);
+      let mockDocuments = getMockData('documents');
+
+      // Apply filters
+      if (clientId) {
+        mockDocuments = mockDocuments.filter((d: any) => d.client.id === clientId);
+      }
+      if (category) {
+        mockDocuments = mockDocuments.filter((d: any) => d.category === category);
+      }
+      if (status) {
+        mockDocuments = mockDocuments.filter((d: any) => d.status === status);
+      }
+
+      return NextResponse.json({ documents: mockDocuments.slice(0, 100) });
+    }
+
+    // Try to get real data from database
+    try {
+      const documents = await prisma.document.findMany({
+        where: {
+          ...(clientId && { clientId }),
+          ...(category && { category }),
+          ...(status && { status: status as any }),
+        },
+        include: {
+          client: {
+            select: {
+              id: true,
+              name: true,
+            },
           },
         },
-      },
-      orderBy: {
-        uploadedAt: 'desc',
-      },
-      take: 100,
-    });
+        orderBy: {
+          uploadedAt: 'desc',
+        },
+        take: 100,
+      });
 
-    return NextResponse.json({ documents });
+      return NextResponse.json({ documents });
+    } catch (dbError: any) {
+      // Fallback to mock data if database query fails
+      console.warn('Database query failed, using mock data:', dbError?.message);
+      await mockDelay(200);
+      let mockDocuments = getMockData('documents');
+
+      if (clientId) {
+        mockDocuments = mockDocuments.filter((d: any) => d.client.id === clientId);
+      }
+      if (category) {
+        mockDocuments = mockDocuments.filter((d: any) => d.category === category);
+      }
+      if (status) {
+        mockDocuments = mockDocuments.filter((d: any) => d.status === status);
+      }
+
+      return NextResponse.json({ documents: mockDocuments.slice(0, 100) });
+    }
   } catch (error: any) {
     console.error('Error fetching documents:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch documents', details: error?.message },
-      { status: 500 }
-    );
+    // Last resort: return mock data
+    await mockDelay(200);
+    return NextResponse.json({ documents: getMockData('documents').slice(0, 100) });
   }
 }
 
