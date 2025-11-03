@@ -7,7 +7,7 @@ import { shouldUseMockData, mockDelay } from '@/lib/mockData';
  * POST /api/compliance/check-all
  * Run compliance checks for all documents
  */
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user) {
