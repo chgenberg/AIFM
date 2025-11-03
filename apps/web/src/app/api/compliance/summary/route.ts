@@ -94,7 +94,6 @@ export async function GET(request: NextRequest) {
       const compliant = checks.filter(c => c.status === 'COMPLIANT').length;
       const nonCompliant = checks.filter(c => c.status === 'NON_COMPLIANT').length;
       const needsReview = checks.filter(c => c.status === 'NEEDS_REVIEW').length;
-      const pending = checks.filter(c => c.status === 'PENDING').length;
 
       const overallScore = total > 0 ? compliant / total : 0;
 
