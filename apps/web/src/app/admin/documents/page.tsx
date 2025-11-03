@@ -35,7 +35,6 @@ type FilterTab = 'ALL' | 'INDEXED' | 'PROCESSING' | 'PENDING';
 
 export default function DocumentsPage() {
   const [documents, setDocuments] = useState<Document[]>([]);
-  const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(new Set());
   const [previewDocument, setPreviewDocument] = useState<Document | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [loading, setLoading] = useState(true);
