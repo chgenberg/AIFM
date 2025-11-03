@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/Card';
 import { PasswordModal } from '@/components/PasswordModal';
 import Image from 'next/image';
 import { 
-  Shield, Zap, BarChart3, TrendingUp, CheckCircle2, Building2, X, ZoomIn,
+  Shield, Zap, BarChart3, TrendingUp, CheckCircle2, X, ZoomIn,
   Users, FileText, Database, Globe, Lock, Activity, AlertTriangle, 
   ArrowRight, Settings, ClipboardList, RefreshCw
 } from 'lucide-react';
