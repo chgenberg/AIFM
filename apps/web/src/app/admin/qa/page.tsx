@@ -40,7 +40,6 @@ export default function QAPage() {
   const [response, setResponse] = useState<RAGResponse | null>(null);
   const [recentQuestions, setRecentQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(false);
-  const [loadingDocs, setLoadingDocs] = useState(true);
 
   useEffect(() => {
     loadDocuments();
@@ -56,7 +55,6 @@ export default function QAPage() {
 
   const loadDocuments = async () => {
     try {
-      setLoadingDocs(true);
       const response = await fetch('/api/documents?status=INDEXED');
       if (response.ok) {
         const data = await response.json();
@@ -64,8 +62,6 @@ export default function QAPage() {
       }
     } catch (error) {
       console.error('Failed to load documents:', error);
-    } finally {
-      setLoadingDocs(false);
     }
   };
 
