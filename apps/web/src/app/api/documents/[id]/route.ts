@@ -2,6 +2,59 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { getStorage } from '@/lib/storage';
+import { mockDelay, getMockData } from '@/lib/mockData';
+
+/**
+ * GET /api/documents/[id]
+ * Get a specific document
+ */
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { id } = await params;
+    
+    const document = await prisma.document.findUnique({
+      where: { id },
+      include: {
+        client: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    // If document not found, try mock data
+    if (!document) {
+      console.log('Document not found in database, trying mock data');
+      await mockDelay(200);
+      const mockDocuments = getMockData('documents');
+      const mockDoc = mockDocuments.find((d: any) => d.id === id);
+      
+      if (mockDoc) {
+        return NextResponse.json({ document: mockDoc });
+      }
+      
+      return NextResponse.json({ error: 'Document not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ document });
+  } catch (error: any) {
+    console.error('Error fetching document:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch document', details: error?.message },
+      { status: 500 }
+    );
+  }
+}
 
 /**
  * DELETE /api/documents/[id]

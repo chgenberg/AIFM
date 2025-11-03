@@ -36,7 +36,8 @@ export async function GET(request: NextRequest) {
       take: limit,
     });
 
-    return NextResponse.json({ questions });
+    // Always return array, even if empty
+    return NextResponse.json({ questions: questions || [] });
   } catch (error: any) {
     console.error('Error fetching questions:', error);
     return NextResponse.json(

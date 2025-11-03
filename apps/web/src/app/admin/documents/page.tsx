@@ -67,7 +67,8 @@ export default function DocumentsPage() {
       const response = await fetch('/api/documents');
       if (response.ok) {
         const data = await response.json();
-        setDocuments(data);
+        // Handle both { documents: [...] } and [...] formats
+        setDocuments(Array.isArray(data) ? data : (data.documents || []));
       }
     } catch (error) {
       console.error('Failed to load documents:', error);
@@ -79,10 +80,10 @@ export default function DocumentsPage() {
 
   const loadClients = async () => {
     try {
-      const response = await fetch('/api/admin/clients');
+      const response = await fetch('/api/clients');
       if (response.ok) {
         const data = await response.json();
-        setClients(data);
+        setClients(Array.isArray(data) ? data : []);
       }
     } catch (error) {
       console.error('Failed to load clients:', error);

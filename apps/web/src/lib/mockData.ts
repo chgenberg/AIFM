@@ -241,6 +241,13 @@ Value at Risk (95%): EUR 2,100,000
       status: 'COMPLIANT',
       score: 0.95,
       checkedAt: new Date(),
+      notes: 'All required fields verified',
+      gaps: [],
+      evidence: [
+        'Account number verified',
+        'Balance matches ledger',
+        'All transactions accounted for',
+      ],
       document: {
         id: 'mock-doc-1',
         fileName: 'Q4_2024_Bank_Statement.pdf',
@@ -261,6 +268,15 @@ Value at Risk (95%): EUR 2,100,000
       status: 'NEEDS_REVIEW',
       score: 0.75,
       checkedAt: new Date(),
+      notes: 'Missing proof of address document',
+      gaps: [
+        'Proof of address document missing',
+        'Source of funds verification incomplete',
+      ],
+      evidence: [
+        'Passport verified',
+        'Identity confirmed',
+      ],
       document: {
         id: 'mock-doc-2',
         fileName: 'KYC_Investor_001.pdf',
@@ -281,6 +297,13 @@ Value at Risk (95%): EUR 2,100,000
       status: 'COMPLIANT',
       score: 0.98,
       checkedAt: new Date(),
+      notes: 'All reporting requirements met',
+      gaps: [],
+      evidence: [
+        'Submitted within deadline',
+        'All required sections included',
+        'Auditor approval obtained',
+      ],
       document: {
         id: 'mock-doc-3',
         fileName: 'Fund_Accounting_Report_Q4.pdf',

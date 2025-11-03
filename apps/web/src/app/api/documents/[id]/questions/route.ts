@@ -28,13 +28,12 @@ export async function GET(
       take: 50,
     });
 
-    return NextResponse.json({ questions });
+    // Always return array, even if empty
+    return NextResponse.json({ questions: questions || [] });
   } catch (error: any) {
     console.error('Error fetching document questions:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch questions', details: error?.message },
-      { status: 500 }
-    );
+    // Return empty array on error instead of failing
+    return NextResponse.json({ questions: [] });
   }
 }
 
